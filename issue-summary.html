@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>七仓确认问题汇总 · 五工具 Wiki 对比</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="">
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav><a class="top-link " href="index.html">总览</a><a class="top-link " href="repository-intro.html">一分钟了解示例仓库</a><a class="top-link " href="local-skill.html">Local Skill</a><a class="top-link " href="devinwiki.html">DevinWiki</a><a class="top-link " href="deepwiki-open.html">deepwiki-open</a><a class="top-link " href="openwiki.html">OpenWiki</a><a class="top-link " href="codewiki.html">CodeWiki</a><a class="top-link active" href="issue-summary.html">七仓问题汇总</a></nav></header>
+  
+<main class="issues-page page-shell">
+  <a class="backline" href="index.html">← 返回总览</a>
+  <section class="issues-hero"><p class="eyebrow">七仓源码核查</p><h1>7 个仓库共确认 13 类问题</h1><p>这里只有能回到同一仓库快照中的源码、测试或运行日志的问题。某工具没有被标记，不代表它的全部内容都已经核查正确。</p></section>
+  <section class="count-strip"><article style="--accent:#bd5a36"><b>Local Skill</b><strong>9</strong><span>类确认涉及问题</span></article><article style="--accent:#2d6d8d"><b>DevinWiki</b><strong>7</strong><span>类确认涉及问题</span></article><article style="--accent:#b88716"><b>deepwiki-open</b><strong>3</strong><span>类确认涉及问题</span></article><article style="--accent:#167764"><b>OpenWiki</b><strong>3</strong><span>类确认涉及问题</span></article><article style="--accent:#62558b"><b>CodeWiki</b><strong>1</strong><span>类确认涉及问题</span></article></section>
+  <section class="pattern-board"><div><p class="eyebrow">常见问题</p><h2>五个工具反复出现的四类问题</h2></div>
+    <article><b>把局部行为说成通则</b><p>普通连接和 TLS 首次连接、406 和 500 被混成一句话。</p></article>
+    <article><b>只看“能跑通”的路径</b><p>失败、超时、资源释放和并发收尾最容易被漏掉。</p></article>
+    <article><b>引用存在，但没证明结论</b><p>文件和行号是真的，Wiki 对这段代码的解释仍可能错。</p></article>
+    <article><b>示例和图表没有机械检查</b><p>复制后不能编译，或流程箭头与真实顺序不一致。</p></article>
+  </section>
+  <section class="section"><div class="section-head"><div><p class="eyebrow">问题与工具</p><h2>每类问题涉及哪些工具</h2></div><p>实心圆表示已经找到该工具出错或遗漏的直接证据。P0 会直接误导操作或判断；P1 会漏掉重要风险或降低可信度。</p></div>
+    <div class="matrix-wrap"><table class="issue-matrix"><thead><tr><th>确认问题</th><th>Local Skill</th><th>DevinWiki</th><th>deepwiki-open</th><th>OpenWiki</th><th>CodeWiki</th><th>级别</th></tr></thead><tbody><tr><th><a href="#issue-01">#01 Wiki 告诉用户运行 -e google，但程序真正接受的是 -e googles。</a></th><td class="hit">●</td><td class="hit">●</td><td class="">—</td><td class="hit">●</td><td class="">—</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-02">#02 Wiki 说所有连接都会按用户设置的超时时间停止，但第一次 TLS 连接并没有使用这个超时。</a></th><td class="hit">●</td><td class="hit">●</td><td class="hit">●</td><td class="hit">●</td><td class="">—</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-03">#03 同一份 Wiki 对“默认返回格式配置错误”同时给出 406 和 500 两个答案。</a></th><td class="">—</td><td class="">—</td><td class="hit">●</td><td class="">—</td><td class="">—</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-04">#04 Wiki 只说“应该留足内存空间”，却没有告诉读者当前代码实际没有留足。</a></th><td class="hit">●</td><td class="hit">●</td><td class="hit">●</td><td class="hit">●</td><td class="">—</td><td><span class="severity p1">P1</span></td></tr><tr><th><a href="#issue-05">#05 一个 sqlx 示例少接收错误返回值，复制后无法编译。</a></th><td class="">—</td><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-06">#06 CodeWiki 无法处理 Go 仓库，生成任务在开始前就失败。</a></th><td class="">—</td><td class="">—</td><td class="">—</td><td class="">—</td><td class="hit">●</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-07">#07 Wiki 宣称支持 fileId:nodeId 的短输入格式，但按说明输入通常解析失败。</a></th><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-08">#08 Wiki 把“不会重复创建页面元素”扩大成“重复初始化完全安全”。</a></th><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p1">P1</span></td></tr><tr><th><a href="#issue-09">#09 Wiki 只介绍图片加载成功后的流程，没有说明图片地址失效时会怎样。</a></th><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p1">P1</span></td></tr><tr><th><a href="#issue-10">#10 Wiki 说停止后会输出稳定的最终统计，但程序可能在最后一次探测还没结束时就开始汇总。</a></th><td class="hit">●</td><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-11">#11 Wiki 把 sqlx 安全模式的报错条件讲反了。</a></th><td class="">—</td><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p0">P0</span></td></tr><tr><th><a href="#issue-12">#12 流程图把 Ghost 的构建和处理顺序画错，DevinWiki 还画出了源码不存在的并行执行。</a></th><td class="hit">●</td><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p1">P1</span></td></tr><tr><th><a href="#issue-13">#13 大量页面只有结论，没有任何源码位置可供核查。</a></th><td class="hit">●</td><td class="">—</td><td class="">—</td><td class="">—</td><td class="">—</td><td><span class="severity p1">P1</span></td></tr></tbody></table></div>
+  </section>
+  <section class="section"><div class="section-head"><div><p class="eyebrow">详细问题</p><h2>每个问题的影响、出错工具和源码核查结果</h2></div><p>按编号可从上表直接跳转。</p></div><div class="evidence-list"><article class="evidence-card" id="issue-01">
+              <header><span class="issue-number">#01</span><span class="severity p0">P0</span><h3>Wiki 告诉用户运行 -e google，但程序真正接受的是 -e googles。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>用户照着文档执行会直接报错，无法启动目标功能，还可能误以为是环境或权限问题。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill、DevinWiki、OpenWiki；仓库 README 和命令帮助本身也写错。CodeWiki 识别出了不一致；deepwiki-open 没有产物。</p></div>
+              <div><b>源码证据说明什么</b><p>源码只注册 googles，并会拒绝未注册的 google。这说明仓库原文档先写错，三个 Wiki 又照抄了错误，没有用源码纠正。证据 E1-E3。</p></div><div><b>应该优先处理什么</b><p>立即处理：命令、参数和注册名必须以源码为准；发现 README 与源码冲突时，要在 Wiki 中明确提示。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/plugins/googles.py#L35-L40">E1 EmailHarvester 插件注册键 ↗</a>　<a href="https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/EmailHarvester.py#L274-L284">E2 EmailHarvester 拒绝未知插件 ↗</a>　<a href="https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/README.md#L74-L82">E3 EmailHarvester README 错例 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-02">
+              <header><span class="issue-number">#02</span><span class="severity p0">P0</span><h3>Wiki 说所有连接都会按用户设置的超时时间停止，但第一次 TLS 连接并没有使用这个超时。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>网络异常时，命令可能比用户设定的时间等得更久，监控或批处理任务可能被拖住。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill、DevinWiki、OpenWiki 写错；deepwiki-open 展示了流程，但没有指出这个限制；CodeWiki 不支持该 Go 仓库。</p></div>
+              <div><b>源码证据说明什么</b><p>源码虽然创建了超时控制，但第一次 TLS 连接时没有把它传进去，底层连接器也没有单独设置超时。证据 E4。</p></div><div><b>应该优先处理什么</b><p>立即处理：涉及超时、重试、取消时，必须逐条检查每个分支，不能把一个分支的行为概括成全部行为。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L16-L75">E4 tcping TCP/TLS 拨号实现 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-03">
+              <header><span class="issue-number">#03</span><span class="severity p0">P0</span><h3>同一份 Wiki 对“默认返回格式配置错误”同时给出 406 和 500 两个答案。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>工程师会写错异常处理和测试用例，排查接口失败时也会判断错原因。</p></div><div><b>哪些工具受到影响</b><p>deepwiki-open。其他已检查工具没有在该具体场景中确认同样错误；未提及不代表已验证正确。</p></div>
+              <div><b>源码证据说明什么</b><p>源码和测试表明：没有可用格式且没有默认值时是 406；配置了一个不存在的默认格式时是 500。证据 E5-E6。</p></div><div><b>应该优先处理什么</b><p>立即处理：返回码、异常类型等边界条件应从测试用例提取，并做跨页面一致性检查。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/flask_restful/__init__.py#L505-L530">E5 Flask-RESTful 表示选择分支 ↗</a>　<a href="https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/tests/test_accept.py#L226-L240">E6 Flask-RESTful 无效默认格式返回 500 的测试 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-04">
+              <header><span class="issue-number">#04</span><span class="severity p1">P1</span><h3>Wiki 只说“应该留足内存空间”，却没有告诉读者当前代码实际没有留足。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>读者会把真实缺陷当成普通注意事项，遗漏可能导致崩溃或内存破坏的风险。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill 弱化了问题；DevinWiki、deepwiki-open、OpenWiki 没指出；CodeWiki 明确发现。</p></div>
+              <div><b>源码证据说明什么</b><p>源码允许把数据放到内存尾部附近，随后仍复制完整数据，可能写出边界；还存在分配和释放方式不匹配。证据 E7-E9。</p></div><div><b>应该优先处理什么</b><p>高优先：安全前提一旦被当前实现违反，Wiki 必须直接写成“现有缺陷”，不能只写成建议。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">E7 Ghost 随机偏移与 memcpy ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L52-L52">E8 Ghost malloc 分配 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L137-L137">E9 Ghost delete[] 释放 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-05">
+              <header><span class="issue-number">#05</span><span class="severity p0">P0</span><h3>一个 sqlx 示例少接收错误返回值，复制后无法编译。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>新用户按示例接入会立刻失败，还要额外排查本应由文档避免的问题。</p></div><div><b>哪些工具受到影响</b><p>DevinWiki 的一处示例；同一 Wiki 的其他示例写对，说明页面之间存在不一致。</p></div>
+              <div><b>源码证据说明什么</b><p>源码明确规定 Connect 同时返回数据库对象和错误信息，示例必须同时接收 db 和 err。证据 E10。</p></div><div><b>应该优先处理什么</b><p>立即处理：所有代码示例在发布前至少要通过编译或静态检查。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/sqlx.go#L639-L650">E10 sqlx.Connect 函数签名 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-06">
+              <header><span class="issue-number">#06</span><span class="severity p0">P0</span><h3>CodeWiki 无法处理 Go 仓库，生成任务在开始前就失败。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>tcping、sqlx 完全拿不到 Wiki；如果批量任务没有预检查，会浪费等待时间并造成覆盖率误判。</p></div><div><b>哪些工具受到影响</b><p>CodeWiki；本轮两个 Go 仓库 tcping 和 sqlx 均失败。</p></div>
+              <div><b>源码证据说明什么</b><p>语言检查器列出的支持类型中没有 .go，运行日志也显示模型尚未调用就终止。证据 E11。</p></div><div><b>应该优先处理什么</b><p>立即处理产品口径：生成前展示支持语言并提前拦截；若要覆盖 Go，再补解析和生成能力。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/FSoft-AI4Code/CodeWiki/blob/8e4b82b6ba57dfd9e8e42b9b482f412e43d3909a/codewiki/cli/utils/repo_validator.py#L11-L34">E11 CodeWiki 支持的源码扩展名 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-07">
+              <header><span class="issue-number">#07</span><span class="severity p0">P0</span><h3>Wiki 宣称支持 fileId:nodeId 的短输入格式，但按说明输入通常解析失败。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>用户会选择一个看起来最简单、实际上不可用的入口，导致调用失败。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill 生成的 Figma Flutter MCP Wiki。URL 输入和分开传参仍可用。</p></div>
+              <div><b>源码证据说明什么</b><p>解析器要求整串只出现一个冒号，但合法 nodeId 本身就包含冒号；另一种连字符写法又过不了后续校验。证据 E12-E13。</p></div><div><b>应该优先处理什么</b><p>立即处理：删除不可用写法，或先为每种公开输入格式补通过测试，再允许 Wiki 宣称支持。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L43-L48">E12 Figma 紧凑输入拆分 ↗</a>　<a href="https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L164-L179">E13 Figma 节点 ID 校验 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-08">
+              <header><span class="issue-number">#08</span><span class="severity p1">P1</span><h3>Wiki 把“不会重复创建页面元素”扩大成“重复初始化完全安全”。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>开发者可能重复初始化，造成同一个点击被多个监听器处理，出现重复打开或行为异常。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill 生成的 Lightbox2 Wiki。</p></div>
+              <div><b>源码证据说明什么</b><p>源码只阻止重复插入页面元素，但每次初始化仍会再次绑定事件；脚本重复加载还会创建新实例。证据 E14。</p></div><div><b>应该优先处理什么</b><p>高优先：描述生命周期时拆开说明“页面元素、事件绑定、实例状态”，不要用一个“安全”概括全部。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/lokesh/lightbox2/blob/6bc87b6c246da1f24dcfcf52683286ad7e560cf3/src/js/lightbox.js#L75-L137">E14 Lightbox2 init、enable 与 build ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-09">
+              <header><span class="issue-number">#09</span><span class="severity p1">P1</span><h3>Wiki 只介绍图片加载成功后的流程，没有说明图片地址失效时会怎样。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>坏图片链接可能让弹窗一直显示加载中，并暂时失去键盘导航；维护者会漏掉真实用户故障。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill 生成的 Lightbox2 Wiki。</p></div>
+              <div><b>源码证据说明什么</b><p>源码只有加载成功处理，没有加载失败处理或超时；仓库路线图也把坏链接列为未解决问题。证据 E15-E16。</p></div><div><b>应该优先处理什么</b><p>高优先：所有加载、网络和文件流程必须同时检查成功、失败和超时三条路径。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/lokesh/lightbox2/blob/6bc87b6c246da1f24dcfcf52683286ad7e560cf3/src/js/lightbox.js#L283-L379">E15 Lightbox2 图片加载流程 ↗</a>　<a href="https://github.com/lokesh/lightbox2/blob/6bc87b6c246da1f24dcfcf52683286ad7e560cf3/ROADMAP.md#L50-L52">E16 Lightbox2 路线图中的坏链接问题 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-10">
+              <header><span class="issue-number">#10</span><span class="severity p0">P0</span><h3>Wiki 说停止后会输出稳定的最终统计，但程序可能在最后一次探测还没结束时就开始汇总。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>统计结果可能漏数或不一致；如果一开始就被停止，还可能因为除以零而崩溃。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill、DevinWiki。</p></div>
+              <div><b>源码证据说明什么</b><p>源码发出停止信号后没有等待后台探测结束，马上读取仍可能变化的统计值。证据 E17-E18。</p></div><div><b>应该优先处理什么</b><p>立即处理：并发流程必须确认“停止”是否等于“已经结束”，并检查零数据、竞态和收尾顺序。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/main.go#L131-L140">E17 tcping 信号处理后立即汇总 ↗</a>　<a href="https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/ping.go#L166-L210">E18 tcping 统计写入与汇总 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-11">
+              <header><span class="issue-number">#11</span><span class="severity p0">P0</span><h3>Wiki 把 sqlx 安全模式的报错条件讲反了。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>开发者可能在不需要时启用 Unsafe()，关闭本来有用的字段检查，让真实映射错误更难发现。</p></div><div><b>哪些工具受到影响</b><p>DevinWiki。</p></div>
+              <div><b>源码证据说明什么</b><p>源码检查的是“查询返回的列没有目标字段”，并不因为结构体里多了未使用字段而报错。证据 E19。</p></div><div><b>应该优先处理什么</b><p>立即处理：对“何时会报错”类结论，应从实际判断条件和测试反推，不凭经验改写。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/sqlx.go#L618-L623">E19 sqlx safe/unsafe 缺失字段判断 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-12">
+              <header><span class="issue-number">#12</span><span class="severity p1">P1</span><h3>流程图把 Ghost 的构建和处理顺序画错，DevinWiki 还画出了源码不存在的并行执行。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>工程师按图理解或改造流程时，会找错入口、调整错顺序，甚至引入新的构建问题。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill、DevinWiki。</p></div>
+              <div><b>源码证据说明什么</b><p>build.py 明确按“先汇编、再准备 payload、再资源和 C++、最后链接”串行执行；辅助进程也在本地代码替换前终止。证据 E20-E22。</p></div><div><b>应该优先处理什么</b><p>高优先：流程图必须从真实调用顺序生成，并检查每条箭头的先后关系，而不只检查 Mermaid 能否渲染。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/build.py#L196-L201">E20 Ghost 实际构建顺序 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L38-L71">E21 Ghost 远端读取与辅助进程终止 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L77-L128">E22 Ghost 本地代码替换 ↗</a></p></details>
+            </article><article class="evidence-card" id="issue-13">
+              <header><span class="issue-number">#13</span><span class="severity p1">P1</span><h3>大量页面只有结论，没有任何源码位置可供核查。</h3></header>
+              <div class="evidence-grid"><div><b>会造成什么后果</b><p>工程师无法快速判断结论是否可信；这类内容也不适合未经筛选直接作为训练数据。</p></div><div><b>哪些工具受到影响</b><p>本地 Skill：Lightbox2 的 23 页全部无引用；Ghost 20 页中有 18 页无引用。</p></div>
+              <div><b>源码证据说明什么</b><p>对生成目录逐页统计后，上述页面没有可解析的源码引用；这不代表主题没写，而是结论无法追溯。证据 E23-E24。</p></div><div><b>应该优先处理什么</b><p>高优先：事实页至少提供可定位到文件和行号的证据；整仓引用为零时应禁止发布。</p></div></div>
+              <details><summary>查看证据入口</summary><p><a href="evidence/lightbox2-qualitative.md">E23 Lightbox2 定性复核报告 ↗</a>　<a href="evidence/ghost-qualitative.md">E24 Ghost 定性复核报告 ↗</a></p></details>
+            </article></div></section>
+</main>
+  <script src="assets/site.js"></script>
+</body>
+</html>

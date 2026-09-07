@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>一分钟理解 Ghost · 五工具 Wiki 对比</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="">
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav><a class="top-link " href="index.html">总览</a><a class="top-link active" href="repository-intro.html">一分钟了解示例仓库</a><a class="top-link " href="local-skill.html">Local Skill</a><a class="top-link " href="devinwiki.html">DevinWiki</a><a class="top-link " href="deepwiki-open.html">deepwiki-open</a><a class="top-link " href="openwiki.html">OpenWiki</a><a class="top-link " href="codewiki.html">CodeWiki</a><a class="top-link " href="issue-summary.html">七仓问题汇总</a></nav></header>
+  
+<main class="intro-page page-shell">
+  <a class="backline" href="index.html">← 返回七仓总览</a>
+  <aside class="publication-note"><strong>阅读范围：</strong>Ghost 仅作为五种文档工具的共同评测样本。页面解释代码结构与已确认缺陷，不提供部署、规避检测或实际攻击步骤。</aside>
+  <section class="intro-hero"><p class="eyebrow">一分钟了解示例仓库</p><h1>Ghost：把一段程序载荷封装进可执行文件，再在运行时还原并执行</h1>
+    <p>构建阶段生成密钥、加密载荷并编译成文件；运行阶段恢复系统组件、解密载荷、把它放入一块随机填充的大内存区域，再通过独立执行单元启动。</p>
+    <p class="analogy-line"><b>类比：</b>载荷是货物，Ghost 是经过伪装的运送车；它先把货物锁进箱子，抵达后再拆箱并藏进一座堆满杂物的大仓库。</p>
+    <a class="commit" href="https://github.com/cpu0x00/Ghost/tree/bf67313c72d1df48117daf4aeca604e83a570280">仓库快照 bf67313c · 查看 GitHub ↗</a>
+  </section>
+  <section class="journey"><div class="journey-node"><b>1</b><h3>接收载荷</h3><p>输入是一段准备封装的二进制程序数据。</p></div><i>→</i>
+    <div class="journey-node"><b>2</b><h3>加密与嵌入</h3><p>构建脚本生成密钥和初始向量，把加密结果放进资源文件。</p></div><i>→</i>
+    <div class="journey-node"><b>3</b><h3>编译与链接</h3><p>依次处理汇编、资源和 C++，最后生成可执行文件。</p></div><i>→</i>
+    <div class="journey-node"><b>4</b><h3>运行时还原</h3><p>程序取出资源、解密数据，并准备一块较大的随机内存区域。</p></div><i>→</i>
+    <div class="journey-node"><b>5</b><h3>放置与执行</h3><p>载荷被复制到随机位置，再通过 fiber 启动。</p></div>
+  </section>
+  <section class="example-journey"><div class="example-title"><p class="eyebrow">一个实际输入到输出流程</p><h2>一份载荷怎样变成最终文件，并在运行时被启动</h2><p>这里不展示操作命令，只说明数据怎样流动，便于理解五份 Wiki 在解释什么。</p></div>
+    <div class="io-card input"><span>输入</span><b>二进制载荷</b><code>payload bytes</code><small>构建脚本读取原始数据</small></div><i>→</i>
+    <div class="io-card process"><span>构建</span><b>加密、嵌入、编译</b><code>key + encrypted resource</code><small>输出包含加密载荷的可执行文件</small></div><i>→</i>
+    <div class="io-card output"><span>运行</span><b>解密、放入内存、执行</b><code>random memory slot → fiber</code><small>载荷从资源进入运行内存</small></div>
+  </section>
+  <details class="evidence-drawer"><summary>查看这个输入输出流程的源码</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/build.py#L196-L201">构建顺序 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L69-L113">运行时流程 ↗</a></p></details>
+  <section class="plain-contrast"><div><p class="eyebrow">本仓最重要的对比点</p><h2>同一段内存代码，只有 CodeWiki 明确指出两处风险</h2><p>代码会从整块内存中随机选择起点，却没有为完整载荷预留右侧空间；另外，两块由 <code>malloc</code> 得到的内存使用了 <code>delete[]</code> 释放。前四个工具把这些写成正常流程、维护建议或直接漏掉，CodeWiki 明确标成缺陷。</p><div class="conflict-line"><span>4 个工具：漏报或弱化</span><i>对照</i><span>CodeWiki：明确指出</span></div></div>
+    <article class="status-card red"><b>越界</b><h3>随机位置可能太靠右</h3><p>像把大箱子随机放到货架上，却没先确认右边空间够不够；放得太靠边，箱子会伸出货架。</p></article>
+    <article class="status-card yellow"><b>错配</b><h3>申请与归还方式不一致</h3><p>像从 A 柜台借出的东西却交给 B 柜台归还，程序可能崩溃或破坏内存。</p></article>
+  </section>
+  <section class="choice-room"><div><p class="eyebrow">五份成品</p><h2>分别查看五个工具生成的完整 Wiki</h2><p>阅读时重点看内存放置和释放部分：侧边栏可直接跳到已核实的错误、遗漏或正确识别位置。</p></div>
+    <div class="choice-tabs"><a style="--accent:#bd5a36" href="local-skill.html"><span>Local Skill</span><small>可改造的本地多页生成流程</small></a><a style="--accent:#2d6d8d" href="devinwiki.html"><span>DevinWiki</span><small>最接近完整在线教程</small></a><a style="--accent:#b88716" href="deepwiki-open.html"><span>deepwiki-open</span><small>成功时较快的长篇生成器</small></a><a style="--accent:#167764" href="openwiki.html"><span>OpenWiki</span><small>证据入口和页面导航较清楚</small></a><a style="--accent:#62558b" href="codewiki.html"><span>CodeWiki</span><small>短总览与风险清单</small></a></div>
+  </section>
+  <details class="evidence-drawer"><summary>查看两处内存风险的源码证据</summary><p>随机起点可落在整块区域的任意位置，随后仍复制完整载荷；解密缓冲区和临时系统文件缓冲区由 <code>malloc</code> 申请，却使用 <code>delete[]</code> 释放。</p><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">随机位置与复制 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L88-L94">解密缓冲区释放 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L52-L137">临时缓冲区释放 ↗</a></p></details>
+</main>
+  <script src="assets/site.js"></script>
+</body>
+</html>

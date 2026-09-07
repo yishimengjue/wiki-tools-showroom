@@ -13,7 +13,7 @@
     link.removeAttribute('href');
     link.classList.add('source-link-missing');
     link.title = isEmptyCitation
-      ? '原始 Wiki 只给出了文件名，没有提供可点击地址'
+      ? '原始引用没有可点击地址；仍可按标签中的文件名、符号或行号定位'
       : '原始 Wiki 指向的仓库路径不存在（404）';
     const badge = document.createElement('span');
     badge.className = 'source-link-note';
@@ -23,9 +23,16 @@
 
   const settleHashTarget = () => {
     if (!location.hash) return;
-    const target = document.querySelector(location.hash);
+    let id;
+    try {
+      id = decodeURIComponent(location.hash.slice(1));
+    } catch {
+      return;
+    }
+    const target = document.getElementById(id);
     if (target) target.scrollIntoView({block:'start'});
   };
+  window.addEventListener('hashchange', settleHashTarget);
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', () => {
       [40, 500, 1400, 2600].forEach(delay => setTimeout(settleHashTarget, delay));
@@ -44,12 +51,12 @@
         page.classList.toggle('search-hidden', !hit);
         visible += hit ? 1 : 0;
       });
-      count.textContent = query ? `找到 ${visible} 个页面` : '显示全部页面';
+      if (count) count.textContent = query ? `找到 ${visible} 个页面` : '显示全部页面';
     });
   }
 
   if (window.mermaid) {
-    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'neutral',flowchart:{htmlLabels:true,useMaxWidth:true}});
+    mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'neutral',flowchart:{htmlLabels:true,useMaxWidth:true}});
     let diagramId = 0;
     const renderDiagram = async (el) => {
       const source = el.textContent;

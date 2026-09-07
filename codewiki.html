@@ -5,25 +5,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>CodeWiki · Ghost 完整 Wiki · 五工具 Wiki 对比</title>
   <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
 </head>
 <body class="reader-page">
-  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav><a class="top-link " href="index.html">总览</a><a class="top-link " href="repository-intro.html">一分钟了解示例仓库</a><a class="top-link " href="local-skill.html">Local Skill</a><a class="top-link " href="devinwiki.html">DevinWiki</a><a class="top-link " href="deepwiki-open.html">deepwiki-open</a><a class="top-link " href="openwiki.html">OpenWiki</a><a class="top-link active" href="codewiki.html">CodeWiki</a><a class="top-link " href="issue-summary.html">七仓问题汇总</a></nav></header>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link" href="repository-intro.html">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a><a class="top-link active" aria-current="page" href="codewiki.html">CodeWiki 单篇</a></nav></header>
   
 <div class="reader-shell" style="--accent:#62558b">
   <aside class="reader-sidebar"><a class="backline" href="repository-intro.html">← Ghost 说明</a>
-    <p class="eyebrow">完整成品 · Ghost</p><h1>CodeWiki</h1><p class="reader-position">短总览与风险清单</p>
+    <p class="eyebrow">完整成品 · Ghost</p><h1>CodeWiki</h1><p class="reader-position">单页总览与风险清单</p>
     <div class="fact-pills"><span>1 页</span><span>20.6 分</span><span>成品 6.2K Token</span></div>
-    <div class="audit-note"><b>核查提示</b><p>Ghost 的两处主要内存风险均被正确指出，作为其他工具的对照样例。</p><a class="issue-jump" href="#ghost-codewiki-risks">定位第一处标注 ↓</a></div>
-    <details class="side-issues" open><summary>当前 Ghost 错误与遗漏</summary><p>点击后直接跳到这份 Wiki 的对应原文。绿色表示工具正确识别了风险。</p><nav><a class="side-issue-link current tone-绿" href="#ghost-codewiki-risks"><span>绿</span><div><b>正确识别两处主要内存风险</b><small>跳到当前 Wiki 原文标注</small></div></a></nav></details>
+    <div class="audit-note"><b>核查提示</b><p>所选两类内存风险说明正确；绿色是对照材料，不代表整篇已经逐句验证。</p><a class="issue-jump quiet" href="#ghost-codewiki-risks">定位本页核查标注</a></div>
+    <details class="side-issues" open><summary>当前 Ghost 核查标注</summary><p>红色为事实矛盾；橙色为风险未说明；灰色为证据不足；绿色为该点正确。</p><nav><a class="side-issue-link current tone-绿" href="#ghost-codewiki-risks"><span>绿</span><div><b>正确识别两处主要内存风险</b><small>跳到当前 Wiki 原文标注</small></div></a></nav></details>
     <label class="search-box"><span>搜索这份 Wiki</span><input id="wiki-search" type="search" placeholder="输入章节、接口或状态码"><small id="search-count">显示全部页面</small></label>
     <nav class="wiki-toc"><a href="#page-1"><span>01</span>Repository Overview</a></nav>
   </aside>
-  <main class="reader-main"><header class="reader-intro"><div><p class="eyebrow">阅读说明</p><h2>1 页快速建立模块认识，并明确识别随机位置越界与错误释放方式。</h2><p>内容压缩明显，教程步骤和跨模块细节少；当前版本不支持 Go。</p></div>
-    <div class="mode-actions"><a class="button" href="raw/codewiki.html">打开原始展示版</a><a class="button" href="issue-summary.html">查看七仓问题</a></div></header>
-    <section class="tool-issue-map" id="tool-issues"><div class="current-repo-audit"><p class="eyebrow">当前 Ghost 的核查结果</p><strong class="current-error green">本仓正确识别 2 处关键风险</strong><p>绿色标注是正确对照，不是错误；其余内容仍未逐句验真。</p></div>
-      <div class="cross-repo-audit"><b>其他仓库中该工具已经确认的问题</b><p>以下问题不发生在当前 Ghost 页面，点击可查看对应仓库、后果和源码证据。</p><div><a href="issue-summary.html#issue-06"><b>#06</b>当前版本不支持 Go</a></div></div>
+  <main class="reader-main"><header class="reader-intro"><div><p class="eyebrow">单篇阅读 / 评审层与原文分开</p><h2>1 页总览，并指出随机位置越界与错误释放风险。</h2><p>内容较精简；本轮两个 Go 仓库没有成品，不能把无成品记为内容错误。</p></div>
+    <div class="mode-actions"><a class="button primary" href="compare.html?left=codewiki&amp;right=local-skill">与 Local Skill 左右对读</a><a class="button" href="issues-compare.html">查看问题对照</a><a class="button" href="raw/codewiki.html">打开原始展示版</a></div></header>
+    <section class="tool-issue-map" id="tool-issues"><div class="current-repo-audit"><p class="eyebrow">当前 Ghost 的核查结果</p><strong class="current-error green">所选两类风险说明正确</strong><p>绿色标注是该检查点的正确对照，不是错误，也不是对整篇 Wiki 的通过判定。</p></div>
+      <div class="cross-repo-audit"><b>其他仓库的对应核查</b><p>以下是各具体检查点的状态，不是工具总评分。部分说明、未说明与无成品均不称为事实错误。</p><div><a data-case-id="email-command" data-audit-status="correct" href="issues-compare.html#case=email-command"><b>此点正确</b><span>EmailHarvester · Google 命令</span></a><a data-case-id="figma-compact-input" data-audit-status="partial" href="issues-compare.html#case=figma-compact-input"><b>部分说明</b><span>Figma · 紧凑输入</span></a><a data-case-id="tcping-timeout" data-audit-status="no-output" href="issues-compare.html#case=tcping-timeout"><b>本轮无成品</b><span>tcping · 超时边界</span></a><a data-case-id="lightbox-reinit" data-audit-status="partial" href="issues-compare.html#case=lightbox-reinit"><b>部分说明</b><span>Lightbox2 · 重复初始化</span></a><a data-case-id="sqlx-bind-order" data-audit-status="no-output" href="issues-compare.html#case=sqlx-bind-order"><b>本轮无成品</b><span>sqlx · 编译与分派</span></a><a data-case-id="sqlx-fixbound" data-audit-status="no-output" href="issues-compare.html#case=sqlx-fixbound"><b>本轮无成品</b><span>sqlx · fixBound 回退</span></a><a data-case-id="email-retry" data-audit-status="correct" href="issues-compare.html#case=email-retry"><b>此点正确</b><span>EmailHarvester · 请求重试</span></a><a data-case-id="flask-temporary-error" data-audit-status="partial" href="issues-compare.html#case=flask-temporary-error"><b>部分说明</b><span>Flask · 临时异常状态</span></a><a data-case-id="sqlx-connect-citation" data-audit-status="no-output" href="issues-compare.html#case=sqlx-connect-citation"><b>本轮无成品</b><span>sqlx · Connect 引用</span></a></div></div>
     </section>
-    <div class="reading-legend"><span><i class="legend-red"></i>确认事实错误</span><span><i class="legend-orange"></i>关键风险遗漏</span><span><i class="legend-yellow"></i>容易误导</span><span><i class="legend-gray"></i>阅读或证据风险</span><span><i class="legend-green"></i>正确识别风险</span></div>
+    <div class="reading-legend"><span><i class="legend-red"></i>已确认事实矛盾</span><span><i class="legend-orange"></i>风险未说明，不等于事实错</span><span><i class="legend-yellow"></i>表述有歧义</span><span><i class="legend-gray"></i>证据或阅读问题</span><span><i class="legend-green"></i>此检查点正确</span></div>
     <section id="wiki-content" class="wiki-content"><article class="wiki-page" id="page-1"><div class="page-label">PAGE 1 · overview.md</div><h1>Ghost Repository Architecture</h1>
 <p>Ghost is a Windows x64 shellcode loader whose build pipeline encrypts a payload into a PE resource and whose runtime decrypts and executes that payload inside a fiber. The implementation concentrates on reducing conventional user-mode visibility through hashed API resolution, indirect system calls, return-address spoofing, <code>ntdll</code> restoration, ETW patching, randomized memory placement, and fiber switching during payload sleep periods.</p>
 <p>This document describes the repository as a single module because the supplied module tree contains no child modules. Component names below therefore refer directly to source files rather than to separate module documentation.</p>
@@ -637,5 +638,6 @@
 </div>
 <script src="assets/mermaid.min.js"></script>
   <script src="assets/site.js"></script>
+  <script src="assets/compare-embed.js"></script>
 </body>
 </html>

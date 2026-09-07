@@ -1,0 +1,631 @@
+{
+  "email-command": [
+    {
+      "title": "实际注册名",
+      "path": "plugins/googles.py",
+      "start": 35,
+      "lines": [
+        "class Plugin:",
+        "    def __init__(self, app, conf):#",
+        "        global app_emailharvester, config",
+        "        #config = conf",
+        "        app.register_plugin('googles', {'search': search})",
+        "        app_emailharvester = app"
+      ],
+      "highlight": [
+        39
+      ],
+      "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/plugins/googles.py#L35-L40",
+      "note": "共同快照核对片段（非工具自带引用）：实际注册键是 googles，而不是 google。"
+    },
+    {
+      "title": "未知名称分支",
+      "path": "EmailHarvester.py",
+      "start": 280,
+      "lines": [
+        "    elif engine not in plugins:",
+        "        print(red(\"[-] Search engine plugin not found\"))",
+        "        sys.exit(3)",
+        "    else:",
+        "        all_emails = plugins[engine]['search'](domain, limit)"
+      ],
+      "highlight": [
+        280,
+        282
+      ],
+      "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/EmailHarvester.py#L280-L284",
+      "note": "共同快照核对片段（非工具自带引用）：不在注册表中的名称会进入退出分支。"
+    }
+  ],
+  "figma-compact-input": [
+    {
+      "title": "紧凑输入分支",
+      "path": "src/utils/figma-url-parser.ts",
+      "start": 43,
+      "lines": [
+        "        // Check if it's in fileId:nodeId format",
+        "        if (input.includes(':') && input.split(':').length === 2) {",
+        "            const [fileIdPart, nodeIdPart] = input.split(':');",
+        "            const validatedFileId = validateFileId(fileIdPart.trim());",
+        "            const validatedNodeId = validateAndConvertNodeId(`${fileIdPart.trim()}:${nodeIdPart.trim()}`);",
+        "",
+        "            return {",
+        "                fileId: validatedFileId,",
+        "                nodeId: validatedNodeId,",
+        "                source: 'direct',",
+        "                isValid: true",
+        "            };",
+        "        }",
+        "",
+        "        throw new FigmaError('Invalid input format. Expected Figma URL or fileId:nodeId format', 'INVALID_INPUT');",
+        "",
+        "    } catch (error) {",
+        "        return {",
+        "            fileId: '',",
+        "            nodeId: '',",
+        "            source: 'direct',",
+        "            isValid: false,",
+        "            error: error instanceof Error ? error.message : String(error)",
+        "        };"
+      ],
+      "highlight": [
+        44,
+        47,
+        64
+      ],
+      "url": "https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L43-L66",
+      "note": "共同快照核对片段（非工具自带引用）：比较两段限制、节点校验的实参以及失败返回值。"
+    },
+    {
+      "title": "节点格式校验",
+      "path": "src/utils/figma-url-parser.ts",
+      "start": 164,
+      "lines": [
+        "    // Convert URL format (123-456) to API format (123:456) if needed",
+        "    let apiFormat = trimmed;",
+        "    if (trimmed.includes('-') && !trimmed.includes(':')) {",
+        "        // Replace first hyphen with colon (handle cases like \"123-456-789\")",
+        "        const parts = trimmed.split('-');",
+        "        if (parts.length >= 2) {",
+        "            apiFormat = `${parts[0]}:${parts.slice(1).join('-')}`;",
+        "        }",
+        "    }",
+        "",
+        "    // Validate API format",
+        "    const nodePattern = /^\\d+:\\d+$/;",
+        "    if (!nodePattern.test(apiFormat)) {",
+        "        throw new FigmaError(",
+        "            `Invalid node ID format: \"${trimmed}\". Expected format: \"123:456\" or \"123-456\"`,",
+        "            'INVALID_NODE_ID'",
+        "        );",
+        "    }",
+        "",
+        "    return apiFormat;"
+      ],
+      "highlight": [
+        166,
+        175,
+        176
+      ],
+      "url": "https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L164-L183",
+      "note": "共同快照核对片段（非工具自带引用）：连字符转换有条件，最终格式仍须是两个数字段。"
+    }
+  ],
+  "tcping-timeout": [
+    {
+      "title": "Dialer 配置",
+      "path": "ping/tcp/tcp.go",
+      "start": 16,
+      "lines": [
+        "func New(host string, port int, op *ping.Option, tls bool) *Ping {",
+        "\treturn &Ping{",
+        "\t\ttls:    tls,",
+        "\t\thost:   host,",
+        "\t\tport:   port,",
+        "\t\toption: op,",
+        "\t\tdialer: &net.Dialer{",
+        "\t\t\tResolver: op.Resolver,",
+        "\t\t},",
+        "\t}"
+      ],
+      "highlight": [
+        22,
+        23
+      ],
+      "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L16-L25",
+      "note": "共同快照核对片段（非工具自带引用）：此处的 net.Dialer 只设置 Resolver，没有设置 Timeout。"
+    },
+    {
+      "title": "超时上下文",
+      "path": "ping/tcp/tcp.go",
+      "start": 36,
+      "lines": [
+        "func (p *Ping) Ping(ctx context.Context) *ping.Stats {",
+        "\ttimeout := ping.DefaultTimeout",
+        "\tif p.option.Timeout > 0 {",
+        "\t\ttimeout = p.option.Timeout",
+        "\t}",
+        "\tctx, cancel := context.WithTimeout(ctx, timeout)",
+        "\tdefer cancel()"
+      ],
+      "highlight": [
+        38,
+        39,
+        41
+      ],
+      "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L36-L42",
+      "note": "共同快照核对片段（非工具自带引用）：配置的超时用于构造 context，是否生效还要看后续调用。"
+    },
+    {
+      "title": "TLS 与 TCP 调用",
+      "path": "ping/tcp/tcp.go",
+      "start": 63,
+      "lines": [
+        "\tif p.tls {",
+        "\t\ttlsConn, err = tls.DialWithDialer(p.dialer, \"tcp\", fmt.Sprintf(\"%s:%d\", p.host, p.port), &tls.Config{",
+        "\t\t\tInsecureSkipVerify: true,",
+        "\t\t})",
+        "\t\tif err == nil {",
+        "\t\t\tconn = tlsConn.NetConn()",
+        "\t\t} else {",
+        "\t\t\ttlsErr = err",
+        "\t\t\tconn, err = p.dialer.DialContext(ctx, \"tcp\", fmt.Sprintf(\"%s:%d\", p.host, p.port))",
+        "\t\t}",
+        "\t} else {",
+        "\t\tconn, err = p.dialer.DialContext(ctx, \"tcp\", fmt.Sprintf(\"%s:%d\", p.host, p.port))",
+        "\t}"
+      ],
+      "highlight": [
+        64,
+        71,
+        74
+      ],
+      "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L63-L75",
+      "note": "共同快照核对片段（非工具自带引用）：首次 TLS 调用未接收 ctx，普通 TCP 和回退调用才接收 ctx。"
+    }
+  ],
+  "lightbox-reinit": [
+    {
+      "title": "初始化、事件绑定与 DOM 防重",
+      "path": "src/js/lightbox.js",
+      "start": 75,
+      "lines": [
+        "  Lightbox.prototype.init = function() {",
+        "    var self = this;",
+        "    // Both enable and build methods require the body tag to be in the DOM.",
+        "    $(document).ready(function() {",
+        "      self.enable();",
+        "      self.build();",
+        "    });",
+        "  };",
+        "",
+        "  // Loop through anchors and areamaps looking for either data-lightbox attributes or rel attributes",
+        "  // that contain 'lightbox'. When these are clicked, start lightbox.",
+        "  Lightbox.prototype.enable = function() {",
+        "    var self = this;",
+        "    $('body').on('click', 'a[rel^=lightbox], area[rel^=lightbox], a[data-lightbox], area[data-lightbox]', function(event) {",
+        "      self.start($(event.currentTarget));",
+        "      return false;",
+        "    });",
+        "  };",
+        "",
+        "  // Build html for the lightbox and the overlay.",
+        "  // Attach event handlers to the new DOM elements. click click click",
+        "  Lightbox.prototype.build = function() {",
+        "    if ($('#lightbox').length > 0) {",
+        "        return;",
+        "    }"
+      ],
+      "highlight": [
+        79,
+        80,
+        88,
+        97,
+        98
+      ],
+      "url": "https://github.com/lokesh/lightbox2/blob/6bc87b6c246da1f24dcfcf52683286ad7e560cf3/src/js/lightbox.js#L75-L99",
+      "note": "共同快照核对片段（非工具自带引用）：每次先绑定事件，随后 build 的存在性检查只拦截重复 DOM 创建。"
+    }
+  ],
+  "pipeline-empty-groups": [],
+  "ghost-build-order": [
+    {
+      "title": "构建入口顺序",
+      "path": "build.py",
+      "start": 196,
+      "lines": [
+        "if __name__ == '__main__':",
+        "\tbuild_assembly()",
+        "\tprepare_src_shellcode()",
+        "\tbuild_resource()",
+        "\tbuild_cpp_src()",
+        "\tlink()"
+      ],
+      "highlight": [
+        197,
+        198,
+        199,
+        200,
+        201
+      ],
+      "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/build.py#L196-L201",
+      "note": "共同快照核对片段（非工具自带引用）：只核对这五个串行入口调用，汇编先于输入准备。"
+    }
+  ],
+  "ghost-helper-order": [
+    {
+      "title": "读取函数尾部",
+      "path": "unhook.h",
+      "start": 62,
+      "lines": [
+        "\t*BUFFER = bufferMemory;",
+        "",
+        "\t//free(bufferMemory);",
+        "\t// status = reinterpret_cast<NTSTATUS>(RetSpoofCall((void*)SysNtTerminateProcess, 2, Gdgt, hProcess, 0));",
+        "\tstatus = reinterpret_cast<NTSTATUS>(RetSpoofCall((void*)SysNtTerminateProcess, 2, Gdgt, hProcess, 0));",
+        "\t",
+        "\tif (status != ERROR_SUCCESS) {",
+        "\t\tstd::cout << \"Termination Error: \" << std::hex << status << \"\\n\";",
+        "\t}",
+        "}"
+      ],
+      "highlight": [
+        62,
+        66,
+        71
+      ],
+      "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L62-L71",
+      "note": "共同快照核对片段（非工具自带引用）：终止调用位于读取函数返回之前；这里不保证终止调用一定成功。"
+    },
+    {
+      "title": "调用者先读取",
+      "path": "unhook.h",
+      "start": 77,
+      "lines": [
+        "VOID FlushNTDLL() {",
+        "",
+        "\tPVOID LOCAL_SECTION = NULL,",
+        "\t\tREMOTE_SECTION = NULL;",
+        "\tSIZE_T SECTION_SIZE;",
+        "",
+        "",
+        "\tPBYTE clean_buffer = nullptr;",
+        "\tReadBufferFromProcess(&clean_buffer);"
+      ],
+      "highlight": [
+        85
+      ],
+      "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L77-L85",
+      "note": "共同快照核对片段（非工具自带引用）：调用者在此等待读取函数返回，再继续执行后续语句。"
+    },
+    {
+      "title": "调用者后续替换",
+      "path": "unhook.h",
+      "start": 124,
+      "lines": [
+        "\tRetSpoofCall((void*)memcpy, 3, Gdgt ,LOCAL_SECTION, REMOTE_SECTION, (SIZE_T)SECTION_SIZE);"
+      ],
+      "highlight": [
+        124
+      ],
+      "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L124",
+      "note": "共同快照核对片段（非工具自带引用）：只摘取后续替换调用这一行以核对先后，不展开其他实现。"
+    }
+  ],
+  "sqlx-bind-order": [
+    {
+      "title": "一次性执行入口",
+      "path": "named.go",
+      "start": 452,
+      "lines": [
+        "func NamedExec(e Ext, query string, arg interface{}) (sql.Result, error) {",
+        "\tq, args, err := bindNamedMapper(BindType(e.DriverName()), query, arg, mapperFor(e))",
+        "\tif err != nil {",
+        "\t\treturn nil, err",
+        "\t}",
+        "\treturn e.Exec(q, args...)",
+        "}"
+      ],
+      "highlight": [
+        453,
+        457
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L452-L458",
+      "note": "共同快照核对片段（非工具自带引用）：NamedExec 先调用分派函数，再使用绑定结果执行。"
+    },
+    {
+      "title": "按参数类型分派",
+      "path": "named.go",
+      "start": 421,
+      "lines": [
+        "func bindNamedMapper(bindType int, query string, arg interface{}, m *reflectx.Mapper) (string, []interface{}, error) {",
+        "\tt := reflect.TypeOf(arg)",
+        "\tk := t.Kind()",
+        "\tswitch {",
+        "\tcase k == reflect.Map && t.Key().Kind() == reflect.String:",
+        "\t\tm, ok := convertMapStringInterface(arg)",
+        "\t\tif !ok {",
+        "\t\t\treturn \"\", nil, fmt.Errorf(\"sqlx.bindNamedMapper: unsupported map type: %T\", arg)",
+        "\t\t}",
+        "\t\treturn bindMap(bindType, query, m)",
+        "\tcase k == reflect.Array || k == reflect.Slice:",
+        "\t\treturn bindArray(bindType, query, arg, m)",
+        "\tdefault:",
+        "\t\treturn bindStruct(bindType, query, arg, m)",
+        "\t}",
+        "}"
+      ],
+      "highlight": [
+        430,
+        432,
+        434
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L421-L436",
+      "note": "共同快照核对片段（非工具自带引用）：分派函数按实参类型选择具体 binder，并非接收预先编译好的结果。"
+    },
+    {
+      "title": "具体 binder 内编译",
+      "path": "named.go",
+      "start": 273,
+      "lines": [
+        "func bindArray(bindType int, query string, arg interface{}, m *reflectx.Mapper) (string, []interface{}, error) {",
+        "\t// do the initial binding with QUESTION;  if bindType is not question,",
+        "\t// we can rebind it at the end.",
+        "\tbound, names, err := compileNamedQuery([]byte(query), QUESTION)",
+        "\tif err != nil {",
+        "\t\treturn \"\", []interface{}{}, err",
+        "\t}"
+      ],
+      "highlight": [
+        276
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L273-L279",
+      "note": "共同快照核对片段（非工具自带引用）：批量 binder 被调用后，才在内部执行 compileNamedQuery。"
+    }
+  ],
+  "sqlx-fixbound": [
+    {
+      "title": "找不到模板时原样返回",
+      "path": "named.go",
+      "start": 245,
+      "lines": [
+        "func fixBound(bound string, loop int) string {",
+        "\tloc := valuesReg.FindStringIndex(bound)",
+        "\t// defensive guard when \"VALUES (...)\" not found",
+        "\tif len(loc) < 2 {",
+        "\t\treturn bound",
+        "\t}",
+        "",
+        "\topeningBracketIndex := loc[1] - 1",
+        "\tindex := findMatchingClosingBracketIndex(bound[openingBracketIndex:])",
+        "\t// defensive guard. must have closing bracket",
+        "\tif index == 0 {",
+        "\t\treturn bound"
+      ],
+      "highlight": [
+        245,
+        249,
+        256
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L245-L256",
+      "note": "共同快照核对片段（非工具自带引用）：两个防御分支都返回原 bound；函数返回类型不包含 error。"
+    },
+    {
+      "title": "批量绑定返回值",
+      "path": "named.go",
+      "start": 293,
+      "lines": [
+        "\tif arrayLen > 1 {",
+        "\t\tbound = fixBound(bound, arrayLen)",
+        "\t}",
+        "\t// adjust binding type if we weren't on question",
+        "\tif bindType != QUESTION {",
+        "\t\tbound = Rebind(bindType, bound)",
+        "\t}",
+        "\treturn bound, arglist, nil"
+      ],
+      "highlight": [
+        294,
+        300
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L293-L300",
+      "note": "共同快照核对片段（非工具自带引用）：fixBound 返回后继续处理，最终仍可返回 nil error。"
+    },
+    {
+      "title": "绑定通过后执行",
+      "path": "named.go",
+      "start": 452,
+      "lines": [
+        "func NamedExec(e Ext, query string, arg interface{}) (sql.Result, error) {",
+        "\tq, args, err := bindNamedMapper(BindType(e.DriverName()), query, arg, mapperFor(e))",
+        "\tif err != nil {",
+        "\t\treturn nil, err",
+        "\t}",
+        "\treturn e.Exec(q, args...)",
+        "}"
+      ],
+      "highlight": [
+        454,
+        457
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L452-L458",
+      "note": "共同快照核对片段（非工具自带引用）：只有绑定返回 error 才提前退出，否则会进入 Exec。"
+    }
+  ],
+  "email-retry": [
+    {
+      "title": "共享请求异常路径",
+      "path": "EmailHarvester.py",
+      "start": 129,
+      "lines": [
+        "    def do_search(self):",
+        "        try:",
+        "            urly = self.url.format(counter=str(self.counter), word=self.word)",
+        "            headers = {'User-Agent': self.userAgent}",
+        "            if(self.proxy):",
+        "                proxies = {self.proxy.scheme: \"http://\" + self.proxy.netloc}",
+        "                r=requests.get(urly, headers=headers, proxies=proxies)",
+        "            else:",
+        "                r=requests.get(urly, headers=headers)",
+        "                ",
+        "        except Exception as e:",
+        "            print(e)",
+        "            sys.exit(4)"
+      ],
+      "highlight": [
+        135,
+        137,
+        139,
+        141
+      ],
+      "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/EmailHarvester.py#L129-L141",
+      "note": "共同快照核对片段（非工具自带引用）：分支各发起一次请求，异常直接退出，没有重试循环。"
+    },
+    {
+      "title": "Yahoo 调用共享流程",
+      "path": "plugins/yahoo.py",
+      "start": 28,
+      "lines": [
+        "def search(domain, limit):",
+        "    url = \"http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}\"",
+        "    app_emailharvester.init_search(url, domain, limit, 1, 100, 'Yahoo')",
+        "    app_emailharvester.process()",
+        "    return app_emailharvester.get_emails()"
+      ],
+      "highlight": [
+        30,
+        31,
+        32
+      ],
+      "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/plugins/yahoo.py#L28-L32",
+      "note": "共同快照核对片段（非工具自带引用）：Yahoo 委托同一共享处理流程，不能据插件名称推定存在重试。"
+    }
+  ],
+  "flask-temporary-error": [
+    {
+      "title": "默认配置",
+      "path": "flask_restful/reqparse.py",
+      "start": 74,
+      "lines": [
+        "    def __init__(self, name, default=None, dest=None, required=False,",
+        "                 ignore=False, type=text_type, location=('json', 'values',),",
+        "                 choices=(), action='store', help=None, operators=('=',),",
+        "                 case_sensitive=True, store_missing=True, trim=False,",
+        "                 nullable=True):"
+      ],
+      "highlight": [
+        77
+      ],
+      "url": "https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/flask_restful/reqparse.py#L74-L78",
+      "note": "共同快照核对片段（非工具自带引用）：store_missing 的默认值为 True。"
+    },
+    {
+      "title": "聚合错误返回",
+      "path": "flask_restful/reqparse.py",
+      "start": 169,
+      "lines": [
+        "        msg = {self.name: error_msg}",
+        "",
+        "        if current_app.config.get(\"BUNDLE_ERRORS\", False) or bundle_errors:",
+        "            return error, msg",
+        "        flask_restful.abort(400, message=msg)"
+      ],
+      "highlight": [
+        171,
+        172,
+        173
+      ],
+      "url": "https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/flask_restful/reqparse.py#L169-L173",
+      "note": "共同快照核对片段（非工具自带引用）：聚合模式把错误交回 parser，非聚合模式在这里直接 abort。"
+    },
+    {
+      "title": "中间赋值与最终失败",
+      "path": "flask_restful/reqparse.py",
+      "start": 326,
+      "lines": [
+        "        errors = {}",
+        "        for arg in self.args:",
+        "            value, found = arg.parse(req, self.bundle_errors)",
+        "            if isinstance(value, ValueError):",
+        "                errors.update(found)",
+        "                found = None",
+        "            if found or arg.store_missing:",
+        "                namespace[arg.dest or arg.name] = value",
+        "        if errors:",
+        "            flask_restful.abort(http_error_code, message=errors)"
+      ],
+      "highlight": [
+        329,
+        331,
+        332,
+        333,
+        335
+      ],
+      "url": "https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/flask_restful/reqparse.py#L326-L335",
+      "note": "共同快照核对片段（非工具自带引用）：found 清空后仍独立检查 store_missing，临时赋值后才统一 abort。"
+    }
+  ],
+  "sqlx-connect-citation": [
+    {
+      "title": "错引区间中的构造方法",
+      "path": "sqlx.go",
+      "start": 250,
+      "lines": [
+        "// NewDb returns a new sqlx DB wrapper for a pre-existing *sql.DB.  The",
+        "// driverName of the original database is required for named query support.",
+        "//",
+        "//lint:ignore ST1003 changing this would break the package interface.",
+        "func NewDb(db *sql.DB, driverName string) *DB {",
+        "\treturn &DB{DB: db, driverName: driverName, Mapper: mapper()}",
+        "}",
+        "",
+        "// DriverName returns the driverName passed to the Open function for this DB.",
+        "func (db *DB) DriverName() string {",
+        "\treturn db.driverName",
+        "}",
+        "",
+        "// Open is the same as sql.Open, but returns an *sqlx.DB instead.",
+        "func Open(driverName, dataSourceName string) (*DB, error) {",
+        "\tdb, err := sql.Open(driverName, dataSourceName)",
+        "\tif err != nil {",
+        "\t\treturn nil, err",
+        "\t}",
+        "\treturn &DB{DB: db, driverName: driverName, Mapper: mapper()}, err"
+      ],
+      "highlight": [
+        254,
+        259,
+        264
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/sqlx.go#L250-L269",
+      "note": "共同快照核对片段（非工具自带引用）：这是原引用 250-290 区间中的一段，出现的是 NewDb、DriverName 和 Open。"
+    },
+    {
+      "title": "Connect 的实际实现",
+      "path": "sqlx.go",
+      "start": 640,
+      "lines": [
+        "func Connect(driverName, dataSourceName string) (*DB, error) {",
+        "\tdb, err := Open(driverName, dataSourceName)",
+        "\tif err != nil {",
+        "\t\treturn nil, err",
+        "\t}",
+        "\terr = db.Ping()",
+        "\tif err != nil {",
+        "\t\tdb.Close()",
+        "\t\treturn nil, err",
+        "\t}",
+        "\treturn db, nil",
+        "}"
+      ],
+      "highlight": [
+        640,
+        641,
+        645,
+        647
+      ],
+      "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/sqlx.go#L640-L651",
+      "note": "共同快照核对片段（非工具自带引用）：真正的 Connect 在这里，包含 Open、Ping 和失败后的 Close。"
+    }
+  ]
+}

@@ -3,113 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>五工具 Wiki 产品对比 · 五工具 Wiki 对比</title>
+  <meta name="color-scheme" content="light dark">
+  <title>五工具 Wiki 对比 · 七仓核查与成品对读</title>
   <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
 </head>
-<body class="">
-  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav><a class="top-link active" href="index.html">总览</a><a class="top-link " href="repository-intro.html">一分钟了解示例仓库</a><a class="top-link " href="local-skill.html">Local Skill</a><a class="top-link " href="devinwiki.html">DevinWiki</a><a class="top-link " href="deepwiki-open.html">deepwiki-open</a><a class="top-link " href="openwiki.html">OpenWiki</a><a class="top-link " href="codewiki.html">CodeWiki</a><a class="top-link " href="issue-summary.html">七仓问题汇总</a></nav></header>
-  
-<main class="landing">
-  <section class="hero">
-    <div class="hero-copy"><p class="eyebrow">5 个工具 · 7 个仓库 · 同一仓库快照核查</p>
-      <h1>5 种 Wiki 工具<br>7 个仓库实测与成品对比</h1>
-      <p class="lead">七个仓库快照用于比较生成覆盖、内容组织和源码忠实度；Ghost 用于并排展示五个工具怎样描述同一段代码，以及是否识别真实风险。</p>
-      <div class="hero-actions"><a class="button primary" href="repository-intro.html">查看 Ghost 五份 Wiki</a><a class="button" href="issue-summary.html">查看七仓确认问题</a></div>
-    </div>
-    <div class="hero-map" aria-label="阅读路径">
-      <div><b>01</b><span>查看 7 个仓库的测试范围</span></div><i>↓</i><div><b>02</b><span>了解示例仓库的用途</span></div><i>↓</i>
-      <div><b>03</b><span>阅读同一仓库的五份 Wiki</span></div><i>↓</i><div><b>04</b><span>查看错误原文和源码结论</span></div>
-    </div>
-  </section>
-
-  <aside class="publication-note"><strong>公开展示说明：</strong>本页面用于比较代码 Wiki 生成效果和源码核查能力，不提供安全工具的使用指导。Wiki 中保留的错误表述、空引用和失效链接属于评测对象本身；旁注用于说明问题，不会偷偷改写原始成品。</aside>
-
-  <section class="section overall-summary">
-    <div class="overall-verdict"><p class="eyebrow">总体结论</p><h2>没有一款工具同时做到稳定、详细、准确和容易核查</h2>
-      <p><strong>OpenWiki 是本轮综合表现较均衡的方案，但不代表准确率最高。</strong>它完成了 7/7 个仓库，导航和源码入口较清楚；但 tcping 和 Ghost 的案例说明，有源码链接仍可能漏掉或误读关键边界。</p>
-      <p>因此，更稳妥的用法不是直接相信任意一份 Wiki，而是先按用途选择生成器，再对关键结论回到源码确认。</p>
-    </div>
-    <div class="overall-choices">
-      <article style="--accent:#167764"><span>综合最均衡</span><b>OpenWiki</b><p>7/7 有产物，结构与证据入口清楚；仍需核查引用是否真正支持结论。</p></article>
-      <article style="--accent:#2d6d8d"><span>最像完整教程</span><b>DevinWiki</b><p>篇幅、示例和表格最多，但错误内容也可能被包装得很可信。</p></article>
-      <article style="--accent:#62558b"><span>短总览与风险线索</span><b>CodeWiki</b><p>Ghost 中正确发现两处内存风险，但内容较短且本版本不支持 Go。</p></article>
-      <article style="--accent:#bd5a36"><span>最适合继续定制</span><b>Local Skill</b><p>流程可控，适合改造成训练数据工具；当前仍有稳定性、引用和事实验证问题。</p></article>
-      <article style="--accent:#b88716"><span>成功时生成较快</span><b>deepwiki-open</b><p>成功仓平均用时较短、内容量大，但 2/7 个仓超时且已发现事实遗漏。</p></article>
-    </div>
-    <div class="overall-bottom"><b>用途对应：</b><span>直接阅读优先 OpenWiki</span><span>教程参考 DevinWiki</span><span>风险审查辅助 CodeWiki</span><span>训练数据继续优化 Local Skill</span><span>deepwiki-open 暂不作为唯一主流程</span></div>
-  </section>
-
-  <section class="section"><div class="section-head"><div><p class="eyebrow">工具原理</p><h2>五种工具采用不同的生成与组织方式</h2></div><p>原理只解释输出为什么不同，不替工具打分。</p></div>
-    <div class="tool-portraits"><article class="tool-portrait" style="--accent:#bd5a36">
-              <div class="tool-number">01</div>
-              <h3>Local Skill</h3><p class="tool-position">可改造的本地多页生成流程</p>
-              <div class="mini-flow"><span>扫描仓库</span><i>→</i><span>规划多页目录</span><i>→</i><span>分页面生成</span><i>→</i><span>校验后保存</span></div>
-              <p><b>输出特点：</b>20 页覆盖运行、构建和各子模块，部分失败路径分析较细。</p><p><b>主要风险：</b>把真实内存缺陷写成“应该注意”，两张流程图顺序错误，18/20 页没有源码引用。</p>
-              <div class="tool-meta"><span>7/7 有产物</span><span>平均成品 26.4K Token</span><span>确认涉及 9 类问题</span></div>
-            </article><article class="tool-portrait" style="--accent:#2d6d8d">
-              <div class="tool-number">02</div>
-              <h3>DevinWiki</h3><p class="tool-position">最接近完整在线教程</p>
-              <div class="mini-flow"><span>提交仓库</span><i>→</i><span>云端分析</span><i>→</i><span>组织教程</span><i>→</i><span>发布在线 Wiki</span></div>
-              <p><b>输出特点：</b>16 页，图表、表格和代码示例丰富，阅读体验最像教程。</p><p><b>主要风险：</b>把随机放置描述成正常能力，没有指出越界与错误释放，并把串行构建画成并行。</p>
-              <div class="tool-meta"><span>7/7 有产物</span><span>平均成品 49.8K Token</span><span>确认涉及 7 类问题</span></div>
-            </article><article class="tool-portrait" style="--accent:#b88716">
-              <div class="tool-number">03</div>
-              <h3>deepwiki-open</h3><p class="tool-position">成功时较快的长篇生成器</p>
-              <div class="mini-flow"><span>建立目录</span><i>→</i><span>逐页找相关源码</span><i>→</i><span>批量写页</span><i>→</i><span>合并长文</span></div>
-              <p><b>输出特点：</b>13 页、330 个代码块，直接展示了大量相关实现。</p><p><b>主要风险：</b>虽然贴出了随机偏移和完整复制的代码，却没有指出组合后可能写出内存范围。</p>
-              <div class="tool-meta"><span>5/7 有产物</span><span>平均成品 43.5K Token</span><span>确认涉及 3 类问题</span></div>
-            </article><article class="tool-portrait" style="--accent:#167764">
-              <div class="tool-number">04</div>
-              <h3>OpenWiki</h3><p class="tool-position">证据入口和页面导航较清楚</p>
-              <div class="mini-flow"><span>排页面队列</span><i>→</i><span>逐页查证</span><i>→</i><span>挂源码入口</span><i>→</i><span>断点保存</span></div>
-              <p><b>输出特点：</b>15 个 Markdown 页面，页面间跳转和源码入口最规整。</p><p><b>主要风险：</b>准确抄出了随机偏移与 delete[]，但把它们当作正常流程，没有提醒代码本身不安全。</p>
-              <div class="tool-meta"><span>7/7 有产物</span><span>平均成品 27.1K Token</span><span>确认涉及 3 类问题</span></div>
-            </article><article class="tool-portrait" style="--accent:#62558b">
-              <div class="tool-number">05</div>
-              <h3>CodeWiki</h3><p class="tool-position">短总览与风险清单</p>
-              <div class="mini-flow"><span>先查语言</span><i>→</i><span>建立模块树</span><i>→</i><span>阅读核心模块</span><i>→</i><span>输出短总览</span></div>
-              <p><b>输出特点：</b>1 页快速建立模块认识，并明确识别随机位置越界与错误释放方式。</p><p><b>主要风险：</b>内容压缩明显，教程步骤和跨模块细节少；当前版本不支持 Go。</p>
-              <div class="tool-meta"><span>5/7 有产物</span><span>平均成品 7.3K Token</span><span>确认涉及 1 类问题</span></div>
-            </article></div>
-  </section>
-
-  <section class="section repository-wall"><div class="section-head"><div><p class="eyebrow">测试仓库</p><h2>从 7 个 GitHub 仓库中选择 Ghost 展示五工具的 Wiki 对比</h2></div><p>选择原因：五个工具都有成品，而且对同两处内存风险给出了明显不同的判断。</p></div>
-    <div class="repo-grid"><a class="repo-card " href="https://github.com/flask-restful/flask-restful/tree/88cce53a8cd65830bf1815185a42ba24e5db78c6">
-              <span class="repo-index">01</span><div><h3>Flask-RESTful</h3><p>Python · API 框架</p><small>五工具均有成品</small></div>
-              <b>查看仓库快照 ↗</b>
-            </a><a class="repo-card " href="https://github.com/maldevel/EmailHarvester/tree/934d4121a92ff4f55aa67921e000469aa56b9595">
-              <span class="repo-index">02</span><div><h3>EmailHarvester</h3><p>Python · 命令行工具</p><small>缺少：deepwiki-open</small></div>
-              <b>查看仓库快照 ↗</b>
-            </a><a class="repo-card " href="https://github.com/mhmzdev/figma-flutter-mcp/tree/5907212d028881341db054b404724e75fed710b6">
-              <span class="repo-index">03</span><div><h3>Figma Flutter MCP</h3><p>TypeScript · 设计转代码</p><small>缺少：deepwiki-open</small></div>
-              <b>查看仓库快照 ↗</b>
-            </a><a class="repo-card " href="https://github.com/lokesh/lightbox2/tree/6bc87b6c246da1f24dcfcf52683286ad7e560cf3">
-              <span class="repo-index">04</span><div><h3>Lightbox2</h3><p>JavaScript · 前端组件</p><small>五工具均有成品</small></div>
-              <b>查看仓库快照 ↗</b>
-            </a><a class="repo-card " href="https://github.com/cloverstd/tcping/tree/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5">
-              <span class="repo-index">05</span><div><h3>tcping</h3><p>Go · 网络工具</p><small>缺少：CodeWiki</small></div>
-              <b>查看仓库快照 ↗</b>
-            </a><a class="repo-card selected" href="repository-intro.html">
-              <span class="repo-index">06</span><div><h3>Ghost</h3><p>C/C++ · 内存与构建</p><small>五工具均有成品</small></div>
-              <b>查看五份完整 Wiki →</b>
-            </a><a class="repo-card " href="https://github.com/jmoiron/sqlx/tree/41dac167fdad5e3fd81d66cafba0951dc6823a30">
-              <span class="repo-index">07</span><div><h3>sqlx</h3><p>Go · 数据库库</p><small>缺少：CodeWiki</small></div>
-              <b>查看仓库快照 ↗</b>
-            </a></div>
-  </section>
-
-  <section class="section spotlight">
-    <div><p class="eyebrow">示例仓库 · Ghost</p><h2>为什么选择 Ghost 展示五份成品</h2><p><b>简单理解：</b>把程序载荷看成货物，Ghost 像一辆经过伪装的运送车：先把货物加密装箱，运行时再拆箱，把它藏进一大片随机内存并执行。</p><p>五个工具都成功生成，并且同一段内存代码形成清晰对照：四个工具漏报或弱化风险，CodeWiki 明确指出问题。</p></div>
-    <div class="spotlight-flow"><span>输入载荷</span><i>→</i><span>加密并嵌入</span><i>→</i><span>运行时解密</span><i>→</i><span>随机放入内存</span><i>→</i><span>执行</span></div>
-    <a class="button primary" href="repository-intro.html">了解 Ghost</a>
-  </section>
-
-  <section class="section takeaway"><p class="eyebrow">本轮观察</p><div class="takeaway-grid">
-    <article><b>篇幅长不代表内容一定正确</b><p>DevinWiki 最像教程，但七仓仍出现可复制示例和行为说明错误。</p></article>
-    <article><b>有源码链接不代表解释一定正确</b><p>OpenWiki 的证据入口最清楚，tcping 仍出现对超时边界的误读。</p></article>
-    <article><b>不同用途需要选择不同工具</b><p>短总览、完整教程、训练数据和可审计知识库需要不同取舍。</p></article>
-  </div></section>
-</main>
-  <script src="assets/site.js"></script>
+<body>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link active" aria-current="page" href="index.html">总览</a><a class="top-link" href="repository-intro.html">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
+  <main class="landing">
+    <header class="overview-intro"><p class="eyebrow">五工具 · 七仓库 · 同一源码快照</p><h1>Wiki 成品与事实准确性对比</h1><p>从多个 GitHub 仓库中选择 Ghost 展示完整成品；七个仓库的具体问题按抽象类别归并，再逐项比较五个工具写了什么、是否与源码对应。</p><div class="overview-facts"><span>完整成品：Ghost 五份 Wiki</span><span>问题分类：表中七类全部纳入</span><span>生成中断与内容错误分开</span></div></header>
+    <section class="entry-grid" aria-label="两种对比方式">
+      <article class="entry-card"><span class="entry-label"><b>01</b> 完整成品</span><h2>两个工具，左右对读</h2><p>任意选择两个工具，独立翻页和搜索。同一屏查看完整正文、表格、代码块和流程图，不再来回切换五个页面。</p><div class="reader-mini" aria-hidden="true"><div><b>左侧 Wiki</b><i class="skeleton-line"></i><i class="skeleton-line short"></i><div class="mini-graph"><i></i>→<i></i>→<i></i></div></div><div><b>右侧 Wiki</b><i class="skeleton-line"></i><div class="mini-code">function → condition → result<br>source → explanation</div></div></div><a class="button primary" href="compare.html">打开成品对读</a></article>
+      <article class="entry-card"><span class="entry-label"><b>02</b> 同一检查点</span><h2>一条问题，五工具对照</h2><p>上方选择抽象问题类别，左侧选择具体案例，右侧查看各工具的判断、原文和源码依据；也可以将其中两个工具放在一起细看。</p><div class="mini-status-grid" aria-hidden="true"><span class="mini-error">有此问题</span><span class="mini-good">说明正确</span><span>部分说明</span><span>未说明</span><span>无成品</span></div><a class="button primary" href="issues-compare.html">打开问题对照</a></article>
+    </section>
+    <section class="overview-conclusion" aria-label="总体结论"><h2>总体结论</h2><div><p><strong>五种工具的成品组织方式不同，但篇幅、图表数量和引用数量不能代替事实核查。</strong>同一个错误可能出现在多个工具中；另一个工具没有犯错，也可能只是没有写到这一点。要区分“明确写对”“写得不完整”和“根本没说”。</p><small>可直接验证：<a href="issues-compare.html#case=email-command">同一个命令，三个工具写错，CodeWiki 指出仓库文档与源码的冲突</a>；<a href="issues-compare.html#case=ghost-helper-order">同一处理顺序，有工具画错，有工具写对，也有工具没有说明</a>。</small></div></section>
+    <section class="section"><div class="section-head"><div><p class="eyebrow">成品组织方式</p><h2>先看实际内容，不按工具名字判断质量</h2></div><p>下列为 Ghost 成品的入口，不是整体质量排名。</p></div><div class="overview-tools">
+      <article><h3>Local Skill</h3><p>按模块与子流程拆成多页，文字说明较细。流程图和说明仍需要对照源码检查。</p><a href="compare.html?left=local-skill&amp;right=devinwiki">与 DevinWiki 对读</a><br><a href="issues-compare.html#case=ghost-build-order">查看顺序错误原文</a></article>
+      <article><h3>DevinWiki</h3><p>按在线教程组织，多页穿插代码、表格和流程图。材料多不等于每条说法正确。</p><a href="compare.html?left=devinwiki&amp;right=local-skill">与 Local Skill 对读</a><br><a href="issues-compare.html#case=ghost-build-order">查看串行与并行的差异</a></article>
+      <article><h3>DeepWiki Open</h3><p>合成长篇内容，章节中包含相关实现代码。相同主题可以比较文字与代码是否相互支持。</p><a href="compare.html?left=deepwiki-open&amp;right=local-skill">与 Local Skill 对读</a><br><a href="issues-compare.html#case=ghost-helper-order">查看正确顺序的依据</a></article>
+      <article><h3>OpenWiki</h3><p>按架构、概念和工作流程组织页面，并提供来源入口。具体说法仍须独立核验。</p><a href="compare.html?left=openwiki&amp;right=local-skill">与 Local Skill 对读</a><br><a href="issues-compare.html#case=sqlx-bind-order">查看另一个仓库的顺序错误</a></article>
+      <article><h3>CodeWiki</h3><p>Ghost 以单页总览呈现，包含模块和风险说明。压缩后的过程不一定覆盖全部细节。</p><a href="compare.html?left=codewiki&amp;right=local-skill">与 Local Skill 对读</a><br><a href="issues-compare.html#case=ghost-build-order">查看部分说明与完整说明</a></article>
+    </div></section>
+    <section class="section"><div class="section-head"><div><p class="eyebrow">测试范围</p><h2>七个仓库提供不同的具体案例</h2></div><p>点击查看该仓库快照。完整双栏阅读以 Ghost 为代表。</p></div><div class="repo-grid">
+      <a class="repo-card" href="https://github.com/flask-restful/flask-restful/tree/88cce53a8cd65830bf1815185a42ba24e5db78c6" target="_blank" rel="noopener noreferrer"><span class="repo-index">01</span><div><h3>Flask-RESTful</h3><p>Python · API 框架</p><small>五工具均有成品</small></div><b>查看仓库快照 ↗</b></a>
+      <a class="repo-card" href="https://github.com/maldevel/EmailHarvester/tree/934d4121a92ff4f55aa67921e000469aa56b9595" target="_blank" rel="noopener noreferrer"><span class="repo-index">02</span><div><h3>EmailHarvester</h3><p>Python · 命令行工具</p><small>DeepWiki Open 本轮无成品</small></div><b>查看仓库快照 ↗</b></a>
+      <a class="repo-card" href="https://github.com/mhmzdev/figma-flutter-mcp/tree/5907212d028881341db054b404724e75fed710b6" target="_blank" rel="noopener noreferrer"><span class="repo-index">03</span><div><h3>Figma Flutter MCP</h3><p>TypeScript · 设计转代码</p><small>DeepWiki Open 本轮无成品</small></div><b>查看仓库快照 ↗</b></a>
+      <a class="repo-card" href="https://github.com/lokesh/lightbox2/tree/6bc87b6c246da1f24dcfcf52683286ad7e560cf3" target="_blank" rel="noopener noreferrer"><span class="repo-index">04</span><div><h3>Lightbox2</h3><p>JavaScript · 图片查看组件</p><small>五工具均有成品</small></div><b>查看仓库快照 ↗</b></a>
+      <a class="repo-card" href="https://github.com/cloverstd/tcping/tree/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5" target="_blank" rel="noopener noreferrer"><span class="repo-index">05</span><div><h3>tcping</h3><p>Go · 网络探测工具</p><small>CodeWiki 本轮无成品</small></div><b>查看仓库快照 ↗</b></a>
+      <a class="repo-card selected" href="repository-intro.html"><span class="repo-index">06</span><div><h3>Ghost</h3><p>C/C++ · 构建与运行流程</p><small>五工具均有成品</small></div><b>了解用途，再查看完整成品</b></a>
+      <a class="repo-card" href="https://github.com/jmoiron/sqlx/tree/41dac167fdad5e3fd81d66cafba0951dc6823a30" target="_blank" rel="noopener noreferrer"><span class="repo-index">07</span><div><h3>sqlx</h3><p>Go · 数据库访问库</p><small>CodeWiki 本轮无成品</small></div><b>查看仓库快照 ↗</b></a>
+    </div><p class="scope-note">这里的七份 Local Skill Wiki 是此前 11 次测试中的成功产物。Valine、ibus-bamboo、IGL 的生成中断另列在<a href="issues-compare.html#case=pipeline-empty-groups">跨阶段契约冲突</a>，不算七份成品的内容错误。“本轮无成品”不代表该工具的所有版本都不支持该仓库。</p></section>
+    <aside class="publication-note"><strong>展示说明：</strong>本站保留原始 Wiki 的说法，通过展示层标注问题，不修改原始文件。用途为文档生成效果比较，不提供安全工具的使用指导。当前对照是有明确边界的案例核查，不声称穷尽所有错误。<a href="issue-summary.html">查看历史检查项及口径变更</a>。</aside>
+  </main>
 </body>
 </html>

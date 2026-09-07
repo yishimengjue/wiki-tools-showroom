@@ -5,25 +5,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>deepwiki-open · Ghost 完整 Wiki · 五工具 Wiki 对比</title>
   <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
 </head>
 <body class="reader-page">
-  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav><a class="top-link " href="index.html">总览</a><a class="top-link " href="repository-intro.html">一分钟了解示例仓库</a><a class="top-link " href="local-skill.html">Local Skill</a><a class="top-link " href="devinwiki.html">DevinWiki</a><a class="top-link active" href="deepwiki-open.html">deepwiki-open</a><a class="top-link " href="openwiki.html">OpenWiki</a><a class="top-link " href="codewiki.html">CodeWiki</a><a class="top-link " href="issue-summary.html">七仓问题汇总</a></nav></header>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link" href="repository-intro.html">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a><a class="top-link active" aria-current="page" href="deepwiki-open.html">DeepWiki Open 单篇</a></nav></header>
   
 <div class="reader-shell" style="--accent:#b88716">
   <aside class="reader-sidebar"><a class="backline" href="repository-intro.html">← Ghost 说明</a>
-    <p class="eyebrow">完整成品 · Ghost</p><h1>deepwiki-open</h1><p class="reader-position">成功时较快的长篇生成器</p>
+    <p class="eyebrow">完整成品 · Ghost</p><h1>DeepWiki Open</h1><p class="reader-position">长篇 Wiki 与实现摘录</p>
     <div class="fact-pills"><span>13 页</span><span>9.3 分</span><span>成品 47.1K Token</span></div>
-    <div class="audit-note"><b>核查提示</b><p>Ghost 已确认 1 处关键内存风险遗漏；七仓中另有 2 个仓运行超时。</p><a class="issue-jump" href="#ghost-deepwiki-memory">定位第一处标注 ↓</a></div>
-    <details class="side-issues" open><summary>当前 Ghost 错误与遗漏</summary><p>点击后直接跳到这份 Wiki 的对应原文。绿色表示工具正确识别了风险。</p><nav><a class="side-issue-link current tone-橙" href="#ghost-deepwiki-memory"><span>橙</span><div><b>展示相关代码但漏报越界风险</b><small>跳到当前 Wiki 原文标注</small></div></a></nav></details>
+    <div class="audit-note"><b>核查提示</b><p>本页标注一处内存风险未说明，属于覆盖不足；其他仓库本轮无成品的情况单列，不记为内容错。</p><a class="issue-jump quiet" href="#ghost-deepwiki-memory">定位本页核查标注</a></div>
+    <details class="side-issues" open><summary>当前 Ghost 核查标注</summary><p>红色为事实矛盾；橙色为风险未说明；灰色为证据不足；绿色为该点正确。</p><nav><a class="side-issue-link current tone-橙" href="#ghost-deepwiki-memory"><span>橙</span><div><b>展示代码，但未说明越界风险</b><small>跳到当前 Wiki 原文标注</small></div></a></nav></details>
     <label class="search-box"><span>搜索这份 Wiki</span><input id="wiki-search" type="search" placeholder="输入章节、接口或状态码"><small id="search-count">显示全部页面</small></label>
     <nav class="wiki-toc"><a href="#page-1"><span>01</span>Project Introduction</a><a href="#page-2"><span>02</span>Detection Techniques and Evasion Strategy</a><a href="#page-3"><span>03</span>Execution Flow and Main Pipeline</a><a href="#page-4"><span>04</span>Fiber-Based Execution Model</a><a href="#page-5"><span>05</span>Return Address Spoofing Mechanism</a><a href="#page-6"><span>06</span>Memory Hiding with Large Page Allocation</a><a href="#page-7"><span>07</span>Sleep Hooking and Fiber Switching</a><a href="#page-8"><span>08</span>NTDLL Unhooking via Suspended Processes</a><a href="#page-9"><span>09</span>API Hashing and Syscall Resolution</a><a href="#page-10"><span>10</span>Shellcode Encryption and Decryption Pipeline</a><a href="#page-11"><span>11</span>Resource Embedding and Extraction</a><a href="#page-12"><span>12</span>Build Process and Toolchain</a><a href="#page-13"><span>13</span>Customizing for Different C2 Beacons</a></nav>
   </aside>
-  <main class="reader-main"><header class="reader-intro"><div><p class="eyebrow">阅读说明</p><h2>13 页、330 个代码块，直接展示了大量相关实现。</h2><p>虽然贴出了随机偏移和完整复制的代码，却没有指出组合后可能写出内存范围。</p></div>
-    <div class="mode-actions"><a class="button" href="raw/deepwiki-open.html">打开原始展示版</a><a class="button" href="issue-summary.html">查看七仓问题</a></div></header>
-    <section class="tool-issue-map" id="tool-issues"><div class="current-repo-audit"><p class="eyebrow">当前 Ghost 的核查结果</p><strong class="current-error orange">本仓标出 1 处关键遗漏</strong><p>代码已经展示在页面中，但没有发现随机位置可能导致越界。</p></div>
-      <div class="cross-repo-audit"><b>其他仓库中该工具已经确认的问题</b><p>以下问题不发生在当前 Ghost 页面，点击可查看对应仓库、后果和源码证据。</p><div><a href="issue-summary.html#issue-02"><b>#02</b>未说明 TLS 超时限制</a><a href="issue-summary.html#issue-03"><b>#03</b>406/500 前后矛盾</a></div></div>
+  <main class="reader-main"><header class="reader-intro"><div><p class="eyebrow">单篇阅读 / 评审层与原文分开</p><h2>13 页，包含大量实现摘录与流程图。</h2><p>所选片段展示了随机偏移和完整复制，但没有说明组合后的越界风险。此处按风险未覆盖展示，不把准确摘录源码本身判错。</p></div>
+    <div class="mode-actions"><a class="button primary" href="compare.html?left=deepwiki-open&amp;right=local-skill">与 Local Skill 左右对读</a><a class="button" href="issues-compare.html">查看问题对照</a><a class="button" href="raw/deepwiki-open.html">打开原始展示版</a></div></header>
+    <section class="tool-issue-map" id="tool-issues"><div class="current-repo-audit"><p class="eyebrow">当前 Ghost 的核查结果</p><strong class="current-error orange">所选内存风险未说明</strong><p>当前旁注是风险覆盖不足，不代表这一片段存在与源码相反的明确说法，也不代表整份 Wiki 已通过事实核查。</p></div>
+      <div class="cross-repo-audit"><b>其他仓库的对应核查</b><p>以下是各具体检查点的状态，不是工具总评分。部分说明、未说明与无成品均不称为事实错误。</p><div><a data-case-id="email-command" data-audit-status="no-output" href="issues-compare.html#case=email-command"><b>本轮无成品</b><span>EmailHarvester · Google 命令</span></a><a data-case-id="figma-compact-input" data-audit-status="no-output" href="issues-compare.html#case=figma-compact-input"><b>本轮无成品</b><span>Figma · 紧凑输入</span></a><a data-case-id="tcping-timeout" data-audit-status="partial" href="issues-compare.html#case=tcping-timeout"><b>部分说明</b><span>tcping · 超时边界</span></a><a data-case-id="lightbox-reinit" data-audit-status="partial" href="issues-compare.html#case=lightbox-reinit"><b>部分说明</b><span>Lightbox2 · 重复初始化</span></a><a data-case-id="sqlx-bind-order" data-audit-status="partial" href="issues-compare.html#case=sqlx-bind-order"><b>部分说明</b><span>sqlx · 编译与分派</span></a><a data-case-id="sqlx-fixbound" data-audit-status="partial" href="issues-compare.html#case=sqlx-fixbound"><b>部分说明</b><span>sqlx · fixBound 回退</span></a><a data-case-id="email-retry" data-audit-status="no-output" href="issues-compare.html#case=email-retry"><b>本轮无成品</b><span>EmailHarvester · 请求重试</span></a><a data-case-id="flask-temporary-error" data-audit-status="not-covered" href="issues-compare.html#case=flask-temporary-error"><b>未说明此点</b><span>Flask · 临时异常状态</span></a><a data-case-id="sqlx-connect-citation" data-audit-status="correct" href="issues-compare.html#case=sqlx-connect-citation"><b>此点正确</b><span>sqlx · Connect 引用</span></a></div></div>
     </section>
-    <div class="reading-legend"><span><i class="legend-red"></i>确认事实错误</span><span><i class="legend-orange"></i>关键风险遗漏</span><span><i class="legend-yellow"></i>容易误导</span><span><i class="legend-gray"></i>阅读或证据风险</span><span><i class="legend-green"></i>正确识别风险</span></div>
+    <div class="reading-legend"><span><i class="legend-red"></i>已确认事实矛盾</span><span><i class="legend-orange"></i>风险未说明，不等于事实错</span><span><i class="legend-yellow"></i>表述有歧义</span><span><i class="legend-gray"></i>证据或阅读问题</span><span><i class="legend-green"></i>此检查点正确</span></div>
     <section id="wiki-content" class="wiki-content"><article class="wiki-page" id="page-1"><div class="page-label">PAGE 1 · page-1</div><details>
 <summary>Relevant source files</summary>
 
@@ -4191,5 +4192,6 @@ NTSTATUS status = reinterpret_cast&lt;NTSTATUS&gt;(RetSpoofCall((void*)NtAllocat
 </div>
 <script src="assets/mermaid.min.js"></script>
   <script src="assets/site.js"></script>
+  <script src="assets/compare-embed.js"></script>
 </body>
 </html>

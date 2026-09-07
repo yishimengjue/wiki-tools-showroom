@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>一分钟理解 Ghost · 五工具 Wiki 对比</title>
   <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
 </head>
 <body class="">
-  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav><a class="top-link " href="index.html">总览</a><a class="top-link active" href="repository-intro.html">一分钟了解示例仓库</a><a class="top-link " href="local-skill.html">Local Skill</a><a class="top-link " href="devinwiki.html">DevinWiki</a><a class="top-link " href="deepwiki-open.html">deepwiki-open</a><a class="top-link " href="openwiki.html">OpenWiki</a><a class="top-link " href="codewiki.html">CodeWiki</a><a class="top-link " href="issue-summary.html">七仓问题汇总</a></nav></header>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link active" aria-current="page" href="repository-intro.html">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
   
 <main class="intro-page page-shell">
   <a class="backline" href="index.html">← 返回七仓总览</a>
@@ -29,12 +30,12 @@
     <div class="io-card output"><span>运行</span><b>解密、放入内存、执行</b><code>random memory slot → fiber</code><small>载荷从资源进入运行内存</small></div>
   </section>
   <details class="evidence-drawer"><summary>查看这个输入输出流程的源码</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/build.py#L196-L201">构建顺序 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L69-L113">运行时流程 ↗</a></p></details>
-  <section class="plain-contrast"><div><p class="eyebrow">本仓最重要的对比点</p><h2>同一段内存代码，只有 CodeWiki 明确指出两处风险</h2><p>代码会从整块内存中随机选择起点，却没有为完整载荷预留右侧空间；另外，两块由 <code>malloc</code> 得到的内存使用了 <code>delete[]</code> 释放。前四个工具把这些写成正常流程、维护建议或直接漏掉，CodeWiki 明确标成缺陷。</p><div class="conflict-line"><span>4 个工具：漏报或弱化</span><i>对照</i><span>CodeWiki：明确指出</span></div></div>
-    <article class="status-card red"><b>越界</b><h3>随机位置可能太靠右</h3><p>像把大箱子随机放到货架上，却没先确认右边空间够不够；放得太靠边，箱子会伸出货架。</p></article>
-    <article class="status-card yellow"><b>错配</b><h3>申请与归还方式不一致</h3><p>像从 A 柜台借出的东西却交给 B 柜台归还，程序可能崩溃或破坏内存。</p></article>
+  <section class="plain-contrast"><div><p class="eyebrow">一个直观对比点</p><h2>同一条生产线，有的 Wiki 把步骤顺序画反了</h2><p>把构建过程想成组装一件商品：实际先完成 A，再准备 B，最后逐步合装。Local Skill 的一张图把 B 放在 A 前面；DevinWiki 还写成了同时加工。DeepWiki Open 和 OpenWiki 对这一段的顺序说明与源码一致。</p><p>这只说明该流程图的准确性，不代表整份 Wiki 的排名，也不把其他工具没有说明的部分算作正确。</p><a class="button primary" href="compare.html?left=local-skill&amp;right=openwiki#case=ghost-build-order">左右对读这处流程图</a></div>
+    <article class="status-card red"><b>Wiki 的问题</b><h3>先后次序被改写</h3><p>图能正常显示，但箭头表达的流程与源码不一致。问题不是图画得难看，而是读者会理解错步骤。</p></article>
+    <article class="status-card yellow"><b>核对方式</b><h3>用同一份源码作依据</h3><p>对照页保留两份 Wiki 的原文，并在下方展示真实调用顺序。源码没有两套，差异在于 Wiki 怎样解释它。</p><a href="issues-compare.html#case=ghost-build-order">查看五工具原文和源码</a></article>
   </section>
-  <section class="choice-room"><div><p class="eyebrow">五份成品</p><h2>分别查看五个工具生成的完整 Wiki</h2><p>阅读时重点看内存放置和释放部分：侧边栏可直接跳到已核实的错误、遗漏或正确识别位置。</p></div>
-    <div class="choice-tabs"><a style="--accent:#bd5a36" href="local-skill.html"><span>Local Skill</span><small>可改造的本地多页生成流程</small></a><a style="--accent:#2d6d8d" href="devinwiki.html"><span>DevinWiki</span><small>最接近完整在线教程</small></a><a style="--accent:#b88716" href="deepwiki-open.html"><span>deepwiki-open</span><small>成功时较快的长篇生成器</small></a><a style="--accent:#167764" href="openwiki.html"><span>OpenWiki</span><small>证据入口和页面导航较清楚</small></a><a style="--accent:#62558b" href="codewiki.html"><span>CodeWiki</span><small>短总览与风险清单</small></a></div>
+  <section class="choice-room"><div><p class="eyebrow">五份成品</p><h2>选择左右对读，或单独阅读一份 Wiki</h2><p>左右对读保留各自目录、搜索和问题定位。差异概览提供原文计数与位置，不用印象代替证据。</p><a class="button" href="compare.html">打开成品对读</a></div>
+    <div class="choice-tabs"><a href="local-skill.html"><span>Local Skill</span><small>多页说明，按模块与流程展开</small></a><a href="devinwiki.html"><span>DevinWiki</span><small>多页教程，含代码和图表</small></a><a href="deepwiki-open.html"><span>DeepWiki Open</span><small>多页说明，含构建与运行流程</small></a><a href="openwiki.html"><span>OpenWiki</span><small>多页说明，含引用和页间导航</small></a><a href="codewiki.html"><span>CodeWiki</span><small>单篇说明，含风险清单</small></a></div>
   </section>
   <details class="evidence-drawer"><summary>查看两处内存风险的源码证据</summary><p>随机起点可落在整块区域的任意位置，随后仍复制完整载荷；解密缓冲区和临时系统文件缓冲区由 <code>malloc</code> 申请，却使用 <code>delete[]</code> 释放。</p><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">随机位置与复制 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L88-L94">解密缓冲区释放 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L52-L137">临时缓冲区释放 ↗</a></p></details>
 </main>

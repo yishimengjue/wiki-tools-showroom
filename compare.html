@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ghost 成品对读 · 五工具 Wiki 对比</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
+  <link rel="stylesheet" href="assets/compare.css">
+  <script src="assets/compare.js" defer></script>
+</head>
+<body class="compare-page">
+  <a class="compare-skip" href="#compare-main">跳到对读内容</a>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a>
+    <nav aria-label="主导航">
+      <a class="top-link" href="index.html">总览</a>
+      <a class="top-link" href="repository-intro.html">仓库说明</a>
+      <a class="top-link active" href="compare.html" aria-current="page">成品对读</a>
+      <a class="top-link" href="issues-compare.html">问题对照</a>
+    </nav>
+  </header>
+  <main id="compare-main" class="compare-shell">
+    <section class="compare-intro" aria-labelledby="compare-title">
+      <div>
+        <p class="eyebrow">GHOST / SAME SOURCE SNAPSHOT</p>
+        <h1 id="compare-title">成品对读</h1>
+      </div>
+      <p>同一仓库快照 <code>bf67313c</code>，任意两份完整 Wiki。<br>保留原文、表格、图表和既有评审标注。</p>
+      <a id="issues-link" class="compare-button compare-button-primary" href="issues-compare.html">查看问题与源码对照</a>
+    </section>
+
+    <section class="compare-controls" aria-label="对读设置">
+      <button id="swap-tools" class="compare-button" type="button">交换左右</button>
+      <label class="compare-sync"><input id="sync-scroll" type="checkbox" aria-describedby="sync-note"> 同步阅读进度</label>
+      <span id="sync-note">按全文百分比同步，不代表章节或语义对齐。</span>
+      <div class="compare-case-controls" aria-label="原文主题定位">
+        <span>定位主题</span>
+        <button type="button" data-case="ghost-build-order" aria-pressed="false">构建顺序</button>
+        <button type="button" data-case="ghost-helper-order" aria-pressed="false">辅助进程顺序</button>
+      </div>
+    </section>
+    <p id="route-message" class="compare-route-message" role="status" hidden></p>
+
+    <details class="compare-overview" open>
+      <summary>成品概览 <span>实测数量，不是质量评分</span></summary>
+      <p id="difference-text" class="compare-difference" aria-live="polite">正在从两份全文读取统计；不同体量或侧重不等于更准确。</p>
+      <div class="compare-overview-grid">
+        <section id="overview-left" class="compare-overview-side" aria-label="左侧成品概览">
+          <h2>左侧 · <span class="overview-tool">Local Skill</span></h2>
+          <dl class="compare-metrics">
+            <div><dt>原文页</dt><dd data-metric="pages">待加载</dd></div>
+            <div><dt>代码块</dt><dd data-metric="codeBlocks">待加载</dd></div>
+            <div><dt>图表</dt><dd data-metric="diagrams">待加载</dd></div>
+            <div><dt>字符</dt><dd data-metric="characters">待加载</dd></div>
+          </dl>
+          <nav class="compare-evidence" aria-label="左侧代表章节证据"></nav>
+        </section>
+        <section id="overview-right" class="compare-overview-side" aria-label="右侧成品概览">
+          <h2>右侧 · <span class="overview-tool">DevinWiki</span></h2>
+          <dl class="compare-metrics">
+            <div><dt>原文页</dt><dd data-metric="pages">待加载</dd></div>
+            <div><dt>代码块</dt><dd data-metric="codeBlocks">待加载</dd></div>
+            <div><dt>图表</dt><dd data-metric="diagrams">待加载</dd></div>
+            <div><dt>字符</dt><dd data-metric="characters">待加载</dd></div>
+          </dl>
+          <nav class="compare-evidence" aria-label="右侧代表章节证据"></nav>
+        </section>
+      </div>
+      <p class="compare-metric-note">代码块不含 Mermaid；字符为非空白原文字符，含代码与表格，不含图表定义、页标签及评审卡。章节链接用于核查原文，不表示该工具出错。</p>
+    </details>
+
+    <div class="compare-grid">
+      <section class="compare-panel" data-side="left" aria-labelledby="left-heading">
+        <header class="compare-panel-head">
+          <h2 id="left-heading">左侧</h2>
+          <label class="compare-tool-picker"><span class="compare-sr-only">选择左侧 Wiki 工具</span>
+            <select id="left-tool">
+              <option value="local-skill">Local Skill</option>
+              <option value="devinwiki">DevinWiki</option>
+              <option value="deepwiki-open">deepwiki-open</option>
+              <option value="openwiki">OpenWiki</option>
+              <option value="codewiki">CodeWiki</option>
+            </select>
+          </label>
+          <span id="left-progress" class="compare-progress" aria-label="左侧阅读进度">0%</span>
+          <a id="left-open" class="compare-open" href="local-skill.html" target="_blank" rel="noopener">单独阅读</a>
+        </header>
+        <div class="compare-frame-wrap">
+          <p id="left-status" class="compare-frame-status" role="status">正在加载左侧 Wiki…</p>
+          <iframe id="left-frame" title="左侧 Local Skill 完整 Wiki" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="same-origin"></iframe>
+        </div>
+      </section>
+      <section class="compare-panel" data-side="right" aria-labelledby="right-heading">
+        <header class="compare-panel-head">
+          <h2 id="right-heading">右侧</h2>
+          <label class="compare-tool-picker"><span class="compare-sr-only">选择右侧 Wiki 工具</span>
+            <select id="right-tool">
+              <option value="local-skill">Local Skill</option>
+              <option value="devinwiki" selected>DevinWiki</option>
+              <option value="deepwiki-open">deepwiki-open</option>
+              <option value="openwiki">OpenWiki</option>
+              <option value="codewiki">CodeWiki</option>
+            </select>
+          </label>
+          <span id="right-progress" class="compare-progress" aria-label="右侧阅读进度">0%</span>
+          <a id="right-open" class="compare-open" href="devinwiki.html" target="_blank" rel="noopener">单独阅读</a>
+        </header>
+        <div class="compare-frame-wrap">
+          <p id="right-status" class="compare-frame-status" role="status">正在加载右侧 Wiki…</p>
+          <iframe id="right-frame" title="右侧 DevinWiki 完整 Wiki" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="same-origin"></iframe>
+        </div>
+      </section>
+    </div>
+    <noscript>对读控件需要 JavaScript。可直接阅读 <a href="local-skill.html">Local Skill</a> 或 <a href="devinwiki.html">DevinWiki</a> 的完整成品。</noscript>
+  </main>
+</body>
+</html>

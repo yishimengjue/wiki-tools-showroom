@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>问题对照 · 五工具 Wiki 对比</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
+  <link rel="stylesheet" href="assets/audit.css">
+  <script src="assets/audit-data.js" defer></script>
+  <script src="assets/audit.js" defer></script>
+</head>
+<body class="audit-page">
+  <header class="topbar">
+    <a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a>
+    <nav aria-label="主导航">
+      <a class="top-link" href="index.html">总览</a>
+      <a class="top-link" href="repository-intro.html">仓库说明</a>
+      <a class="top-link" href="compare.html">成品对读</a>
+      <a class="top-link active" aria-current="page" href="issues-compare.html">问题对照</a>
+    </nav>
+  </header>
+  <main class="audit-shell">
+    <header class="audit-heading">
+      <div><p class="eyebrow">七仓内容核查 / 历史运行故障单列</p><h1>同一个问题，五个工具怎么写</h1></div>
+      <div class="audit-scope"><span id="audit-count">正在载入核查记录</span><a href="#audit-method">查看口径</a></div>
+    </header>
+    <p class="audit-lead">先选问题类别，再选具体案例。对比的是同一检查点，不是整份 Wiki 的质量排名。</p>
+    <nav class="category-grid" id="category-grid" aria-label="抽象问题类别"></nav>
+    <div class="audit-workbench">
+      <aside class="case-sidebar" aria-label="具体问题列表">
+        <div class="case-filters">
+          <div class="case-list-heading"><h2>具体案例</h2><span id="case-count"></span></div>
+          <label class="sr-only" for="case-search">搜索仓库或问题</label>
+          <input id="case-search" type="search" placeholder="搜索仓库或问题" autocomplete="off">
+          <label class="table-only"><input id="table-only" type="checkbox"> 只看表中七个代表问题</label>
+        </div>
+        <div class="case-list" id="case-list"></div>
+      </aside>
+      <section class="case-detail" id="case-detail" aria-label="所选问题的五工具对照" aria-live="polite">
+        <p class="empty-state">正在载入证据。若未能载入，请确认 assets 目录与网页一起保留。</p>
+      </section>
+    </div>
+    <section id="audit-method" class="audit-method">
+      <h2>核查口径</h2>
+      <p>一个案例是一条可被源码验证的具体说法。多个工具在同一案例出错，仍只算一个案例；一个案例只归入一个主类。分类下只有一个案例时，不据此宣称该问题高频。</p>
+      <div class="status-legend" id="status-legend"></div>
+      <p>“未说明此点”不等于事实错误，也不等于说明正确；“部分说明”不是通过。只对已展示的检查点负责，不声称完成全部页面的逐句审查。没有生成成品与成品内容写错分开记录。</p>
+      <p>七仓成品对比不包含独立的 OpenAI builder-lab 实验。Local Skill 是 deepwiki:generate 0.12.0，不是 basic-wiki-generate 打标版本。历史空组故障来自此前 11 次生成测试，单列展示，不混入七份成功 Wiki 的错误数。</p>
+      <p>原文摘录保持原意，中文为阅读辅助，不偷偷修正错误。源码链接固定到对应快照；它是各工具共同的核查依据，不代表该工具原文已经提供这个引用。</p>
+      <p class="audit-download"><a href="assets/audit-core.json" download>下载接口、能力及运行核查记录</a><a href="assets/audit-behavior.json" download>下载行为及引用核查记录</a></p>
+    </section>
+    <noscript><p class="empty-state">问题对照需要启用 JavaScript。也可下载上方原始核查 JSON 查看记录。</p></noscript>
+  </main>
+</body>
+</html>

@@ -1,0 +1,300 @@
+{
+  "cases": [
+    {
+      "id": "email-command",
+      "category": "interface-contract",
+      "title": "Wiki 推荐的命令名，程序实际不接受",
+      "repo": "EmailHarvester",
+      "repoSlug": "maldevel/EmailHarvester",
+      "commit": "934d4121a92ff4f55aa67921e000469aa56b9595",
+      "kind": "content",
+      "severity": "high",
+      "sourceFact": "程序实际接受 -e googles，不接受 -e google。仓库 README 自己也写错了；部分 Wiki 沿用了这个错误，CodeWiki 则明确指出了文档与源码的差异。",
+      "impact": "用户照抄推荐命令无法选中 Google 插件；这是调用说明与实际接口不一致，不是要求仓库必须把插件改名。",
+      "skillFix": "先从源码整理有效命令和参数，再让 Skill 按清单写用法，不照抄 README。",
+      "sourceEvidence": [
+        {
+          "label": "Google 插件实际注册为 googles",
+          "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/plugins/googles.py#L35-L40"
+        },
+        {
+          "label": "未知插件名称退出 3",
+          "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/EmailHarvester.py#L280-L284"
+        }
+      ],
+      "fromTable": true,
+      "tools": {
+        "local-skill": {
+          "status": "error",
+          "explanation": "使用表推荐 -e google，与实际注册键矛盾；同份 Wiki 的 Provider Query and Paging Profiles 虽写对 googles，不能抵消此处的错误命令。",
+          "quote": "| Focused | `-e google` or another plugin name | One registered search strategy |",
+          "quoteZh": "| 定向搜索 | `-e google` 或其他插件名称 | 一个已注册的搜索策略 |",
+          "wikiLabel": "EmailHarvester / Capabilities and Search Coverage / L49"
+        },
+        "devinwiki": {
+          "status": "error",
+          "explanation": "命令章节明确把 google 称为注册表中的名称，且推荐 -e google；这是本检查点的错误，不因 Google 专章另有正确名称而消失。",
+          "quote": "This invokes the Google plugin to search for emails at `example.com`. The `-e google` argument selects the plugin registered under the name `\"google\"` in the plugin registry.",
+          "quoteZh": "这会调用 Google 插件搜索 `example.com` 的电子邮件地址。`-e google` 参数选择插件注册表中以 `\"google\"` 为名称注册的插件。",
+          "wikiLabel": "EmailHarvester / Command-Line Usage / 内容 L256",
+          "wikiUrl": "https://deepwiki.com/maldevel/EmailHarvester"
+        },
+        "deepwiki-open": {
+          "status": "no-output",
+          "explanation": "本轮 EmailHarvester 的 artifacts 目录没有可审查 Wiki；已检查产物目录及运行日志，不能据此判断该工具对 Google 命令写对或写错。",
+          "quote": "",
+          "quoteZh": "",
+          "wikiLabel": "EmailHarvester / 本轮产物目录及运行日志 / 无 Wiki 成品"
+        },
+        "openwiki": {
+          "status": "error",
+          "explanation": "Quickstart 的单引擎示例仍使用未注册的 google；Plugin System 中正确提示 googles，不能抵消这个可直接照抄的错误示例。",
+          "quote": "./EmailHarvester.py -d example.com -e google",
+          "quoteZh": "命令原样：./EmailHarvester.py -d example.com -e google",
+          "wikiLabel": "EmailHarvester / Quickstart / L56"
+        },
+        "codewiki": {
+          "status": "correct",
+          "explanation": "明确区分 README 的 google 与源码的 googles，并要求使用实际注册键；全文检索 Google 相关段落未发现相反的推荐调用。",
+          "quote": "The Google plugin registers as `googles`, although examples in the README refer to `google`. Consumers must use the actual registry key exposed by the code.",
+          "quoteZh": "Google 插件注册为 `googles`，尽管 README 中的示例使用 `google`。使用者必须采用代码暴露的实际注册键。",
+          "wikiLabel": "EmailHarvester / Repository Architecture / L256"
+        }
+      }
+    },
+    {
+      "id": "figma-compact-input",
+      "category": "interface-contract",
+      "title": "Wiki 说能用这种简写，代码却解析不了常见输入",
+      "repo": "Figma Flutter MCP",
+      "repoSlug": "mhmzdev/figma-flutter-mcp",
+      "commit": "5907212d028881341db054b404724e75fed710b6",
+      "kind": "content",
+      "severity": "high",
+      "sourceFact": "把文件 ID 和节点 ID 合成一个短字符串时，源码会错误拆分或校验；例如 abcdefghijkl:123:456 和 abcdefghijkl:123-456 都不能正常解析。传完整 URL 或分开传两个 ID 的方式仍可用；这不代表所有短字符串都失败。",
+      "impact": "用户可能选择文档推荐的简写却被拒绝；仓库解析器已有缺陷，Wiki 的责任是准确披露当前限制，而不是把存在分支等同于正常支持。",
+      "skillFix": "让 Skill 沿实际解析流程核对推荐输入，不能仅因代码有这一分支就写成可用。",
+      "sourceEvidence": [
+        {
+          "label": "紧凑分支的两段限制与节点校验传参",
+          "url": "https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L23-L66"
+        },
+        {
+          "label": "节点 ID 只接受两个数字段",
+          "url": "https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L164-L183"
+        }
+      ],
+      "fromTable": false,
+      "tools": {
+        "local-skill": {
+          "status": "error",
+          "explanation": "把紧凑冒号输入列为可识别形式，并紧接着描述成功结果，未反映当前分支对通常 fileId 与 nodeId 组合的解析缺陷。",
+          "quote": "It also recognizes a compact colon-delimited input. The successful result contains `fileId`, `nodeId`, a source marker of `url` or `direct`, and `isValid: true`.",
+          "quoteZh": "它也能识别紧凑的冒号分隔输入。成功结果包含 `fileId`、`nodeId`、值为 `url` 或 `direct` 的来源标记，以及 `isValid: true`。",
+          "wikiLabel": "Figma Flutter MCP / Figma Identifier Parsing and Validation / L7"
+        },
+        "devinwiki": {
+          "status": "not-covered",
+          "explanation": "已检索全部 23 页的 compact、colon、fileId:nodeId 及解析器相关内容，只见 URL 或独立 nodeId 参数，未找到紧凑格式的支持或限制说明；这里不带入其他接口示例的错误。",
+          "quote": "| `nodeId` | string | optional | Node ID (if providing file ID separately) |",
+          "quoteZh": "| `nodeId` | 字符串 | 可选 | 节点 ID（单独提供文件 ID 时使用） |",
+          "wikiLabel": "Figma Flutter MCP / Component Analysis Tools / 内容 L114；另检全部 23 页",
+          "wikiUrl": "https://deepwiki.com/mhmzdev/figma-flutter-mcp"
+        },
+        "deepwiki-open": {
+          "status": "no-output",
+          "explanation": "本轮 Figma Flutter MCP 生成在 2400 秒后超时，没有可审查 Wiki；这不等于内容没提，也不表示其他版本一定无法生成。",
+          "quote": "TIMEOUT after 2400 seconds",
+          "quoteZh": "2400 秒后超时",
+          "wikiLabel": "Figma Flutter MCP / 本轮运行日志 run.log / L14；无 Wiki 成品"
+        },
+        "openwiki": {
+          "status": "error",
+          "explanation": "明确宣称直接输入接受 fileId:nodeId，与当前紧凑分支的拆分及校验行为冲突；同段对 URL 和独立参数的正确说明不能抵消该承诺。",
+          "quote": "Direct input accepts `fileId:nodeId` or a separately supplied `nodeId`;",
+          "quoteZh": "直接输入接受 `fileId:nodeId` 或单独提供的 `nodeId`；",
+          "wikiLabel": "Figma Flutter MCP / Component Analysis / L49"
+        },
+        "codewiki": {
+          "status": "partial",
+          "explanation": "表格只称尝试拆分，维护说明也提醒冒号冲突，不能判作明确的成功保证；但未说明文件 ID 混入节点校验及两种通常输入的具体失败结果。",
+          "quote": "- The combined `fileId:nodeId` branch is sensitive because both the separator and the API node ID use colons; add tests before expanding that format.",
+          "quoteZh": "- 组合式 `fileId:nodeId` 分支较敏感，因为分隔符和 API 节点 ID 都使用冒号；扩展该格式前应增加测试。",
+          "wikiLabel": "Figma Flutter MCP / Figma Access / L123；表格 L33 使用 Attempts"
+        }
+      }
+    },
+    {
+      "id": "tcping-timeout",
+      "category": "capability-scope",
+      "title": "把超时设置描述为覆盖所有连接",
+      "repo": "tcping",
+      "repoSlug": "cloverstd/tcping",
+      "commit": "a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5",
+      "kind": "content",
+      "severity": "medium",
+      "sourceFact": "第一次加密连接没有接入用户设置的超时；普通连接，以及加密连接失败后改走普通连接的路径，才使用该限制。因此不能保证所有连接都会按这个设置停止。",
+      "impact": "用户可能以为等待上限覆盖整个连接过程，实际首次 TLS 阶段可能超过该限制；这是仓库现存限制与 Wiki 过度保证并存，不是说所有路径都没有超时。",
+      "skillFix": "增加能力范围核查，只描述源码实际支持的条件和范围，不写过度保证。",
+      "sourceEvidence": [
+        {
+          "label": "net.Dialer 只设置 Resolver",
+          "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L16-L25"
+        },
+        {
+          "label": "timeout context、首次 TLS 与 DialContext 回退",
+          "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L36-L75"
+        }
+      ],
+      "fromTable": true,
+      "tools": {
+        "local-skill": {
+          "status": "error",
+          "explanation": "同段将 TCP 的 TLS-first 模式纳入讨论后，仍称两类传输都遵守调用方 timeout，保证范围超出了实际实现。",
+          "quote": "Both honor a caller-supplied resolver and timeout and return the common statistics model, but their definitions of success and metadata differ.",
+          "quoteZh": "两者都遵守调用方提供的解析器和超时设置，并返回共同的统计模型，但它们对成功的定义及元数据不同。",
+          "wikiLabel": "tcping / Network Transports and Project Maintenance / L3"
+        },
+        "devinwiki": {
+          "status": "error",
+          "explanation": "明确把创建 timeout context 解释为所有协议都获得一致行为，未考虑首次 TLS 调用没有使用这个 context。",
+          "quote": "The timeout context is established at [ping/tcp/tcp.go:37-42]() and [ping/http/http.go:67-72]() in each implementation, ensuring consistent behavior across all protocols.",
+          "quoteZh": "各实现分别在 [ping/tcp/tcp.go:37-42]() 和 [ping/http/http.go:67-72]() 建立超时上下文，从而确保所有协议具有一致行为。",
+          "wikiLabel": "tcping / Protocol Implementations / 内容 L168",
+          "wikiUrl": "https://deepwiki.com/cloverstd/tcping"
+        },
+        "deepwiki-open": {
+          "status": "partial",
+          "explanation": "原文说明创建 timeout context，并在后文写出 TLS 首连和普通 TCP 回退，但未指出首连未使用 context；按该单项的严格口径，不把这段配置说明升级为明确保证首次 TLS 受控。",
+          "quote": "1. **Timeout Configuration**: The method checks if a custom timeout is set in the option; otherwise, it defaults to `ping.DefaultTimeout` (5 seconds). A new context with this timeout is created.",
+          "quoteZh": "1. **超时配置**：该方法检查选项中是否设置了自定义超时；否则采用 `ping.DefaultTimeout`（5 秒）。随后创建具有该超时的新上下文。",
+          "wikiLabel": "tcping / TCP Ping Implementation / wiki.md L2788；TLS 分支 L2793"
+        },
+        "openwiki": {
+          "status": "error",
+          "explanation": "明确称两种 probe 遵守相同超时语义，而该章节包含 TLS 首次拨号，源码却没有把配置的 timeout 传到这次调用。",
+          "quote": "Both probes implement the shared `Ping interface` (`Ping(ctx) *Stats`), honor the same timeout semantics and custom resolver, and return a `Stats` whose `Connected`/`Error`/`Duration`/`DNSDuration`/`Address` fields carry the outcome.",
+          "quoteZh": "两种探测都实现共享的 `Ping interface`（`Ping(ctx) *Stats`），遵守相同的超时语义和自定义解析器设置，并返回通过 `Connected`、`Error`、`Duration`、`DNSDuration`、`Address` 字段承载结果的 `Stats`。",
+          "wikiLabel": "tcping / Protocol Probes / L256"
+        },
+        "codewiki": {
+          "status": "no-output",
+          "explanation": "本轮所用 CodeWiki 版本未识别到支持的代码文件，tcping 没有生成 Wiki；只说明这一版本和这次运行无成品，不能判断其超时说明正确。",
+          "quote": "No supported code files found",
+          "quoteZh": "未找到受支持的代码文件",
+          "wikiLabel": "tcping / 本轮运行日志 run.log / L17 的错误摘要；无 Wiki 成品"
+        }
+      }
+    },
+    {
+      "id": "lightbox-reinit",
+      "category": "capability-scope",
+      "title": "把“页面元素不重复”写成“重复初始化安全”",
+      "repo": "Lightbox2",
+      "repoSlug": "lokesh/lightbox2",
+      "commit": "6bc87b6c246da1f24dcfcf52683286ad7e560cf3",
+      "kind": "content",
+      "severity": "medium",
+      "sourceFact": "代码只避免重复创建页面元素，并未避免重复绑定点击事件。再初始化一次，仍可能多加一份事件监听；“页面没有多出一层”不能证明整个初始化没有副作用。",
+      "impact": "用户若依赖整体幂等的说法重复初始化，可能重复绑定事件；这是 Wiki 扩大保证范围，不能仅因仓库未支持任意重复初始化就把仓库本身定为 bug。",
+      "skillFix": "增加能力范围核查，分别确认页面元素和事件绑定，避免用局部防重代表整体安全。",
+      "sourceEvidence": [
+        {
+          "label": "init 每次先 enable，再 build；仅 build 防重复 DOM",
+          "url": "https://github.com/lokesh/lightbox2/blob/6bc87b6c246da1f24dcfcf52683286ad7e560cf3/src/js/lightbox.js#L75-L99"
+        }
+      ],
+      "fromTable": false,
+      "tools": {
+        "local-skill": {
+          "status": "error",
+          "explanation": "由 build 的 ID 检查直接推出重复初始化的 setup 幂等，忽略之前已经执行的事件绑定，扩大了局部防重保证。",
+          "quote": "This makes setup idempotent and prevents multiple overlays when the module is evaluated or initialized more than once.",
+          "quoteZh": "这使设置过程具有幂等性，并在模块被多次求值或初始化时防止出现多个遮罩层。",
+          "wikiLabel": "Lightbox2 / Generated Overlay DOM and Handlers / L9"
+        },
+        "devinwiki": {
+          "status": "not-covered",
+          "explanation": "已检查全部 13 页并搜索重复初始化、幂等、重复绑定和 DOM 防重相关表述，只见正常初始化及构建流程，没有直接讨论本检查点；其他生命周期错误不移入这一项。",
+          "quote": "The `build()` method creates the necessary DOM elements for the lightbox UI. This includes the overlay, container, image, navigation, and caption elements:",
+          "quoteZh": "`build()` 方法为 lightbox 界面创建所需的 DOM 元素，包括遮罩层、容器、图片、导航和说明文字元素：",
+          "wikiLabel": "Lightbox2 / Core JavaScript Implementation / 内容 L136；另检全部 13 页",
+          "wikiUrl": "https://deepwiki.com/lokesh/lightbox2"
+        },
+        "deepwiki-open": {
+          "status": "partial",
+          "explanation": "准确把去重检查限定在 build 创建的 DOM，全文也给出了正常 init、enable 流程；未明确说明重复 init 仍会重复绑定，因此是部分覆盖，不是完整正确结论。",
+          "quote": "The `build()` method creates the entire lightbox DOM structure in a single jQuery append call. It checks first whether a `#lightbox` element already exists to avoid duplicates:",
+          "quoteZh": "`build()` 方法通过一次 jQuery append 调用创建整个 lightbox DOM 结构。它先检查 `#lightbox` 元素是否已经存在，以避免重复：",
+          "wikiLabel": "Lightbox2 / DOM Construction / wiki.md L2161"
+        },
+        "openwiki": {
+          "status": "partial",
+          "explanation": "写出了 enable 后 build 的正常顺序，并把短路条件限定于 build 的 DOM 创建；未展开重复 init 对 body 监听的影响，不能仅因没有错误保证就记为完整正确。",
+          "quote": "`build()` short-circuits if `#lightbox` already exists, then injects a single\nHTML string into the body and caches jQuery references (`src/js/lightbox.js#L96-L137`).",
+          "quoteZh": "如果 `#lightbox` 已经存在，`build()` 会提前返回；随后将一个 HTML 字符串插入 body，并缓存 jQuery 引用（`src/js/lightbox.js#L96-L137`）。",
+          "wikiLabel": "Lightbox2 / Runtime Lifecycle / L68-L69；初始化顺序 L46-L49"
+        },
+        "codewiki": {
+          "status": "partial",
+          "explanation": "只把 build 称为幂等，没有宣称整个 setup 幂等；但未说明重复 init 会再次执行 enable，本检查点仍只部分覆盖。",
+          "quote": "`build()` is idempotent: if `#lightbox` already exists, it returns. Otherwise it appends the full overlay and viewer structure, caches key nodes, measures CSS padding and borders, and wires close, previous, next, right-click, and keyboard-accessible close behavior.",
+          "quoteZh": "`build()` 是幂等的：如果 `#lightbox` 已经存在，它就返回。否则，它添加完整的遮罩层和查看器结构、缓存关键节点、测量 CSS 内边距及边框，并连接关闭、上一张、下一张、右键和可通过键盘触发的关闭行为。",
+          "wikiLabel": "Lightbox2 / Lightbox Runtime / L145；init 与 enable 说明 L141-L143"
+        }
+      }
+    },
+    {
+      "id": "pipeline-empty-groups",
+      "category": "pipeline-contract",
+      "title": "前一步选中的文件，后一步全排除，生成中断",
+      "repo": "Local Skill 历史生成批次（Valine / ibus-bamboo / IGL）",
+      "repoSlug": "",
+      "commit": "",
+      "kind": "pipeline",
+      "severity": "high",
+      "sourceFact": "前一步接受了文件组，后一步又用另一套筛选规则，把组内文件全部排除，导致无法继续生成。历史 11 次测试中，Valine、ibus-bamboo、IGL 因同一机制失败；这是生成器故障，不是三个 GitHub 仓库写错。",
+      "impact": "三次历史运行都没有生成 Wiki，是同一阶段交接问题的三次复现，不是三个不同问题，也不能据此推出其他工具存在或不存在相同缺陷。",
+      "skillFix": "统一分组与摘要的筛选规则，空组退回重新分组，保留不受影响且已通过检查的结果。",
+      "sourceEvidence": [],
+      "fromTable": true,
+      "tools": {
+        "local-skill": {
+          "status": "error",
+          "explanation": "三份 last-failure.json 的 reason 与 run-summary.json 的 failed/summary 状态相互印证，分别涉及 docs/search、仅含测试的分组、src/igl/tests；范围仅为历史 11 次中的三次同因复现，未重新运行。",
+          "quote": "summary batch registration failed after 3 drive attempts because the accepted identify path group docs/search contained no RepoWiki pre-explore text after filtering\nsummary batch construction failed after identify_core accepted a test-only path group that becomes empty under RepoWiki pre-explore filtering\nsummary batch registration repeatedly failed because accepted identify path group src/igl/tests contains no RepoWiki pre-explore text after filtering",
+          "quoteZh": "摘要批次注册在三次驱动尝试后失败，因为已接受的 identify 路径组 docs/search 在过滤后不包含 RepoWiki 预探索文本。\nidentify_core 接受了一个仅含测试的路径组后，摘要批次构建失败；该组在 RepoWiki 预探索过滤下变为空。\n摘要批次注册反复失败，因为已接受的 identify 路径组 src/igl/tests 在过滤后不包含 RepoWiki 预探索文本。",
+          "wikiLabel": "历史运行日志 / Valine、ibus-bamboo、IGL / .wiki/ops/last-failure.json 的 reason，依次摘录"
+        },
+        "devinwiki": {
+          "status": "unverified",
+          "explanation": "没有该工具在同一历史批次、同类阶段交接条件下的运行验证，不能宣称已通过或不存在此缺陷。",
+          "quote": "",
+          "quoteZh": "",
+          "wikiLabel": "历史流水线对照 / 无同批次运行核验记录"
+        },
+        "deepwiki-open": {
+          "status": "unverified",
+          "explanation": "没有该工具在同一历史批次、同类阶段交接条件下的运行验证；其他仓库的成功或超时记录不能回答本检查点。",
+          "quote": "",
+          "quoteZh": "",
+          "wikiLabel": "历史流水线对照 / 无同批次运行核验记录"
+        },
+        "openwiki": {
+          "status": "unverified",
+          "explanation": "没有该工具在同一历史批次、同类阶段交接条件下的运行验证，不能用有 Wiki 成品推定此类交接已被正确处理。",
+          "quote": "",
+          "quoteZh": "",
+          "wikiLabel": "历史流水线对照 / 无同批次运行核验记录"
+        },
+        "codewiki": {
+          "status": "unverified",
+          "explanation": "没有该工具在同一历史批次、同类阶段交接条件下的运行验证；语言识别失败与本项空组交接问题不是同一机制。",
+          "quote": "",
+          "quoteZh": "",
+          "wikiLabel": "历史流水线对照 / 无同批次运行核验记录"
+        }
+      }
+    }
+  ]
+}

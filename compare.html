@@ -15,7 +15,7 @@
     <a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a>
     <nav aria-label="主导航">
       <a class="top-link" href="index.html">总览</a>
-      <a class="top-link" href="repository-intro.html">仓库说明</a>
+      <a class="top-link" href="index.html#repository-intro">仓库说明</a>
       <a class="top-link active" href="compare.html" aria-current="page">成品对读</a>
       <a class="top-link" href="issues-compare.html">问题对照</a>
     </nav>
@@ -32,6 +32,7 @@
 
     <section class="compare-controls" aria-label="对读设置">
       <button id="swap-tools" class="compare-button" type="button">交换左右</button>
+      <button id="jump-readers" class="compare-button compare-button-primary" type="button">跳到双栏阅读</button>
       <label class="compare-sync"><input id="sync-scroll" type="checkbox" aria-describedby="sync-note"> 同步阅读进度</label>
       <span id="sync-note">按全文百分比同步，不代表章节或语义对齐。</span>
       <div class="compare-case-controls" aria-label="原文主题定位">
@@ -43,34 +44,41 @@
     <p id="route-message" class="compare-route-message" role="status" hidden></p>
 
     <details class="compare-overview" open>
-      <summary>成品概览 <span>实测数量，不是质量评分</span></summary>
+      <summary>成品概览 <span>整体风格、图表类型与原文例子，仅针对 Ghost 这五份成品</span></summary>
       <p id="difference-text" class="compare-difference" aria-live="polite">正在从两份全文读取统计；不同体量或侧重不等于更准确。</p>
       <div class="compare-overview-grid">
         <section id="overview-left" class="compare-overview-side" aria-label="左侧成品概览">
           <h2>左侧 · <span class="overview-tool">Local Skill</span></h2>
+          <div class="compare-style"></div>
           <dl class="compare-metrics">
             <div><dt>原文页</dt><dd data-metric="pages">待加载</dd></div>
             <div><dt>代码块</dt><dd data-metric="codeBlocks">待加载</dd></div>
             <div><dt>图表</dt><dd data-metric="diagrams">待加载</dd></div>
             <div><dt>字符</dt><dd data-metric="characters">待加载</dd></div>
           </dl>
+          <div class="compare-diagram-types" aria-label="左侧图表类型"></div>
+          <div class="compare-reading-evidence" aria-label="左侧风格的原文依据"></div>
           <nav class="compare-evidence" aria-label="左侧代表章节证据"></nav>
         </section>
         <section id="overview-right" class="compare-overview-side" aria-label="右侧成品概览">
           <h2>右侧 · <span class="overview-tool">DevinWiki</span></h2>
+          <div class="compare-style"></div>
           <dl class="compare-metrics">
             <div><dt>原文页</dt><dd data-metric="pages">待加载</dd></div>
             <div><dt>代码块</dt><dd data-metric="codeBlocks">待加载</dd></div>
             <div><dt>图表</dt><dd data-metric="diagrams">待加载</dd></div>
             <div><dt>字符</dt><dd data-metric="characters">待加载</dd></div>
           </dl>
+          <div class="compare-diagram-types" aria-label="右侧图表类型"></div>
+          <div class="compare-reading-evidence" aria-label="右侧风格的原文依据"></div>
           <nav class="compare-evidence" aria-label="右侧代表章节证据"></nav>
         </section>
       </div>
-      <p class="compare-metric-note">代码块不含 Mermaid；字符为非空白原文字符，含代码与表格，不含图表定义、页标签及评审卡。章节链接用于核查原文，不表示该工具出错。</p>
+      <p class="compare-metric-note">图表类型按原文 Mermaid 声明统计，包含未渲染成功的图，不是质量评分。代码块不含 Mermaid；字符含代码与表格、不含图表定义及评审卡。点击例子会在下方对应窗口定位原文，风格说明不是准确性结论。</p>
     </details>
 
-    <div class="compare-grid">
+    <p class="compare-reading-note">下方两份 Wiki 各自滚动；整页也可上下滚动，概览不会挤占阅读窗口。</p>
+    <div class="compare-grid" id="compare-readers">
       <section class="compare-panel" data-side="left" aria-labelledby="left-heading">
         <header class="compare-panel-head">
           <h2 id="left-heading">左侧</h2>

@@ -7,22 +7,47 @@
   const PROFILES = {
     'local-skill': {
       build: 'ghost-local-build-order', helper: 'ghost-local-unhook-order',
+      style: {focus:'按子模块讲机制和维护约束', summary:'更像给维护者看的技术说明：把子流程拆成短页，分别写用途、机制、前提和验证。不是逐行代码教程；同类章节会复用相似结构。'},
+      reading: [
+        {page:'page-19', heading:'Purpose', label:'技术说明的固定结构', detail:'这一页按 Purpose、Mechanism、Build Flow、Invariants、Verification 展开，可直接看到“用途—机制—约束—验证”的写法。'},
+        {page:'page-20', heading:'Source-Mutating Build Consequences', label:'侧重修改后的影响', detail:'用独立章节说明构建会改变源文件，以及阶段失败的后果，偏向维护者关心的依赖和边界。'}
+      ],
       evidence: [['构建章节原文', 'page-19'], ['辅助进程章节原文', 'page-12']]
     },
     devinwiki: {
       build: 'ghost-devin-build-order', helper: 'page-16',
+      style: {focus:'用概念说明和组件表组织技术教程', summary:'更像分章节的技术手册：先说明概念，再用组件表、实现说明和不同类型的图展开。同一主题往往同时给总览和细节，而非只给一段摘要。'},
+      reading: [
+        {page:'page-2', heading:'2. Component Breakdown', label:'用表格拆解模块职责', detail:'组件拆解章节把部件与职责放在一起，可与左侧按子流程分段说明的方式直接比较。'},
+        {page:'page-15', heading:'Utility Component Summary', label:'表格式技术参考', detail:'这里按 Component、Type、Purpose 整理辅助部件，便于查某个名字属于什么、用来做什么。'}
+      ],
       evidence: [['构建章节原文', 'page-3'], ['辅助进程相关原文', 'page-16']]
     },
     'deepwiki-open': {
       build: 'page-12', helper: 'page-8',
+      style: {focus:'把代码片段嵌入长篇实现讲解', summary:'更接近源码讲读：同一页穿插数据结构、函数片段、逐步解释与图表。读者能看到具体代码形式，但篇幅较长，展示了代码也不代表代码或解释都正确。'},
+      reading: [
+        {page:'page-6', heading:'Core Data Structures', label:'先放结构代码，再解释字段', detail:'查看数据结构章节的代码块和字段说明，直观看到它与以自然语言解释为主的写法有什么区别。'},
+        {page:'page-11', heading:'Key Components Summary', label:'长篇讲解后再列组件表', detail:'实现说明之后另列组件汇总表，同一页兼有展开讲解和查阅式总结。'}
+      ],
       evidence: [['构建章节原文', 'page-12'], ['辅助进程章节原文', 'page-8']]
     },
     openwiki: {
       build: 'page-14', helper: 'page-9',
+      style: {focus:'按阅读任务连接模块、文件和工作流', summary:'更像源码导航与工作流说明：用导航页告诉读者“看什么问题，去哪个页面”，正文经常交代文件之间的关系和失败条件。目录页也包含在原文页数中。'},
+      reading: [
+        {page:'page-13', heading:'Task-routing map', label:'按问题选择阅读入口', detail:'原文用 Task-routing map 把要了解的事情与页面关联起来，侧重“去哪里找”。'},
+        {page:'page-3', heading:'Invariants and failure semantics', label:'单独列约束与失败条件', detail:'类型说明后另列使用前提和失败处理，体现其按源码关系组织说明的方式；这些说法仍需核对。'}
+      ],
       evidence: [['构建章节原文', 'page-14'], ['辅助进程章节原文', 'page-9']]
     },
     codewiki: {
       build: 'compare-codewiki-build', helper: 'compare-codewiki-helper',
+      style: {focus:'在一篇文档中集中呈现架构、状态和风险', summary:'更像精简的架构说明：把依赖关系、共享状态、边界和维护风险集中到同一页。不必在很多页面之间切换，但不能因此认为每个函数和步骤都讲全了。'},
+      reading: [
+        {page:'page-1', heading:'Shared State and Ownership', label:'集中说明状态归谁管理', detail:'用独立章节和表格归纳共享状态，而不是将这些信息分散到多个子模块页面。'},
+        {page:'page-1', heading:'Maintenance Risks and Known Fragility', label:'单列维护风险清单', detail:'原文集中列出维护风险；这是组织方式的证据，不表示整份文档的每项判断都已验证。'}
+      ],
       evidence: [['Build-Time Pipeline 原文', 'compare-codewiki-build'], ['Restore ntdll 原文', 'compare-codewiki-helper']]
     }
   };
@@ -107,6 +132,31 @@
   singlePageHeadings.forEach((heading, index) => {
     if (!heading.id) heading.id = 'compare-section-' + (index + 1);
   });
+  const reading = profile.reading.flatMap((item, index) => {
+    const page = document.getElementById(item.page);
+    const heading = page && [...page.querySelectorAll('h2, h3')].find(el =>
+      !el.closest('.inline-issue') && el.textContent.trim() === item.heading
+    );
+    if (!heading) return [];
+    if (!heading.id) heading.id = 'compare-reading-' + (index + 1);
+    return [{label:item.label, detail:item.detail, heading:item.heading, target:heading.id}];
+  });
+  // Count authored diagram declarations before the lazy renderer replaces them with SVG.
+  const diagramDefinitions = [
+    ['flowchart', /^(?:flowchart|graph)\b/i, '流程／关系图', '用方框和箭头表示步骤或依赖；关系箭头不一定表示执行先后。'],
+    ['sequence', /^sequenceDiagram\b/i, '调用时序图', '按不同参与者排列调用和返回，侧重谁先联系谁。'],
+    ['state', /^stateDiagram(?:-v2)?\b/i, '状态图', '展示对象从一种状态切换到另一种状态，不是代码执行清单。'],
+    ['class', /^classDiagram\b/i, '类／结构图', '展示类型、字段或结构之间的关系。']
+  ];
+  const diagramTypes = new Map();
+  [...content.querySelectorAll('.mermaid')].filter(el => !el.closest('.inline-issue')).forEach((el, index) => {
+    const source = el.textContent.split('\n').filter(line => !line.trim().startsWith('%%')).join('\n').trim();
+    const definition = diagramDefinitions.find(item => item[1].test(source)) || ['other', null, '其他图表', '未归入以上类型，点击查看原图。'];
+    const [kind, , label, description] = definition;
+    if (!el.id) el.id = 'compare-diagram-' + (index + 1);
+    if (!diagramTypes.has(kind)) diagramTypes.set(kind, {kind, label, description, count:0, target:el.id});
+    diagramTypes.get(kind).count += 1;
+  });
   const targets = new Set([...content.querySelectorAll('[id]')].map(el => el.id));
   const tocItems = singlePageHeadings.length
     ? singlePageHeadings.map(heading => ({
@@ -132,6 +182,9 @@
   });
   const metadata = {
     metrics: { pages: pages.length, codeBlocks, diagrams, characters },
+    style: profile.style,
+    reading,
+    diagramTypes: [...diagramTypes.values()],
     evidence: profile.evidence.filter(item => targets.has(item[1])).map(item => ({ label: item[0], target: item[1] }))
   };
 

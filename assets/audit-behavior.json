@@ -3,14 +3,15 @@
     {
       "id": "ghost-build-order",
       "category": "control-flow",
-      "title": "流程图把构建步骤画反，或把串行画成并行",
+      "title": "构建图把先后画反，还把顺序执行写成同时执行",
       "repo": "Ghost",
       "repoSlug": "cpu0x00/Ghost",
       "commit": "bf67313c72d1df48117daf4aeca604e83a570280",
       "kind": "content",
       "severity": "medium",
-      "sourceFact": "正确顺序是：先编译汇编文件，再准备后续输入，然后编译资源和 C++，最后链接。脚本按顺序执行。另需注意：表示“产物关系”的图出现分叉，不等于它在声称并行执行。",
-      "impact": "会把实际串行流程学成先准备后汇编或并行执行，影响对构建阶段先后关系的理解。本例仅静态核查文档，不执行构建。",
+      "sourceFact": "脚本依次执行：汇编文件、准备输入、编译资源、编译 C++、链接。图上仅有分叉不代表同时执行；不能仅凭分叉就判定 Wiki 把顺序执行写成了同时执行。",
+      "impact": "读者会把构建顺序记成先准备输入再汇编，或误以为各步同时运行。这里只核对现有脚本的顺序，没有执行构建。",
+      "plainExample": "实际是“先汇编，再准备输入”；图若写成“先准备输入，再汇编”，就把两步反过来了。",
       "skillFix": "正文和流程图共用源码步骤清单，生成后核对箭头的先后顺序。",
       "sourceEvidence": [
         {
@@ -22,7 +23,7 @@
       "tools": {
         "local-skill": {
           "status": "error",
-          "explanation": "构建图把准备源码和载荷放在汇编之前，与入口顺序相反。同 Wiki 的 Source and Resource Materialization L5 又正确写明 assembly comes first；保留这段正确文字，但不能用它抵消错误图。",
+          "explanation": "Wiki 的图把“准备源码和载荷”放在“汇编”之前，代码实际先汇编。同一份 Wiki 的另一页虽然写对了顺序，也不能让这张图变正确。",
           "quote": " A[Prepare sources and payload] --> B[Assemble native stubs]\n B --> C[Compile resources]\n C --> D[Compile C++ source]\n D --> E[Link Ghost.exe]",
           "quoteZh": "准备源码和载荷 → 汇编本地桩\n汇编本地桩 → 编译资源\n编译资源 → 编译 C++ 源码\n编译 C++ 源码 → 链接 Ghost.exe",
           "wikiLabel": "Ghost / 4.3-Cross-Compilation Stages.md / L12-L15",
@@ -30,7 +31,7 @@
         },
         "devinwiki": {
           "status": "error",
-          "explanation": "图明确写 Process in parallel，并把更新源码放在汇编之前；这不是仅凭依赖分叉推断并行。固定源码的五个调用依次执行。",
+          "explanation": "Wiki 的图明确写“并行处理”，并把更新源码放在汇编前。代码实际按顺序执行，而且先汇编，这两点都画错了。",
           "quote": "    UpdateSourceCode --> ParallelProcess[\"Process in parallel\"]\n    \n    ParallelProcess --> BuildAssembly[\"Build assembly files\"]\n    BuildAssembly -->|\"nasm\"| SyscallsObj[\"syscalls.o\"]\n    BuildAssembly -->|\"nasm\"| RetAddrSpoofObj[\"retaddrspoof.o\"]",
           "quoteZh": "更新源码 → 并行处理\n\n并行处理 → 构建汇编文件\n构建汇编文件 → 经 nasm 生成 syscalls.o\n构建汇编文件 → 经 nasm 生成 retaddrspoof.o",
           "wikiLabel": "Ghost / wiki.json pages[2] Build System / content L31-L35",
@@ -38,7 +39,7 @@
         },
         "deepwiki-open": {
           "status": "correct",
-          "explanation": "原文将此片段标为 build sequence，并逐项列出与固定源码一致的五个串行调用。其他运行阶段图的问题不移入本构建顺序案例。",
+          "explanation": "Wiki 依次列出汇编、准备输入、编译资源、编译 C++、链接。代码也按这个顺序执行，因此本条构建顺序写对了。",
           "quote": "    build_assembly()\n    prepare_src_shellcode()\n    build_resource()\n    build_cpp_src()\n    link()",
           "quoteZh": "执行汇编构建\n准备源码和载荷\n编译资源\n编译 C++ 源码\n链接",
           "wikiLabel": "Ghost / wiki.md, Project Introduction / L53-L57",
@@ -46,7 +47,7 @@
         },
         "openwiki": {
           "status": "correct",
-          "explanation": "正文明确称 fixed order，图按汇编、准备、资源编译、C++ 编译、链接顺序连接，并注明 executed in sequence。",
+          "explanation": "Wiki 把五个步骤依次连起来，并明确说明按固定顺序执行。这个顺序与代码一致，本条没有把先后关系或执行方式写错。",
           "quote": "    A[\"build_assembly()\"] --> B[\"prepare_src_shellcode()\"]\n    B --> C[\"build_resource()\"]\n    C --> D[\"build_cpp_src()\"]\n    D --> E[\"link()\"]",
           "quoteZh": "汇编构建 → 准备源码和载荷\n准备源码和载荷 → 编译资源\n编译资源 → 编译 C++ 源码\n编译 C++ 源码 → 链接",
           "wikiLabel": "Ghost / workflows/build-and-deploy.md / L61-L64",
@@ -54,7 +55,7 @@
         },
         "codewiki": {
           "status": "partial",
-          "explanation": "图正确显示汇编先于读取和准备输入，但后段主要表达产物到编译、链接的依赖，未完整说明资源编译与 C++ 编译的串行先后。没有明确并行声明，不能判成 Devin 的同一错误，也不据此认定完整覆盖。",
+          "explanation": "Wiki 的图把汇编放在准备输入之前，与代码一致。后面的图主要讲哪些步骤用到哪些产物，没讲全资源和 C++ 的编译先后，也没明确说同时执行，所以只算部分说明。",
           "quote": "    Start --> Assemble\n    Assemble --> Read\n    Read --> Keys",
           "quoteZh": "开始 → 汇编\n汇编 → 读取\n读取 → 密钥",
           "wikiLabel": "Ghost / overview.md, Build-Time Pipeline / L139-L141",
@@ -65,14 +66,15 @@
     {
       "id": "ghost-helper-order",
       "category": "control-flow",
-      "title": "流程图把临时进程的结束时点画晚了",
+      "title": "代码先调用结束临时进程，图却把这一步放到后面",
       "repo": "Ghost",
       "repoSlug": "cpu0x00/Ghost",
       "commit": "bf67313c72d1df48117daf4aeca604e83a570280",
       "kind": "content",
       "severity": "medium",
-      "sourceFact": "源码先取回需要的内容并调用结束临时进程，之后才修改本地内容；Local Skill 的图却把结束动作画在修改之后。这里比较的是调用顺序，不是保证结束操作一定成功。",
-      "impact": "把辅助进程的生命周期画长，导致读者误解读取缓冲、本地替换与资源清理的先后。本例只比较文档与既有源码，不运行或改进该机制。",
+      "sourceFact": "代码读完所需内容后，先调用结束临时进程，再修改本地内容。这里核对的是调用的先后，不保证临时进程每次都能成功结束。",
+      "impact": "读者会误以为修改本地内容时，临时进程还需要继续工作。这个错误影响对处理顺序的理解，不涉及实际运行或改进该机制。",
+      "plainExample": "实际是“读取内容 → 调用结束临时进程 → 修改本地内容”，不是把结束进程放在最后。",
       "skillFix": "让 Skill 展开被调用函数中的清理步骤，再核对整张流程图的先后顺序。",
       "sourceEvidence": [
         {
@@ -88,7 +90,7 @@
       "tools": {
         "local-skill": {
           "status": "error",
-          "explanation": "图把复制和恢复保护都放在 Terminate helper 之前，与源码相反。同页 L7 的文字说辅助进程在读取后终止，属于正确材料，不能抵消图文矛盾。",
+          "explanation": "Wiki 的图把结束临时进程放在本地复制和恢复保护之后。代码实际先调用结束进程，再做这些修改；同页文字虽然写对了，图的顺序仍然错了。",
           "quote": "    D --> E[Copy clean section]\n    E --> F[Restore protection]\n    F --> G[Terminate helper]",
           "quoteZh": "D → 复制干净节区\n复制干净节区 → 恢复保护\n恢复保护 → 终止辅助进程",
           "wikiLabel": "Ghost / 3-Telemetry Suppression and Sleep Evasion.md / L14-L16",
@@ -96,7 +98,7 @@
         },
         "devinwiki": {
           "status": "not-covered",
-          "explanation": "检查全部 16 页的辅助进程、终止、ReadBufferFromProcess 和 FlushNTDLL 相关内容，仅见恢复过程摘要，没有交代辅助进程终止相对本地替换的先后。不能把未提及判为顺序正确。",
+          "explanation": "Wiki 只概述读取和替换，没有说临时进程何时结束。代码在修改本地内容前就调用结束进程，这一步没被介绍，不能因此判为写错或写对。",
           "quote": "    A[\"FlushNTDLL()\"] --> B[\"Locate clean copy of NTDLL\"]\n    B --> C[\"Replace hooked functions with original versions\"]\n    C --> D[\"Return to caller with cleaned NTDLL\"]",
           "quoteZh": "FlushNTDLL() → 定位干净的 NTDLL 副本\n定位副本 → 用原始版本替换被挂钩的函数\n替换 → 带着清理后的 NTDLL 返回调用者",
           "wikiLabel": "Ghost / wiki.json pages[15] Security Analysis / content L210-L212",
@@ -104,7 +106,7 @@
         },
         "deepwiki-open": {
           "status": "correct",
-          "explanation": "时序图把终止调用放在头部解析、本地保护变更和复制之前；正文 Step 2 结束辅助进程，Step 3/4 才处理本地替换，覆盖本例相对顺序。",
+          "explanation": "Wiki 的图先调用结束临时进程，再解析和修改本地内容。代码也是这个顺序，本条写对的是调用先后，不是保证结束操作必定成功。",
           "quote": "    U->>R: RetSpoofCall(SysNtTerminateProcess)\n    U->>U: Parse PE headers\n    U->>R: RetSpoofCall(SysNtProtectVirtualMemory)\n    R->>S: Change to PAGE_EXECUTE_WRITECOPY\n    U->>R: RetSpoofCall(memcpy)",
           "quoteZh": "U → R：调用进程终止\nU → U：解析 PE 头部\nU → R：调用内存保护变更\nR → S：改为 PAGE_EXECUTE_WRITECOPY\nU → R：调用复制",
           "wikiLabel": "Ghost / wiki.md, NTDLL Unhooking via Suspended Processes / L2961-L2965",
@@ -112,7 +114,7 @@
         },
         "openwiki": {
           "status": "correct",
-          "explanation": "明确把辅助进程终止放在读取之后；同页 L41-L51 将读取函数置于调用者本地替换之前。本格只核这两个动作的相对顺序，不据此保证终止必然成功。",
+          "explanation": "Wiki 说读完内容就结束临时进程，后面才修改本地内容。这个调用顺序与代码一致；这里只确认先后，不保证结束操作一定成功。",
           "quote": "- **Temporary process lifecycle:** `ReadBufferFromProcess` terminates the spawned `audiodg.exe` immediately after the read, so no orphan window is left running.",
           "quoteZh": "临时进程生命周期：ReadBufferFromProcess 在读取后立即终止所创建的 audiodg.exe，因此不会留下仍在运行的孤立窗口。",
           "wikiLabel": "Ghost / concepts/ntdll-unhooking.md / L145；调用者步骤 L41-L51",
@@ -120,7 +122,7 @@
         },
         "codewiki": {
           "status": "correct",
-          "explanation": "编号步骤明确是读取、终止辅助进程、再本地替换，覆盖本例顺序。",
+          "explanation": "Wiki 列出的步骤是读取、结束临时进程，再修改本地内容。代码按这个顺序调用，本条没有把结束时间画晚；这不保证结束操作一定成功。",
           "quote": "3. `ReadBufferFromProcess` reads an image-sized range beginning at the local `ntdll` base address from the suspended process.\n4. The temporary process is terminated.\n5. `FlushNTDLL` locates `.text` in the local image, temporarily applies `PAGE_EXECUTE_WRITECOPY`, copies the corresponding bytes from the clean buffer, and restores the old protection.",
           "quoteZh": "3. ReadBufferFromProcess 从挂起进程读取一个映像大小的区域，起点为本地 ntdll 基址。\n4. 临时进程被终止。\n5. FlushNTDLL 定位本地映像的 .text，临时应用 PAGE_EXECUTE_WRITECOPY，从干净缓冲区复制对应字节，并恢复原保护。",
           "wikiLabel": "Ghost / overview.md, Restore ntdll / L276-L278",
@@ -131,14 +133,15 @@
     {
       "id": "sqlx-bind-order",
       "category": "control-flow",
-      "title": "先选处理方式还是先转换查询，流程图画反了",
+      "title": "先看参数类型再改写查询，图却画成了相反顺序",
       "repo": "sqlx",
       "repoSlug": "jmoiron/sqlx",
       "commit": "41dac167fdad5e3fd81d66cafba0951dc6823a30",
       "kind": "content",
       "severity": "medium",
-      "sourceFact": "这里检查一次性查询调用：源码先根据输入类型选择处理分支，再由对应分支编译查询。OpenWiki 把这两步画反。另一种预先编译语句的调用方式不在本条范围，不能混成同一条流程。",
-      "impact": "会把实际的分派入口学成编译后的处理阶段，混淆一次性绑定、批量绑定和预编译语句的控制流。",
+      "sourceFact": "NamedExec、NamedQuery 这类一次性调用，先看参数类型并选好处理方式，再改写查询。预先准备语句是另一条流程，不在这条比较范围内。",
+      "impact": "读者会误以为查询先被改写，程序之后才决定怎样处理参数。这样容易把一次性调用、批量参数处理和预先准备语句的步骤混在一起。",
+      "plainExample": "传入一组记录时，代码先选择“按多条记录处理”，再把 :name 这样的参数改写为占位符。",
       "skillFix": "先区分不同入口，再让正文和流程图按各自真实调用顺序生成。",
       "sourceEvidence": [
         {
@@ -158,35 +161,35 @@
       "tools": {
         "local-skill": {
           "status": "correct",
-          "explanation": "明确先将数组和切片分派给 bindArray，再在批量处理内编译成问号形式；同页 L45 给出 NamedExec/NamedQuery 到 bindNamedMapper 的入口。本格仅确认分派与编译顺序，fixBound 的独立错误另列。",
+          "explanation": "Wiki 说先把数组或列表交给批量处理，再在里面改写查询。代码也是先选处理方式、后改写，本条顺序写对了；错误时怎样处理另有案例。",
           "quote": "Maps are bound as a single record, arrays and slices are sent to `bindArray`, and other values are treated as structs [named.go:L406-L435](). Batch handling first compiles the named query to question-mark form, then requires a non-empty collection.",
           "quoteZh": "映射作为单条记录绑定，数组和切片交给 bindArray，其他值作为结构体处理。批量处理先将命名查询编译为问号形式，然后要求集合非空。",
           "wikiLabel": "sqlx / 2.3-Named Parameters and Batch Execution.md / L67；入口 L45"
         },
         "devinwiki": {
           "status": "partial",
-          "explanation": "给出编译后按来源取值的概念阶段，也在其他图中命名 bindNamedMapper，但没有把 dispatcher 选择具体 binder、再进入编译器的调用关系连成同一条链。编译先于取值不等于编译先于 dispatcher，故不把抽象表述直接判成 OpenWiki 的同一倒置。",
+          "explanation": "Wiki 说改写查询后，再从结构体、映射或列表中取出参数值。它没讲清代码其实先选处理方式、再改写；“后取值”也不等于“后选处理方式”，所以只算部分说明。",
           "quote": "After compilation, SQLx binds the parameter values based on the source type:\n\n1. For structs: Uses reflection to extract field values based on the parameter names\n2. For maps: Directly looks up values by key\n3. For slices/arrays: Applies the binding process for each element and constructs a batch query",
           "quoteZh": "编译后，SQLx 根据来源类型绑定参数值：\n\n1. 结构体：按参数名用反射提取字段值。\n2. 映射：按键直接查找值。\n3. 切片或数组：对每个元素应用绑定过程并构造批量查询。",
           "wikiLabel": "sqlx / wiki.json pages[6] Named Queries / content L427-L431"
         },
         "deepwiki-open": {
           "status": "partial",
-          "explanation": "批量图显示类型判断先于编译，没有画出相反顺序；但省略 bindNamedMapper 到 bindArray 的具体调用关系，也未在同一链路中说明 QUESTION 编译与最终 Rebind，不能作为完整正确对照。",
+          "explanation": "Wiki 的图先判断参数类型，再改写查询，没有把这两步画反。它没讲清中间怎样选中具体处理函数，也省略了后续占位符调整，所以只算部分说明。",
           "quote": "    A[Batch Insert Request] --> B{Argument Type}\n    B -->|Struct Slice| C[Compile Named Query]\n    B -->|Map Slice| C\n    C --> D[Process Each Element]",
           "quoteZh": "批量插入请求 → 判断参数类型\n结构体切片 → 编译命名查询\n映射切片 → 同一编译步骤\n编译命名查询 → 处理每个元素",
           "wikiLabel": "sqlx / wiki.md, Bind Variable Handling / L2905-L2908"
         },
         "openwiki": {
           "status": "error",
-          "explanation": "端到端图明确把 compileNamedQuery 和产出的查询、名称放在 bindNamedMapper 之前，与真实调用方向相反。同页 L82-L98 的分派及批量算法文字正确，应保留，但不能抵消这张图。",
+          "explanation": "Wiki 的图先改写查询，再按参数类型选择处理方式。代码实际顺序相反；同页文字虽然写对了，图的顺序仍然错了。",
           "quote": "    A[\"DriverName\"] --> B[\"BindType\"]\n    B --> C[\"compileNamedQuery : bindType, query\"]\n    C --> D[\"rebound query + names\"]\n    D --> E[\"bindNamedMapper: arg kind\"]",
           "quoteZh": "驱动名称 → 绑定类型\n绑定类型 → compileNamedQuery（绑定类型、查询）\n编译 → 改写后的查询与参数名称\n改写后的查询与名称 → bindNamedMapper（实参种类）",
           "wikiLabel": "sqlx / concepts/named-queries.md / L158-L161"
         },
         "codewiki": {
           "status": "no-output",
-          "explanation": "本轮 CodeWiki 未生成 sqlx 的可审查 Wiki 成品，无法核对本案例；不把无成品记为内容错误或未覆盖。",
+          "explanation": "本轮 CodeWiki 没有生成 sqlx 的 Wiki。没有原文可核对，不能算成它把流程写错了，也不是已有 Wiki 漏写了这一点。",
           "quote": "",
           "quoteZh": "",
           "wikiLabel": "sqlx / 本轮无可审查 Wiki 成品"
@@ -196,14 +199,15 @@
     {
       "id": "sqlx-fixbound",
       "category": "error-semantics",
-      "title": "代码可能继续处理，Wiki 却说一定提前报错",
+      "title": "没找到批量片段时返回原 SQL，Wiki 却说会提前报错",
       "repo": "sqlx",
       "repoSlug": "jmoiron/sqlx",
       "commit": "41dac167fdad5e3fd81d66cafba0951dc6823a30",
       "kind": "content",
       "severity": "medium",
-      "sourceFact": "当查询中找不到可批量扩展的那部分，或找不到配对括号时，fixBound 会返回原查询。如果前面的其他检查通过，调用方仍可能把它交给数据库；这里不保证在访问数据库前就报错。",
-      "impact": "把可能延后到数据库或驱动处才暴露的问题，误写成绑定层必定提前拒绝，导致错误处理边界和测试预期失真。",
+      "sourceFact": "找不到 VALUES (...) 或配对括号时，fixBound 返回原 SQL，不产生错误。如果其他检查通过，调用执行接口会继续交给驱动；之后是否报错由 SQL、参数和驱动决定，也不保证一定已经访问数据库。",
+      "impact": "Wiki 把“没有扩展成功”写成了“必定提前报错”。读者会误判失败发生的阶段；不是已经报错后还要查询一次来确认。",
+      "plainExample": "Wiki：找不到片段 → 当场报错、不再执行。源码：找不到片段 → 返回原 SQL、不在此报错 → 后续可能执行，也可能在其他检查处报错。",
       "skillFix": "写作前记录出错后的真实处理，区分“报错、继续执行、返回原值”。",
       "sourceEvidence": [
         {
@@ -223,35 +227,35 @@
       "tools": {
         "local-skill": {
           "status": "error",
-          "explanation": "明确声称找不到或解析不了 VALUES 元组会产生错误，L75 还保证此类失败发生在联系驱动之前；实际这两个 fixBound guard 只返回原串。",
-          "quote": "The batch algorithm is deliberately tied to a `VALUES (...)` shape rather than being a general SQL repetition engine. Failure to find or parse the tuple produces an error rather than silently generating mismatched SQL.",
-          "quoteZh": "批量算法刻意绑定于 VALUES (...) 这种形状，而不是通用的 SQL 重复引擎。找不到或无法解析该元组会产生错误，而不是悄然生成不匹配的 SQL。",
+          "explanation": "Wiki 明确说这类失败会在联系驱动前报错。源码这里没有返回错误，仍给出原 SQL；后续是否执行或报错另有条件，所以错在报错条件和阶段，不只是少写查询步骤。",
+          "quote": "The batch algorithm is deliberately tied to a `VALUES (...)` shape rather than being a general SQL repetition engine. Failure to find or parse the tuple produces an error rather than silently generating mismatched SQL.\n\nNamed execution is designed to fail before contacting the driver when query syntax cannot be compiled, a requested map key is absent, a struct traversal is missing, a batch is empty, or a `VALUES` tuple cannot be expanded.",
+          "quoteZh": "批量算法刻意绑定于 VALUES (...) 这种形状，而不是通用的 SQL 重复引擎。找不到或无法解析该元组会产生错误，而不是悄然生成不匹配的 SQL。\n\n命名执行被设计为在联系驱动前失败，条件包括：查询语法无法编译、请求的映射键不存在、缺少结构体取值路径、批次为空，或 VALUES 元组无法扩展。",
           "wikiLabel": "sqlx / 2.3-Named Parameters and Batch Execution.md / L71；预驱动保证 L75"
         },
         "devinwiki": {
           "status": "not-covered",
-          "explanation": "检查 Named Queries 的批量绑定、内部实现及其他页面，仅见正常 VALUES 扩展；未说明找不到模式、缺右括号时的返回，也未明确宣称这两种情况提前报错。正常示例不能替代本例异常回退覆盖。",
+          "explanation": "Wiki 只介绍了正常情况下怎样把一组值扩成多组值。它没讲找不到片段或缺右括号时会原样返回，也没声称会提前报错，因此这里是没说明，不是写错。",
           "quote": "When binding a slice or array, SQLx automatically expands the query to include multiple value sets, converting:",
           "quoteZh": "绑定切片或数组时，SQLx 会自动扩展查询，使其包含多组值，转换如下：",
           "wikiLabel": "sqlx / wiki.json pages[6] Named Queries / content L310"
         },
         "deepwiki-open": {
           "status": "partial",
-          "explanation": "代码摘录保留 VALUES 模式未匹配时返回原串的分支；后半实现被省略，缺少未闭合括号的回退和后续可进入驱动的说明。已给出的这个 guard 是正确的，但本案例没有完整覆盖。",
+          "explanation": "Wiki 的代码摘录写出了找不到 VALUES 片段就返回原查询。它省略了缺少右括号时的同样处理，以及之后仍可能交给数据库，所以只说明了一部分。",
           "quote": "func fixBound(bound string, loop int) string {\n    loc := valuesReg.FindStringIndex(bound)\n    if len(loc) < 2 {\n        return bound\n    }",
           "quoteZh": "fixBound 接收 bound 和 loop，返回字符串。\n查找 VALUES 模式的位置。\n若未得到两个位置索引，\n返回原来的 bound。\n结束该条件分支。",
           "wikiLabel": "sqlx / wiki.md, Bind Variable Handling / L2854-L2858"
         },
         "openwiki": {
           "status": "correct",
-          "explanation": "直接说明找不到 VALUES 或右括号就原样返回查询，未虚构提前 error；同页 L94-L98 的批量算法及 L135 的执行入口支持后续处理关系。",
+          "explanation": "Wiki 说找不到 VALUES (...) 或右括号时，查询会原样返回。代码确实这样处理，不是在这里报错；其他检查通过后还可能继续交给数据库。",
           "quote": "It is defensive: if `VALUES (...)` or a closing bracket is not found, the query is returned unchanged.",
           "quoteZh": "它采取防御性处理：如果找不到 VALUES (...) 或右括号，就原样返回查询。",
           "wikiLabel": "sqlx / concepts/named-queries.md / L100"
         },
         "codewiki": {
           "status": "no-output",
-          "explanation": "本轮 CodeWiki 未生成 sqlx 的可审查 Wiki 成品，无法核对本案例；不把无成品记为内容错误或未覆盖。",
+          "explanation": "本轮 CodeWiki 没有生成 sqlx 的 Wiki。没有原文，无法核对它怎样介绍这种情况，不能记为写错或漏写。",
           "quote": "",
           "quoteZh": "",
           "wikiLabel": "sqlx / 本轮无可审查 Wiki 成品"
@@ -261,14 +265,15 @@
     {
       "id": "email-retry",
       "category": "error-semantics",
-      "title": "程序遇到请求异常直接退出，Wiki 却说会重试",
+      "title": "网页请求发生异常就退出，Wiki 却说会自动重试",
       "repo": "EmailHarvester",
       "repoSlug": "maldevel/EmailHarvester",
       "commit": "934d4121a92ff4f55aa67921e000469aa56b9595",
       "kind": "content",
       "severity": "medium",
-      "sourceFact": "遇到网页请求异常时，共享搜索逻辑会打印错误并退出，没有自动重试。Yahoo 插件也使用这段逻辑；成功翻页后的短暂等待，不是失败后的重试。",
-      "impact": "虚构网络失败自动恢复能力，掩盖一次请求异常会终止整轮命令的真实行为。",
+      "sourceFact": "搜索时一旦网页请求抛出异常，共用代码就打印错误并退出，没有自动重试，Yahoo 插件也一样。正常翻页后的短暂等待，不是失败后重新请求。",
+      "impact": "读者可能以为网络出错后程序会自己再试，实际整轮命令会结束。即使选择运行全部插件的 all 模式，一个插件的请求异常也会让后面的插件无法继续。",
+      "plainExample": "Yahoo 请求发生异常，程序会以状态码 4 退出，而不是等一会儿再试一次。",
       "skillFix": "让 Skill 追到实际异常处理位置，不能把正常翻页或等待写成失败重试。",
       "sourceEvidence": [
         {
@@ -284,35 +289,35 @@
       "tools": {
         "local-skill": {
           "status": "correct",
-          "explanation": "明确写无本地重试，单次请求异常终止整个命令，包括 all 模式；前段 L75 同时给出退出状态 4。",
+          "explanation": "Wiki 说没有重试，一次请求异常就会结束整轮命令，包括运行全部插件的 all 模式。代码会打印错误并退出，和这个说明一致。",
           "quote": "There is no local retry, exponential backoff, timeout parameter, fallback provider, or partial-result continuation. A single request exception terminates the whole command, including an all-plugin run.",
           "quoteZh": "没有本地重试、指数退避、超时参数、备用提供方或带部分结果继续执行。一次请求异常就会终止整个命令，包括运行所有插件的情况。",
           "wikiLabel": "EmailHarvester / 3.2-HTTP Retrieval and Proxy Routing.md / L77；退出码 L75"
         },
         "devinwiki": {
           "status": "error",
-          "explanation": "Yahoo Plugin 的 The core application handles 清单宣称共享核心有 retry logic；源码异常路径直接退出 4。其他页对异常的正确描述不能抵消这个不存在的重试保证。",
+          "explanation": "Wiki 在 Yahoo 章节说共用代码提供了重试。代码遇到请求异常却直接退出，因此这里多写了并不存在的自动重试；其他页写对不能抵消这句话。",
           "quote": "- Error handling and retry logic\n\nSources: [plugins/yahoo.py:28-32]()",
           "quoteZh": "错误处理和重试逻辑。\n\n来源：plugins/yahoo.py 第 28 至 32 行。",
           "wikiLabel": "EmailHarvester / wiki.json pages[13] Yahoo Plugin / content L302-L304"
         },
         "deepwiki-open": {
           "status": "no-output",
-          "explanation": "本轮 DeepWiki Open 未生成 EmailHarvester 的可审查 Wiki 成品，无法核对本案例；不是已有 Wiki 没有写重试。",
+          "explanation": "本轮 DeepWiki Open 没有生成 EmailHarvester 的 Wiki。没有原文可核对，不是说它已有的 Wiki 忘了介绍重试。",
           "quote": "",
           "quoteZh": "",
           "wikiLabel": "EmailHarvester / 本轮无可审查 Wiki 成品"
         },
         "openwiki": {
           "status": "correct",
-          "explanation": "明确说任何请求异常都会触发 sys.exit(4)，并在提取之前结束，这已覆盖本例的异常退出而非重试。未完整讨论 timeout 等其他限制，不影响这个单案例结论。",
+          "explanation": "Wiki 说请求异常会打印错误，并以状态码 4 退出。代码实际就是这样处理，不会在失败后自动重试，本条写对了。",
           "quote": "4. Any `Exception` from the request is printed and triggers `sys.exit(4)` — this is the transport-failure exit, before any extraction.",
           "quoteZh": "4. 请求中的任何 Exception 都会被打印并触发 sys.exit(4)。这是传输失败时的退出，发生在任何提取之前。",
           "wikiLabel": "EmailHarvester / workflows/end-to-end-search.md / L100"
         },
         "codewiki": {
           "status": "correct",
-          "explanation": "明确写无重试，并说明请求失败在共享运行时 sys.exit(4)，某个插件失败会终止 all 模式而不是继续其他插件。",
+          "explanation": "Wiki 明确说没有重试，一个插件的请求异常也会终止全部插件模式。代码会在共用逻辑里直接退出，与这段说明一致。",
           "quote": "| Rate limiting or blocking | No retry, backoff, CAPTCHA detection, or status-aware handling |\n\nBecause request failures call `sys.exit(4)` inside the runtime, a failure in one plugin terminates an `all` run rather than allowing remaining plugins to continue.",
           "quoteZh": "限流或封禁：没有重试、退避、验证码检测或按状态处理。\n\n因为请求失败会在运行时内调用 sys.exit(4)，一个插件失败就会终止 all 模式，而不是让其余插件继续。",
           "wikiLabel": "EmailHarvester / overview.md / L491-L493"
@@ -322,14 +327,15 @@
     {
       "id": "flask-temporary-error",
       "category": "state-semantics",
-      "title": "最终会拒绝请求，不等于中间没有暂存错误",
+      "title": "请求最终被拒绝，但错误对象会先被暂存",
       "repo": "Flask-RESTful",
       "repoSlug": "flask-restful/flask-restful",
       "commit": "88cce53a8cd65830bf1815185a42ba24e5db78c6",
       "kind": "content",
       "severity": "medium",
-      "sourceFact": "开启“合并报告错误”，且保留默认保存设置（store_missing=True）时，代码会先把返回的错误对象暂存在内部结果里，最后统一拒绝请求。Wiki 把这个中间步骤说没了；这不意味着错误数据会正常返回给用户。",
-      "impact": "把请求处理中的临时状态讲错，可能影响工程师理解内部处理步骤；不意味着错误请求能通过最终校验。沿用问题表的中级，实际影响相对较小。",
+      "sourceFact": "开启“合并报告错误”且保留默认 store_missing=True 时，代码会先把错误对象写入内部结果，最后统一拒绝请求。暂时存进去，不等于这些错误会作为成功结果返回给用户。",
+      "impact": "读者会误解请求被拒绝前，程序内部保存过什么。错误只在这个中间步骤，不意味着无效请求能通过校验；实际影响相对较小。",
+      "plainExample": "要求年龄为整数，却传入 abc；开启合并报错且 store_missing=True 时，错误对象会先暂存，最后仍拒绝请求。",
       "skillFix": "调整写作模板，分开说明临时状态和最终结果，避免把两者混为一谈。",
       "sourceEvidence": [
         {
@@ -349,35 +355,35 @@
       "tools": {
         "local-skill": {
           "status": "error",
-          "explanation": "明确声称聚合 ValueError 时抑制该参数的 namespace 赋值，忽略 store_missing=True 仍触发写入。原文同段关于最终统一 abort 的说明是正确的，错误只在临时状态。",
+          "explanation": "Wiki 说合并错误时，不会把该参数写入内部结果。代码在 store_missing=True 时仍会暂存错误对象，最后才统一拒绝请求，所以错的是中间步骤，不是最终结果。",
           "quote": "`parse_args` recognizes the returned `ValueError`, merges the mapping into its local `errors` dictionary, and suppresses namespace assignment for that argument.",
           "quoteZh": "parse_args 识别返回的 ValueError，把映射合并到本地 errors 字典，并抑制该参数的 namespace 赋值。",
           "wikiLabel": "Flask-RESTful / 3.4-Validation and Error Bundling.md / L54"
         },
         "devinwiki": {
           "status": "not-covered",
-          "explanation": "Request Parsing 和 Arguments 讲解了错误聚合、store_missing 与一般结果存储，但未说明聚合 ValueError 在 found 清空后的临时写入。本例未覆盖，不由此判错误，也不能当作正确对照。",
+          "explanation": "Wiki 介绍了怎样合并错误，以及一般参数怎样保存。它没说明合并报错且 store_missing=True 时会暂存错误对象，因此本条只是没覆盖，不能判为写错或写对。",
           "quote": "By default, the parser will abort on the first error. To collect all errors before responding:",
           "quoteZh": "默认情况下，解析器会在第一个错误处中止。若要在响应前收集所有错误：",
           "wikiLabel": "Flask-RESTful / wiki.json pages[7] Request Parsing / content L367"
         },
         "deepwiki-open": {
           "status": "not-covered",
-          "explanation": "检索完整 Wiki 的 bundle_errors、ValueError、store_missing、namespace 相关内容，只见聚合响应和普通解析结果说明，没有本例临时 namespace 状态及触发条件。",
+          "explanation": "Wiki 说合并错误后会一次性返回错误响应。它没讲 store_missing=True 时内部会先暂存错误对象，这个中间步骤没有说明，不算它作出了相反的承诺。",
           "quote": "When `bundle_errors=True`, the parser collects all validation errors and returns them in a single response:",
           "quoteZh": "当 bundle_errors=True 时，解析器收集所有验证错误，并在一个响应中返回这些错误：",
           "wikiLabel": "Flask-RESTful / wiki.md, Error Handling with bundle_errors / L1698"
         },
         "openwiki": {
           "status": "partial",
-          "explanation": "正确给出 found 或 store_missing=True 时赋值，且 L256-L262 说明聚合错误最终统一 abort；但未将 ValueError、found=None 与临时写入连起来，不能算完整覆盖本例内部状态。",
+          "explanation": "Wiki 说找到参数或 store_missing=True 时就保存结果，也说最终会统一拒绝有错的请求。它没连起来说明错误对象也可能先被保存，所以只说明了部分过程。",
           "quote": "3. The result is written under `arg.dest or arg.name` for every argument that\n   was found **or** has `store_missing=True`.",
           "quoteZh": "3. 对于已找到或 store_missing=True 的每个参数，\n   结果都写入 arg.dest or arg.name 对应的项。",
           "wikiLabel": "Flask-RESTful / concepts/request-parsing.md / L137-L138；最终拒绝 L256-L262"
         },
         "codewiki": {
           "status": "partial",
-          "explanation": "图有聚合错误进入 Store 的分支，但没有 store_missing=True 条件，也未画出最终统一拒绝，不能作为完整正确对照。它不是 Local 的“完全抑制临时赋值”说法，故不判为同一错误。",
+          "explanation": "Wiki 的图把“合并错误”连到“保存”，没有说完全不保存。它没写清 store_missing=True 这个条件，也没画出最后统一拒绝请求，因此只算部分说明。",
           "quote": "    Failure --> Bundle\n    Bundle -->|No| Abort\n    Bundle -->|Yes| Store\n    Store --> More\n    More -->|Yes| Next",
           "quoteZh": "失败 → 判断是否聚合\n不聚合 → 中止\n聚合 → 存储\n存储 → 判断是否还有参数\n还有参数 → 下一个参数",
           "wikiLabel": "Flask-RESTful / overview.md, Request Parsing and Validation / L309-L313；后续出口 L314-L321"
@@ -387,14 +393,15 @@
     {
       "id": "sqlx-connect-citation",
       "category": "evidence-mismatch",
-      "title": "Wiki 讲的是连接函数，引用却指向其他代码",
+      "title": "讲的是 Connect，引用行号却找不到这个函数",
       "repo": "sqlx",
       "repoSlug": "jmoiron/sqlx",
       "commit": "41dac167fdad5e3fd81d66cafba0951dc6823a30",
       "kind": "content",
       "severity": "low",
-      "sourceFact": "Wiki 解释 Connect 如何建立并检查连接，但引用的 sqlx.go 第 250–290 行没有这个函数；本次源码快照中的实际定义在第 640–651 行。文字的主要意思正确，错的是证据位置。",
-      "impact": "读者按所附行号无法找到 Connect 的实现，削弱材料可追溯性；原文对 Connect 的主要行为说明仍正确，因此不把引用错位升级成行为错误。",
+      "sourceFact": "Connect 的实现在 sqlx.go 第 640 至 651 行，不在 Wiki 引用的第 250 至 290 行。这段 Wiki 对连接行为的主要说明是对的，错的是附上的源码位置。",
+      "impact": "读者顺着行号去查，会看到别的代码，无法直接验证这段说明。这里是引用指错位置，不是 Connect 的主要行为被写反。",
+      "plainExample": "Wiki 让你去第 250 至 290 行找 Connect，但实际要看第 640 至 651 行。",
       "skillFix": "升级引用校验：不仅检查位置有效，还检查这段代码能否支持文中的结论。",
       "sourceEvidence": [
         {
@@ -410,35 +417,35 @@
       "tools": {
         "local-skill": {
           "status": "error",
-          "explanation": "Connect 的 Open、Ping、失败 Close 描述正确，但附着的 sqlx.go:L250-L290 不含该函数；不是完全无来源，也不是 Connect 行为被写反。",
+          "explanation": "Wiki 说 Connect 会打开连接、检查连接，检查失败时关闭连接，这些主要步骤没写错。它给出的第 250 至 290 行却不含 Connect，因此错在引用位置。",
           "quote": "`Connect` builds on Open and calls Ping before returning, closing the database on failure [sqlx.go:L250-L290].",
           "quoteZh": "Connect 基于 Open，并在返回前调用 Ping，失败时关闭数据库［sqlx.go 第 250 至 290 行］。",
           "wikiLabel": "sqlx / 1.2-Handle Lifecycles and Context.md / L7"
         },
         "devinwiki": {
           "status": "correct",
-          "explanation": "Core Types 的构造方法表包含 Connect，随后明确给出 sqlx.go:639-660，覆盖真实定义及失败关闭。本格只检查这条 Connect 引用，不推广为全 Wiki 引用完整。",
+          "explanation": "Wiki 介绍 Connect 后引用了 sqlx.go 第 639 至 660 行。这个范围包含实际实现，读者能找到对应代码；这里只确认这一条引用。",
           "quote": "| `Connect(driverName, dataSourceName)` | Opens and verifies connection with a ping |\n| `MustConnect(driverName, dataSourceName)` | Same as Connect but panics on error |\n| `NewDb(db, driverName)` | Wraps an existing `sql.DB` |\n\nSources: [sqlx.go:250-270](), [sqlx.go:639-660]()",
           "quoteZh": "Connect(driverName, dataSourceName)：打开连接并通过 ping 验证。\nMustConnect(driverName, dataSourceName)：与 Connect 相同，但出错时 panic。\nNewDb(db, driverName)：包装已有 sql.DB。\n\n来源：sqlx.go 第 250 至 270 行及第 639 至 660 行。",
           "wikiLabel": "sqlx / wiki.json pages[3] Core Types / content L180-L184"
         },
         "deepwiki-open": {
           "status": "correct",
-          "explanation": "Connect/MustConnect 连续实现摘录后自带 sqlx.go:630-660 引用，实际覆盖 Connect 的 L640-L651；其他符号的引用偏移不移入本例。",
+          "explanation": "Wiki 展示 Connect 的实现，并引用 sqlx.go 第 630 至 660 行。这个范围包含 Connect，来源位置能对上，但不代表整份 Wiki 的引用都正确。",
           "quote": "Sources: [sqlx.go:630-660]()",
           "quoteZh": "来源：sqlx.go 第 630 至 660 行。",
           "wikiLabel": "sqlx / wiki.md, Database Connection Setup / L366；实现摘录 L342-L363"
         },
         "openwiki": {
           "status": "correct",
-          "explanation": "Connect 条目自带 sqlx.go#L640-L660，覆盖真实定义。这只表示本例引用命中；同句把 MustConnect 的失败语义与 Connect 混写，是另一问题，不能由此称整句行为说明都正确。",
+          "explanation": "Wiki 给 Connect 附了 sqlx.go 第 640 至 660 行，实际实现就在这里。本条引用对得上；同处把 Connect 和 MustConnect 的失败处理混在一起，是另一个问题。",
           "quote": "- **`Connect` / `MustConnect`** (`sqlx.go#L640-L660`)",
           "quoteZh": "Connect / MustConnect（sqlx.go 第 640 至 660 行）。",
           "wikiLabel": "sqlx / architecture/core-types.md / L98"
         },
         "codewiki": {
           "status": "no-output",
-          "explanation": "本轮 CodeWiki 未生成 sqlx 的可审查 Wiki 成品，没有可核对的原 Wiki 引用；不按引用缺失或错位计数。",
+          "explanation": "本轮 CodeWiki 没有生成 sqlx 的 Wiki。没有原文引用可检查，不能把无成品当成引用遗漏或指错位置。",
           "quote": "",
           "quoteZh": "",
           "wikiLabel": "sqlx / 本轮无可审查 Wiki 成品"

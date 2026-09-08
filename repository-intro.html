@@ -3,42 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>一分钟理解 Ghost · 五工具 Wiki 对比</title>
+  <meta name="color-scheme" content="light dark">
+  <title>仓库说明已并入首页 · 五工具 Wiki 对比</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/review-theme.css">
+  <link rel="stylesheet" href="assets/repository-brief.css">
 </head>
-<body class="">
-  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link active" aria-current="page" href="repository-intro.html">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
-  
-<main class="intro-page page-shell">
-  <a class="backline" href="index.html">← 返回七仓总览</a>
-  <aside class="publication-note"><strong>阅读范围：</strong>Ghost 仅作为五种文档工具的共同评测样本。页面解释代码结构与已确认缺陷，不提供部署、规避检测或实际攻击步骤。</aside>
-  <section class="intro-hero"><p class="eyebrow">一分钟了解示例仓库</p><h1>Ghost：把一段程序载荷封装进可执行文件，再在运行时还原并执行</h1>
-    <p>构建阶段生成密钥、加密载荷并编译成文件；运行阶段恢复系统组件、解密载荷、把它放入一块随机填充的大内存区域，再通过独立执行单元启动。</p>
-    <p class="analogy-line"><b>类比：</b>载荷是货物，Ghost 是经过伪装的运送车；它先把货物锁进箱子，抵达后再拆箱并藏进一座堆满杂物的大仓库。</p>
-    <a class="commit" href="https://github.com/cpu0x00/Ghost/tree/bf67313c72d1df48117daf4aeca604e83a570280">仓库快照 bf67313c · 查看 GitHub ↗</a>
-  </section>
-  <section class="journey"><div class="journey-node"><b>1</b><h3>接收载荷</h3><p>输入是一段准备封装的二进制程序数据。</p></div><i>→</i>
-    <div class="journey-node"><b>2</b><h3>加密与嵌入</h3><p>构建脚本生成密钥和初始向量，把加密结果放进资源文件。</p></div><i>→</i>
-    <div class="journey-node"><b>3</b><h3>编译与链接</h3><p>依次处理汇编、资源和 C++，最后生成可执行文件。</p></div><i>→</i>
-    <div class="journey-node"><b>4</b><h3>运行时还原</h3><p>程序取出资源、解密数据，并准备一块较大的随机内存区域。</p></div><i>→</i>
-    <div class="journey-node"><b>5</b><h3>放置与执行</h3><p>载荷被复制到随机位置，再通过 fiber 启动。</p></div>
-  </section>
-  <section class="example-journey"><div class="example-title"><p class="eyebrow">一个实际输入到输出流程</p><h2>一份载荷怎样变成最终文件，并在运行时被启动</h2><p>这里不展示操作命令，只说明数据怎样流动，便于理解五份 Wiki 在解释什么。</p></div>
-    <div class="io-card input"><span>输入</span><b>二进制载荷</b><code>payload bytes</code><small>构建脚本读取原始数据</small></div><i>→</i>
-    <div class="io-card process"><span>构建</span><b>加密、嵌入、编译</b><code>key + encrypted resource</code><small>输出包含加密载荷的可执行文件</small></div><i>→</i>
-    <div class="io-card output"><span>运行</span><b>解密、放入内存、执行</b><code>random memory slot → fiber</code><small>载荷从资源进入运行内存</small></div>
-  </section>
-  <details class="evidence-drawer"><summary>查看这个输入输出流程的源码</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/build.py#L196-L201">构建顺序 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L69-L113">运行时流程 ↗</a></p></details>
-  <section class="plain-contrast"><div><p class="eyebrow">一个直观对比点</p><h2>同一条生产线，有的 Wiki 把步骤顺序画反了</h2><p>把构建过程想成组装一件商品：实际先完成 A，再准备 B，最后逐步合装。Local Skill 的一张图把 B 放在 A 前面；DevinWiki 还写成了同时加工。DeepWiki Open 和 OpenWiki 对这一段的顺序说明与源码一致。</p><p>这只说明该流程图的准确性，不代表整份 Wiki 的排名，也不把其他工具没有说明的部分算作正确。</p><a class="button primary" href="compare.html?left=local-skill&amp;right=openwiki#case=ghost-build-order">左右对读这处流程图</a></div>
-    <article class="status-card red"><b>Wiki 的问题</b><h3>先后次序被改写</h3><p>图能正常显示，但箭头表达的流程与源码不一致。问题不是图画得难看，而是读者会理解错步骤。</p></article>
-    <article class="status-card yellow"><b>核对方式</b><h3>用同一份源码作依据</h3><p>对照页保留两份 Wiki 的原文，并在下方展示真实调用顺序。源码没有两套，差异在于 Wiki 怎样解释它。</p><a href="issues-compare.html#case=ghost-build-order">查看五工具原文和源码</a></article>
-  </section>
-  <section class="choice-room"><div><p class="eyebrow">五份成品</p><h2>选择左右对读，或单独阅读一份 Wiki</h2><p>左右对读保留各自目录、搜索和问题定位。差异概览提供原文计数与位置，不用印象代替证据。</p><a class="button" href="compare.html">打开成品对读</a></div>
-    <div class="choice-tabs"><a href="local-skill.html"><span>Local Skill</span><small>多页说明，按模块与流程展开</small></a><a href="devinwiki.html"><span>DevinWiki</span><small>多页教程，含代码和图表</small></a><a href="deepwiki-open.html"><span>DeepWiki Open</span><small>多页说明，含构建与运行流程</small></a><a href="openwiki.html"><span>OpenWiki</span><small>多页说明，含引用和页间导航</small></a><a href="codewiki.html"><span>CodeWiki</span><small>单篇说明，含风险清单</small></a></div>
-  </section>
-  <details class="evidence-drawer"><summary>查看两处内存风险的源码证据</summary><p>随机起点可落在整块区域的任意位置，随后仍复制完整载荷；解密缓冲区和临时系统文件缓冲区由 <code>malloc</code> 申请，却使用 <code>delete[]</code> 释放。</p><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">随机位置与复制 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L88-L94">解密缓冲区释放 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L52-L137">临时缓冲区释放 ↗</a></p></details>
-</main>
-  <script src="assets/site.js"></script>
+<body>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link" href="index.html#repository-intro">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
+  <main class="page-shell">
+    <section class="repository-compat" aria-labelledby="repository-compat-title">
+      <p class="eyebrow">仓库背景</p>
+      <h1 id="repository-compat-title">Ghost 的介绍已并入首页</h1>
+      <p>简短介绍、类比和一条抽象示例都在首页底部。此地址保留为旧链接入口，不会自动跳转。</p>
+      <nav class="repository-compat-actions" aria-label="继续阅读">
+        <a class="button primary" href="index.html#repository-intro">前往首页仓库介绍</a>
+        <a class="button" href="compare.html">直接打开成品对读</a>
+      </nav>
+    </section>
+  </main>
 </body>
 </html>

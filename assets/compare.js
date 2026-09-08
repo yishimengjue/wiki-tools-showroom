@@ -27,7 +27,7 @@
       open: document.getElementById(name + '-open'),
       progress: document.getElementById(name + '-progress'),
       overview: document.getElementById('overview-' + name),
-      tool: '', instance: '', ready: false, metadata: null, ratio: 0, timer: null
+      tool: '', instance: '', ready: false, metadata: null, style: null, ratio: 0, timer: null
     };
   });
 
@@ -67,7 +67,8 @@
       return TOOLS[larger.tool].name + ' 的' + label + '更多（' +
         Math.max(left[key], right[key]) + ' 对 ' + Math.min(left[key], right[key]) + '）';
     };
-    output.textContent = describe('codeBlocks', '代码块') + '；' + describe('diagrams', '图表') +
+    const angle = sides.left.style && sides.right.style ? TOOLS[sides.left.tool].name + '：' + sides.left.style.focus + '；' + TOOLS[sides.right.tool].name + '：' + sides.right.style.focus + '。' : '';
+    output.textContent = angle + describe('codeBlocks', '代码块') + '；' + describe('diagrams', '图表') +
       '。体量或侧重不同，不代表细节覆盖更多或事实更准确。';
   }
 
@@ -75,7 +76,64 @@
     side.overview.querySelector('.overview-tool').textContent = TOOLS[side.tool].name;
     side.overview.querySelectorAll('[data-metric]').forEach(el => { el.textContent = '待加载'; });
     side.overview.querySelector('.compare-evidence').replaceChildren();
+    ['.compare-style', '.compare-diagram-types', '.compare-reading-evidence'].forEach(selector => side.overview.querySelector(selector).replaceChildren());
     difference();
+  }
+
+  const validTarget = target => typeof target === 'string' && /^[a-zA-Z][a-zA-Z0-9_-]{0,100}$/.test(target);
+  function evidenceLink(side, target, label) {
+    const link = document.createElement('a');
+    link.href = TOOLS[side.tool].file + '?embed=1#' + target;
+    link.textContent = label;
+    link.title = '在' + (side.name === 'left' ? '左' : '右') + '侧定位原文';
+    link.addEventListener('click', event => {
+      if (!side.ready || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      send(side, 'navigate', { target });
+      document.querySelectorAll('.compare-panel').forEach(panel => panel.classList.toggle('is-evidence-target', panel.dataset.side === side.name));
+      const destination = matchMedia('(max-width:800px)').matches ? side.frame.closest('.compare-panel') : document.getElementById('compare-readers');
+      destination.scrollIntoView({block:'start', behavior:'instant'});
+    });
+    return link;
+  }
+
+  function renderStyle(side, data) {
+    const style = side.overview.querySelector('.compare-style');
+    style.replaceChildren();
+    if (data.style && typeof data.style.focus === 'string' && typeof data.style.summary === 'string') {
+      side.style = {focus:data.style.focus.slice(0,100), summary:data.style.summary.slice(0,500)};
+      const title = document.createElement('h3');
+      title.textContent = side.style.focus;
+      const summary = document.createElement('p');
+      summary.textContent = side.style.summary;
+      style.append(title, summary);
+    }
+    const reading = side.overview.querySelector('.compare-reading-evidence');
+    reading.replaceChildren();
+    if (Array.isArray(data.reading)) data.reading.slice(0,3).forEach(item => {
+      if (!item || !validTarget(item.target) || !['label','detail','heading'].every(key => typeof item[key] === 'string')) return;
+      const card = document.createElement('article');
+      card.className = 'compare-reading-example';
+      const detail = document.createElement('p');
+      detail.textContent = item.detail.slice(0,400);
+      const heading = document.createElement('small');
+      heading.textContent = '原文章节：' + item.heading.slice(0,150);
+      card.append(evidenceLink(side, item.target, item.label.slice(0,100) + ' · 看原文'), detail, heading);
+      reading.append(card);
+    });
+    const diagrams = side.overview.querySelector('.compare-diagram-types');
+    diagrams.replaceChildren();
+    if (Array.isArray(data.diagramTypes)) data.diagramTypes.slice(0,8).forEach(item => {
+      if (!item || !validTarget(item.target) || !Number.isSafeInteger(item.count) || item.count < 1 ||
+          typeof item.label !== 'string' || typeof item.description !== 'string') return;
+      const link = evidenceLink(side, item.target, item.label.slice(0,50) + ' ' + item.count + ' 张 · 看图');
+      link.title += '。' + item.description.slice(0,250);
+      diagrams.append(link);
+    });
+    const note = document.createElement('p');
+    note.className = 'compare-diagram-description';
+    note.textContent = '流程／关系图看步骤或依赖；时序图看谁调用谁；状态图看状态变化。点击类型可看这份 Wiki 的原图，图多不表示顺序正确。';
+    diagrams.append(note);
   }
 
   function applyMetadata(side, data) {
@@ -84,6 +142,7 @@
       Number.isSafeInteger(metrics[key]) && metrics[key] >= 0 && metrics[key] < 1000000000
     )) return;
     side.metadata = metrics;
+    renderStyle(side, data);
     side.overview.querySelectorAll('[data-metric]').forEach(el => {
       el.textContent = metrics[el.dataset.metric].toLocaleString('zh-CN');
     });
@@ -92,15 +151,7 @@
     if (Array.isArray(data.evidence)) data.evidence.slice(0, 2).forEach(item => {
       if (!item || !/^[a-zA-Z][a-zA-Z0-9_-]{0,100}$/.test(item.target) ||
           typeof item.label !== 'string') return;
-      const link = document.createElement('a');
-      link.href = TOOLS[side.tool].file + '?embed=1#' + item.target;
-      link.textContent = item.label.slice(0, 70);
-      link.title = '在' + (side.name === 'left' ? '左' : '右') + '侧定位原文';
-      link.addEventListener('click', event => {
-        event.preventDefault();
-        send(side, 'navigate', { target: item.target });
-      });
-      nav.append(link);
+      nav.append(evidenceLink(side, item.target, item.label.slice(0,70)));
     });
     difference();
   }
@@ -112,6 +163,7 @@
     side.instance = side.name + '-' + (++sequence);
     side.ready = false;
     side.metadata = null;
+    side.style = null;
     side.ratio = 0;
     side.select.value = tool;
     side.progress.textContent = '0%';
@@ -210,6 +262,7 @@
     syncLeader = null;
     updateURL();
   });
+  document.getElementById('jump-readers').addEventListener('click', () => document.getElementById('compare-readers').scrollIntoView({block:'start',behavior:'instant'}));
   document.querySelectorAll('[data-case]').forEach(button => {
     button.addEventListener('click', () => chooseCase(button.dataset.case));
   });

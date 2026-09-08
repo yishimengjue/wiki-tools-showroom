@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="assets/review-theme.css">
 </head>
 <body class="reader-page">
-  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link" href="repository-intro.html">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a><a class="top-link active" aria-current="page" href="codewiki.html">CodeWiki 单篇</a></nav></header>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link" href="index.html#repository-intro">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a><a class="top-link active" aria-current="page" href="codewiki.html">CodeWiki 单篇</a></nav></header>
   
 <div class="reader-shell" style="--accent:#62558b">
-  <aside class="reader-sidebar"><a class="backline" href="repository-intro.html">← Ghost 说明</a>
+  <aside class="reader-sidebar"><a class="backline" href="index.html#repository-intro">← Ghost 说明</a>
     <p class="eyebrow">完整成品 · Ghost</p><h1>CodeWiki</h1><p class="reader-position">单页总览与风险清单</p>
     <div class="fact-pills"><span>1 页</span><span>20.6 分</span><span>成品 6.2K Token</span></div>
     <div class="audit-note"><b>核查提示</b><p>所选两类内存风险说明正确；绿色是对照材料，不代表整篇已经逐句验证。</p><a class="issue-jump quiet" href="#ghost-codewiki-risks">定位本页核查标注</a></div>
@@ -593,7 +593,7 @@
 <li>The payload can execute as an <code>LPFIBER_START_ROUTINE</code> and yields through the exact hooked sleep API.</li>
 <li>The payload fits entirely between the selected random offset and the end of the large allocation.</li>
 </ul>
-<h2>Maintenance Risks and Known Fragility</h2>
+<h2 id="maintenance-risks">Maintenance Risks and Known Fragility</h2>
 <p>These constraints are important when changing or testing the module:</p>
 <ul>
 <li class="flagged-correct"><code>allocate_large_page</code> chooses an offset from the whole allocation without reserving <code>cbBuffer</code> bytes at the end. A high offset can make <code>place_data_rand</code> write beyond the region.</li>

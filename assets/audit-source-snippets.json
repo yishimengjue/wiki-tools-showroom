@@ -16,7 +16,14 @@
         39
       ],
       "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/plugins/googles.py#L35-L40",
-      "note": "共同快照核对片段（非工具自带引用）：实际注册键是 googles，而不是 google。"
+      "note": "共同快照核对片段（非工具自带引用）：实际注册键是 googles，而不是 google。",
+      "summary": "代码登记的名称是 googles，命令也必须照这个名称填写，末尾不能少一个 s。",
+      "annotations": [
+        {
+          "line": 39,
+          "text": "这里把搜索功能登记为 googles；末尾的 s 不能省略。"
+        }
+      ]
     },
     {
       "title": "未知名称分支",
@@ -34,7 +41,22 @@
         282
       ],
       "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/EmailHarvester.py#L280-L284",
-      "note": "共同快照核对片段（非工具自带引用）：不在注册表中的名称会进入退出分支。"
+      "note": "共同快照核对片段（非工具自带引用）：不在注册表中的名称会进入退出分支。",
+      "summary": "用户填的名称如果不在登记名单里，程序就停止，不会继续搜索。",
+      "annotations": [
+        {
+          "line": 280,
+          "text": "这里逐字检查输入的名称，不会把 google 自动纠正成 googles。"
+        },
+        {
+          "line": 282,
+          "text": "名称不对就退出，并返回退出码 3。"
+        },
+        {
+          "line": 284,
+          "text": "名称检查通过，才执行所选搜索功能。"
+        }
+      ]
     }
   ],
   "figma-compact-input": [
@@ -74,7 +96,26 @@
         64
       ],
       "url": "https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L43-L66",
-      "note": "共同快照核对片段（非工具自带引用）：比较两段限制、节点校验的实参以及失败返回值。"
+      "note": "共同快照核对片段（非工具自带引用）：比较两段限制、节点校验的实参以及失败返回值。",
+      "summary": "程序只接受按冒号拆成两段的简写，常见组合却会拆成三段。另一处检查还混入了文件编号，也可能因此把输入拒绝。",
+      "annotations": [
+        {
+          "line": 44,
+          "text": "这里要求拆成两段，但 fileId:123:456 会被拆成三段，进不了这段处理。"
+        },
+        {
+          "line": 47,
+          "text": "本来该只检查节点编号，这里却把文件编号也带了进去，所以检查可能失败。"
+        },
+        {
+          "line": 53,
+          "text": "只有两个编号都检查通过，才返回成功；写了“成功出口”，不代表常见简写能通过检查。"
+        },
+        {
+          "line": 64,
+          "text": "输入格式不符或检查出错，就返回“解析失败”（isValid=false）。"
+        }
+      ]
     },
     {
       "title": "节点格式校验",
@@ -108,7 +149,22 @@
         176
       ],
       "url": "https://github.com/mhmzdev/figma-flutter-mcp/blob/5907212d028881341db054b404724e75fed710b6/src/utils/figma-url-parser.ts#L164-L183",
-      "note": "共同快照核对片段（非工具自带引用）：连字符转换有条件，最终格式仍须是两个数字段。"
+      "note": "共同快照核对片段（非工具自带引用）：连字符转换有条件，最终格式仍须是两个数字段。",
+      "summary": "节点编号必须是“数字:数字”。123-456 这种横线写法只有在不含冒号时才会先转换。",
+      "annotations": [
+        {
+          "line": 166,
+          "text": "只有“含横线、不含冒号”才会转换。文件编号一旦用冒号拼进来，就不会执行这步转换。"
+        },
+        {
+          "line": 175,
+          "text": "这里只认 123:456 这种两段数字，带上字母文件编号就不符合格式。"
+        },
+        {
+          "line": 177,
+          "text": "格式不对就报错，最终显示解析失败，而不是返回有效编号。"
+        }
+      ]
     }
   ],
   "tcping-timeout": [
@@ -133,7 +189,18 @@
         23
       ],
       "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L16-L25",
-      "note": "共同快照核对片段（非工具自带引用）：此处的 net.Dialer 只设置 Resolver，没有设置 Timeout。"
+      "note": "共同快照核对片段（非工具自带引用）：此处的 net.Dialer 只设置 Resolver，没有设置 Timeout。",
+      "summary": "这里保存了用户设置，但实际创建的连接工具没有设置等待上限。保存过超时设置，不代表每次连接都用上了。",
+      "annotations": [
+        {
+          "line": 21,
+          "text": "这里只是把设置记下来，不能证明后面的每次连接都会遵守。"
+        },
+        {
+          "line": 22,
+          "text": "创建连接工具时只填了地址解析选项，没有填超时时间（Timeout）。"
+        }
+      ]
     },
     {
       "title": "超时上下文",
@@ -154,7 +221,18 @@
         41
       ],
       "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L36-L42",
-      "note": "共同快照核对片段（非工具自带引用）：配置的超时用于构造 context，是否生效还要看后续调用。"
+      "note": "共同快照核对片段（非工具自带引用）：配置的超时用于构造 context，是否生效还要看后续调用。",
+      "summary": "这里设好了超时时间，但后面的连接只有接收并使用它，这个限制才会生效。",
+      "annotations": [
+        {
+          "line": 38,
+          "text": "用户填写正数就用用户的值，否则用默认等待时间。"
+        },
+        {
+          "line": 41,
+          "text": "这里只创建了一个“到时停止”的限制（ctx），不会自动管住所有连接。"
+        }
+      ]
     },
     {
       "title": "TLS 与 TCP 调用",
@@ -181,7 +259,22 @@
         74
       ],
       "url": "https://github.com/cloverstd/tcping/blob/a3e9e7d5d7d0dc8183cb1a1bb5cfed01bf025fe5/ping/tcp/tcp.go#L63-L75",
-      "note": "共同快照核对片段（非工具自带引用）：首次 TLS 调用未接收 ctx，普通 TCP 和回退调用才接收 ctx。"
+      "note": "共同快照核对片段（非工具自带引用）：首次 TLS 调用未接收 ctx，普通 TCP 和回退调用才接收 ctx。",
+      "summary": "第一次加密连接没收到这个超时限制；普通连接、加密失败后改走的普通连接才用上它。",
+      "annotations": [
+        {
+          "line": 64,
+          "text": "第一次加密连接没有拿到前面设置的超时限制，因此不能保证按用户指定时间停止。"
+        },
+        {
+          "line": 71,
+          "text": "加密连接报错后，才用这个超时限制尝试普通连接；它管不了前面已经花掉的时间。"
+        },
+        {
+          "line": 74,
+          "text": "没有启用加密时，普通连接直接使用这个超时限制。"
+        }
+      ]
     }
   ],
   "lightbox-reinit": [
@@ -224,7 +317,22 @@
         98
       ],
       "url": "https://github.com/lokesh/lightbox2/blob/6bc87b6c246da1f24dcfcf52683286ad7e560cf3/src/js/lightbox.js#L75-L99",
-      "note": "共同快照核对片段（非工具自带引用）：每次先绑定事件，随后 build 的存在性检查只拦截重复 DOM 创建。"
+      "note": "共同快照核对片段（非工具自带引用）：每次先绑定事件，随后 build 的存在性检查只拦截重复 DOM 创建。",
+      "summary": "每次初始化都会先增加一次点击处理，再检查界面是否已经存在。避免重复创建界面，不代表避免重复处理点击。",
+      "annotations": [
+        {
+          "line": 79,
+          "text": "初始化时会先执行事件绑定（enable），不会因为界面已经存在就跳过。"
+        },
+        {
+          "line": 88,
+          "text": "这里又给点击增加一份处理逻辑，没有先检查或移除旧的绑定。"
+        },
+        {
+          "line": 97,
+          "text": "到这里才检查界面是否已经存在；即使跳过界面创建，也不会撤回刚才增加的点击处理。"
+        }
+      ]
     }
   ],
   "pipeline-empty-groups": [],
@@ -249,7 +357,22 @@
         201
       ],
       "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/build.py#L196-L201",
-      "note": "共同快照核对片段（非工具自带引用）：只核对这五个串行入口调用，汇编先于输入准备。"
+      "note": "共同快照核对片段（非工具自带引用）：只核对这五个串行入口调用，汇编先于输入准备。",
+      "summary": "代码把五个构建步骤排成先后顺序：汇编在输入准备之前，最后才链接，不是同时进行。",
+      "annotations": [
+        {
+          "line": 197,
+          "text": "代码里先进行汇编构建，下一行才准备输入。Wiki 不能把这两步倒过来。"
+        },
+        {
+          "line": 199,
+          "text": "等输入准备这一步返回后，才继续构建资源，再进行下一行的 C++ 构建。"
+        },
+        {
+          "line": 201,
+          "text": "链接排在前面几步之后。这里是一项接一项调用，不是同时开始。"
+        }
+      ]
     }
   ],
   "ghost-helper-order": [
@@ -275,7 +398,22 @@
         71
       ],
       "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L62-L71",
-      "note": "共同快照核对片段（非工具自带引用）：终止调用位于读取函数返回之前；这里不保证终止调用一定成功。"
+      "note": "共同快照核对片段（非工具自带引用）：终止调用位于读取函数返回之前；这里不保证终止调用一定成功。",
+      "summary": "这个函数先尝试结束临时进程，然后才返回；后续的修改步骤发生得更晚。",
+      "annotations": [
+        {
+          "line": 62,
+          "text": "把读到的数据位置记给调用方，此时函数还没返回，接着处理结束动作。"
+        },
+        {
+          "line": 66,
+          "text": "结束临时进程的操作写在返回前；这里只比较先后，不保证操作一定成功。"
+        },
+        {
+          "line": 68,
+          "text": "结束操作失败时会提示错误，所以不能把“尝试过”说成“一定成功”。"
+        }
+      ]
     },
     {
       "title": "调用者先读取",
@@ -296,7 +434,14 @@
         85
       ],
       "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L77-L85",
-      "note": "共同快照核对片段（非工具自带引用）：调用者在此等待读取函数返回，再继续执行后续语句。"
+      "note": "共同快照核对片段（非工具自带引用）：调用者在此等待读取函数返回，再继续执行后续语句。",
+      "summary": "外层先等读取函数做完，才会继续后面的步骤。",
+      "annotations": [
+        {
+          "line": 85,
+          "text": "先等这次读取调用返回，才往下执行；读取函数里的结束操作发生得更早。"
+        }
+      ]
     },
     {
       "title": "调用者后续替换",
@@ -309,7 +454,14 @@
         124
       ],
       "url": "https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L124",
-      "note": "共同快照核对片段（非工具自带引用）：只摘取后续替换调用这一行以核对先后，不展开其他实现。"
+      "note": "共同快照核对片段（非工具自带引用）：只摘取后续替换调用这一行以核对先后，不展开其他实现。",
+      "summary": "这里的修改发生在读取之后，比读取函数内的结束操作更晚。",
+      "annotations": [
+        {
+          "line": 124,
+          "text": "与第 85 行一起看：先完成读取调用，再到这里修改。这里只对照步骤先后。"
+        }
+      ]
     }
   ],
   "sqlx-bind-order": [
@@ -331,7 +483,22 @@
         457
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L452-L458",
-      "note": "共同快照核对片段（非工具自带引用）：NamedExec 先调用分派函数，再使用绑定结果执行。"
+      "note": "共同快照核对片段（非工具自带引用）：NamedExec 先调用分派函数，再使用绑定结果执行。",
+      "summary": "直接执行查询时，先按输入类型选择处理方式，再整理查询和参数，没有报错才交给数据库。",
+      "annotations": [
+        {
+          "line": 453,
+          "text": "先把原查询和参数交给这里处理；先选处理方式，再在选中的方式里改写查询。"
+        },
+        {
+          "line": 454,
+          "text": "前面的参数处理报错，就返回错误，不会继续执行查询。"
+        },
+        {
+          "line": 457,
+          "text": "前面没报错，才把整理好的查询和参数交给数据库执行；这里讲的是直接执行，不是预先准备语句。"
+        }
+      ]
     },
     {
       "title": "按参数类型分派",
@@ -361,7 +528,22 @@
         434
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L421-L436",
-      "note": "共同快照核对片段（非工具自带引用）：分派函数按实参类型选择具体 binder，并非接收预先编译好的结果。"
+      "note": "共同快照核对片段（非工具自带引用）：分派函数按实参类型选择具体 binder，并非接收预先编译好的结果。",
+      "summary": "先看传来的是哪种数据，再选择对应处理方式。不是先改写查询，再选择处理方式。",
+      "annotations": [
+        {
+          "line": 425,
+          "text": "用文字作键的映射表（map）走这条路；格式转换失败就报错，成功后调用 bindMap。"
+        },
+        {
+          "line": 432,
+          "text": "收到一组数据（数组或切片）时，选择 bindArray；到它里面才开始改写查询。"
+        },
+        {
+          "line": 434,
+          "text": "其他类型交给 bindStruct。这里是在选处理方式，不是在接收提前改写好的查询。"
+        }
+      ]
     },
     {
       "title": "具体 binder 内编译",
@@ -380,7 +562,18 @@
         276
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L273-L279",
-      "note": "共同快照核对片段（非工具自带引用）：批量 binder 被调用后，才在内部执行 compileNamedQuery。"
+      "note": "共同快照核对片段（非工具自带引用）：批量 binder 被调用后，才在内部执行 compileNamedQuery。",
+      "summary": "处理一组数据时，先选中 bindArray，再在函数内部改写带名字的参数。",
+      "annotations": [
+        {
+          "line": 276,
+          "text": "选中这种处理方式后，才把带名字的参数改成问号，同时记下参数名。"
+        },
+        {
+          "line": 278,
+          "text": "改写查询失败就返回错误，不再继续处理这批数据。"
+        }
+      ]
     }
   ],
   "sqlx-fixbound": [
@@ -408,7 +601,22 @@
         256
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L245-L256",
-      "note": "共同快照核对片段（非工具自带引用）：两个防御分支都返回原 bound；函数返回类型不包含 error。"
+      "note": "共同快照核对片段（非工具自带引用）：两个防御分支都返回原 bound；函数返回类型不包含 error。",
+      "summary": "找不到要复制的 VALUES 内容，或找不到配对的右括号时，这个函数会原样返回查询，而不是报错。",
+      "annotations": [
+        {
+          "line": 245,
+          "text": "它的返回值只有查询文字，不包含错误信息；下面两种情况都返回原文。"
+        },
+        {
+          "line": 249,
+          "text": "找不到可复制的 VALUES 部分，就原样返回查询，不做扩展，也不主动报错。"
+        },
+        {
+          "line": 256,
+          "text": "找不到配对的右括号，也原样返回，不会在这里拒绝查询。"
+        }
+      ]
     },
     {
       "title": "批量绑定返回值",
@@ -429,7 +637,22 @@
         300
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L293-L300",
-      "note": "共同快照核对片段（非工具自带引用）：fixBound 返回后继续处理，最终仍可返回 nil error。"
+      "note": "共同快照核对片段（非工具自带引用）：fixBound 返回后继续处理，最终仍可返回 nil error。",
+      "summary": "前面的检查通过后，即使查询没被扩展，也可能继续处理并返回“没有错误”。",
+      "annotations": [
+        {
+          "line": 293,
+          "text": "只有要处理多条数据时才尝试扩展查询；只有一条就跳过。"
+        },
+        {
+          "line": 298,
+          "text": "这里只按数据库类型改写参数占位符，没有检查前面是否真的扩展成功。"
+        },
+        {
+          "line": 300,
+          "text": "能走到这里就返回“没有错误”。这不保证数据库最终会接受这条查询。"
+        }
+      ]
     },
     {
       "title": "绑定通过后执行",
@@ -449,7 +672,18 @@
         457
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/named.go#L452-L458",
-      "note": "共同快照核对片段（非工具自带引用）：只有绑定返回 error 才提前退出，否则会进入 Exec。"
+      "note": "共同快照核对片段（非工具自带引用）：只有绑定返回 error 才提前退出，否则会进入 Exec。",
+      "summary": "调用执行接口时，前面的处理未报错就会交给驱动。驱动可能先拒绝，也可能交给数据库；不是已报错后再查询一次来确认。",
+      "annotations": [
+        {
+          "line": 454,
+          "text": "前面的处理如果明确报错，就立即返回，不会交给数据库。"
+        },
+        {
+          "line": 457,
+          "text": "没收到错误就调用 Exec，把 SQL 交给驱动处理；是否实际访问数据库、最终是否报错，还要看驱动和 SQL。"
+        }
+      ]
     }
   ],
   "email-retry": [
@@ -479,7 +713,22 @@
         141
       ],
       "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/EmailHarvester.py#L129-L141",
-      "note": "共同快照核对片段（非工具自带引用）：分支各发起一次请求，异常直接退出，没有重试循环。"
+      "note": "共同快照核对片段（非工具自带引用）：分支各发起一次请求，异常直接退出，没有重试循环。",
+      "summary": "发出网页请求后，一旦出现请求异常就退出，没有失败后再试一次的步骤。",
+      "annotations": [
+        {
+          "line": 133,
+          "text": "这里只选择是否使用代理：两种方式只选一种，并且只发一次请求，不是失败后再试一次。"
+        },
+        {
+          "line": 139,
+          "text": "请求过程抛出异常时，到这里统一处理；下一行只是显示错误。"
+        },
+        {
+          "line": 141,
+          "text": "然后以退出码 4 退出，不会回去重发请求。"
+        }
+      ]
     },
     {
       "title": "Yahoo 调用共享流程",
@@ -498,7 +747,22 @@
         32
       ],
       "url": "https://github.com/maldevel/EmailHarvester/blob/934d4121a92ff4f55aa67921e000469aa56b9595/plugins/yahoo.py#L28-L32",
-      "note": "共同快照核对片段（非工具自带引用）：Yahoo 委托同一共享处理流程，不能据插件名称推定存在重试。"
+      "note": "共同快照核对片段（非工具自带引用）：Yahoo 委托同一共享处理流程，不能据插件名称推定存在重试。",
+      "summary": "Yahoo 使用同一段请求代码，没有自己增加重试。",
+      "annotations": [
+        {
+          "line": 30,
+          "text": "这里只设置 Yahoo 的地址和搜索参数，没有设置失败后重试。"
+        },
+        {
+          "line": 31,
+          "text": "实际请求交给共用代码执行；共用代码没有重试，调用它也不会自动获得重试能力。"
+        },
+        {
+          "line": 32,
+          "text": "只有共用代码正常结束，才取回结果；如果已经因请求异常退出，就到不了这里。"
+        }
+      ]
     }
   ],
   "flask-temporary-error": [
@@ -517,7 +781,14 @@
         77
       ],
       "url": "https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/flask_restful/reqparse.py#L74-L78",
-      "note": "共同快照核对片段（非工具自带引用）：store_missing 的默认值为 True。"
+      "note": "共同快照核对片段（非工具自带引用）：store_missing 的默认值为 True。",
+      "summary": "这个开关默认开启（store_missing=True）：即使参数没被标记为“已找到”，也允许把对应值存进内部结果。",
+      "annotations": [
+        {
+          "line": 77,
+          "text": "这个设置默认开启。后面即使清空 found 标记，仍可能暂存错误；这不代表错误请求会通过。"
+        }
+      ]
     },
     {
       "title": "聚合错误返回",
@@ -536,7 +807,22 @@
         173
       ],
       "url": "https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/flask_restful/reqparse.py#L169-L173",
-      "note": "共同快照核对片段（非工具自带引用）：聚合模式把错误交回 parser，非聚合模式在这里直接 abort。"
+      "note": "共同快照核对片段（非工具自带引用）：聚合模式把错误交回 parser，非聚合模式在这里直接 abort。",
+      "summary": "开启“一次收集所有错误”时，先把错误交回外层继续收集；没开启就立刻拒绝请求，返回 400。",
+      "annotations": [
+        {
+          "line": 171,
+          "text": "应用设置或这次调用只要任一开启“一次收集所有错误”，就继续收集；并非所有请求默认都这样。"
+        },
+        {
+          "line": 172,
+          "text": "这里交回错误本身和错误说明，交给外层汇总，不是说请求成功了。"
+        },
+        {
+          "line": 173,
+          "text": "没有开启“收集所有错误”时，立即拒绝请求并返回 400，不走后面的临时保存步骤。"
+        }
+      ]
     },
     {
       "title": "中间赋值与最终失败",
@@ -562,7 +848,26 @@
         335
       ],
       "url": "https://github.com/flask-restful/flask-restful/blob/88cce53a8cd65830bf1815185a42ba24e5db78c6/flask_restful/reqparse.py#L326-L335",
-      "note": "共同快照核对片段（非工具自带引用）：found 清空后仍独立检查 store_missing，临时赋值后才统一 abort。"
+      "note": "共同快照核对片段（非工具自带引用）：found 清空后仍独立检查 store_missing，临时赋值后才统一 abort。",
+      "summary": "开启“收集所有错误”，且 store_missing 保持默认 True 时，错误可能先写入内部临时记录；最后请求仍会被拒绝。",
+      "annotations": [
+        {
+          "line": 329,
+          "text": "发现参数检查错误（ValueError），先汇总错误说明，没有把它变成有效参数。"
+        },
+        {
+          "line": 331,
+          "text": "这里只改了 found 标记，错误对象还留在 value 里，后面还会继续判断要不要暂存。"
+        },
+        {
+          "line": 333,
+          "text": "上一行只要 found 或 store_missing 有一个为真，就会在这里暂存 value，所以默认设置下也可能暂存错误。"
+        },
+        {
+          "line": 335,
+          "text": "检查完所有参数后，只要有错误就拒绝请求；这份临时记录不会作为成功结果返回给用户。"
+        }
+      ]
     }
   ],
   "sqlx-connect-citation": [
@@ -598,7 +903,22 @@
         264
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/sqlx.go#L250-L269",
-      "note": "共同快照核对片段（非工具自带引用）：这是原引用 250-290 区间中的一段，出现的是 NewDb、DriverName 和 Open。"
+      "note": "共同快照核对片段（非工具自带引用）：这是原引用 250-290 区间中的一段，出现的是 NewDb、DriverName 和 Open。",
+      "summary": "Wiki 引用的这段代码没有做它所说的连接检查，只是在包装连接、读取数据库驱动名称和创建连接对象。",
+      "annotations": [
+        {
+          "line": 254,
+          "text": "NewDb 只把已有连接包起来，不是 Wiki 所说的“创建后再检查连接”。"
+        },
+        {
+          "line": 259,
+          "text": "这里仅返回数据库驱动名称，没有检查连接是否可用。"
+        },
+        {
+          "line": 265,
+          "text": "这里只创建并包装连接对象，没有做后面 Connect 里的 Ping 检查。"
+        }
+      ]
     },
     {
       "title": "Connect 的实际实现",
@@ -625,7 +945,26 @@
         647
       ],
       "url": "https://github.com/jmoiron/sqlx/blob/41dac167fdad5e3fd81d66cafba0951dc6823a30/sqlx.go#L640-L651",
-      "note": "共同快照核对片段（非工具自带引用）：真正的 Connect 在这里，包含 Open、Ping 和失败后的 Close。"
+      "note": "共同快照核对片段（非工具自带引用）：真正的 Connect 在这里，包含 Open、Ping 和失败后的 Close。",
+      "summary": "真正的连接检查在这里：先准备连接对象，再检查数据库能否连通；检查失败就关闭连接，成功才返回。",
+      "annotations": [
+        {
+          "line": 641,
+          "text": "先准备连接对象；这一步报错就立即返回，不再继续检查连通性。"
+        },
+        {
+          "line": 645,
+          "text": "准备连接对象时没报错，再检查数据库能否连通。这正是前一段引用里没有的步骤。"
+        },
+        {
+          "line": 647,
+          "text": "如果连通性检查失败，就关闭连接并把错误返回。"
+        },
+        {
+          "line": 650,
+          "text": "创建和连通性检查都没报错，才返回连接，并报告这次检查成功。"
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,145 @@
+.repository-brief {
+  margin-top: 36px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  scroll-margin-top: 88px;
+}
+.repository-brief-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.repository-brief-heading .eyebrow {
+  margin: 0 0 4px;
+}
+.repository-brief-heading h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.35;
+}
+.repository-brief-heading > a {
+  font-size: 13px;
+  white-space: nowrap;
+}
+.repository-brief-description {
+  max-width: 1050px;
+  margin: 15px 0 11px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.85;
+}
+.repository-brief-analogy {
+  margin: 0;
+  font-size: 17px;
+  color: var(--ink);
+}
+.repository-brief-analogy strong {
+  color: var(--blue);
+}
+.repository-brief-example-title {
+  margin: 19px 0 9px;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--muted);
+}
+.repository-brief-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.repository-brief-flow li {
+  position: relative;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--subtle);
+}
+.repository-brief-flow li:not(:last-child)::after {
+  content: "\2192";
+  position: absolute;
+  top: 50%;
+  right: -21px;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+}
+.repository-brief-flow span,
+.repository-brief-flow b {
+  display: block;
+}
+.repository-brief-flow span {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.repository-brief-flow b {
+  font-size: 16px;
+  font-weight: 600;
+}
+.repository-brief-note {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.repository-compat {
+  max-width: 760px;
+  margin: 36px auto;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+.repository-compat h1 {
+  margin: 8px 0 16px;
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.35;
+}
+.repository-compat > p:not(.eyebrow) {
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--muted);
+}
+.repository-compat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+.repository-brief :focus-visible,
+.repository-compat :focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--blue) 65%, transparent);
+  outline-offset: 4px;
+}
+@media (max-width: 700px) {
+  .repository-brief {
+    padding: 20px;
+  }
+  .repository-brief-heading {
+    display: block;
+  }
+  .repository-brief-heading > a {
+    display: inline-block;
+    margin-top: 8px;
+  }
+  .repository-brief-flow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+  .repository-brief-flow li:not(:last-child)::after {
+    content: "\2193";
+    top: auto;
+    right: 50%;
+    bottom: -22px;
+    transform: translateX(50%);
+  }
+  .repository-compat {
+    padding: 24px;
+    margin-top: 12px;
+  }
+}

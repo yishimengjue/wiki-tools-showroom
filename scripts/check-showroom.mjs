@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import vm from 'node:vm';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
@@ -13,6 +14,20 @@ const readers = ['local-skill', 'devinwiki', 'deepwiki-open', 'openwiki', 'codew
 const errors = [];
 let checkedLinks = 0;
 const ids = new Map(pages.map((file) => [file, new Set([...read(file).matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]))]));
+const trainingContext = {window:{}};
+vm.runInNewContext(read('assets/training-summary.js'), trainingContext);
+const training = trainingContext.window.WIKI_TRAINING_DATA;
+for (const [id] of training.dimensions) ids.get('index.html').add('ability-' + id);
+for (const [id] of training.dimensions) for (const tool of training.tools) {
+  const actual = {yes:0,partial:0,fix:0,missing:0,no_artifact:0};
+  for (const repo of training.repositories) actual[repo.tools[tool].cells[id].status] += 1;
+  if (Object.values(actual).reduce((a,b)=>a+b,0) !== 7 || JSON.stringify(actual) !== JSON.stringify(training.counts[id][tool])) errors.push('Training count mismatch: ' + id + '/' + tool);
+}
+if (training.repositories.filter(repo => Object.entries(repo.tools['local-skill'].cells).some(([id,cell]) => 'ABCDEFH'.includes(id) && cell.status === 'fix')).length !== 5) errors.push('Local revised fact count must be five repositories.');
+for (const id of ['figma-compact-input','lightbox-reinit']) {
+  const item = cases.find(item=>item.id === id);
+  if (item.category !== 'review-notes' || Object.values(item.tools).some(record=>record.status === 'error')) errors.push('Withdrawn case still counted as an error: ' + id);
+}
 
 function checkLink(page, rawURL) {
   const value = rawURL.replaceAll('&amp;', '&');
@@ -57,8 +72,15 @@ for (const tool of readers) {
   if (!html.includes('assets/compare-embed.js')) errors.push(tool + ': no embed integration');
   if (html.indexOf('assets/site.js') > html.indexOf('assets/compare-embed.js')) errors.push(tool + ': embed executes before base reader');
 }
+const home = read('index.html');
+if ([...home.matchAll(/\bid="repository-intro"/g)].length !== 1) errors.push('Expected one repository introduction on the home page.');
+if (home.indexOf('id="repository-intro"') < home.indexOf('class="repo-grid"')) errors.push('Repository introduction must follow the comparison and scope sections.');
+if ([...home.matchAll(/\bclass="repository-brief-flow"/g)].length !== 1) errors.push('Expected one short repository example.');
+const oldIntro = read('repository-intro.html');
+if (!oldIntro.includes('href="index.html#repository-intro"')) errors.push('Legacy repository page must link to the home introduction.');
+if (/<script\b|http-equiv\s*=\s*["']refresh/i.test(oldIntro)) errors.push('Legacy repository page must not redirect automatically.');
 execFileSync(process.execPath, ['scripts/build-audit-data.mjs', '--check'], {cwd: root, stdio: 'inherit'});
-for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js']) {
+for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
   execFileSync(process.execPath, ['--check', file], {cwd: root, stdio: 'inherit'});
 }
 if (errors.length) {

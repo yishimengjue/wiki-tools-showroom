@@ -80,7 +80,7 @@ const oldIntro = read('repository-intro.html');
 if (!oldIntro.includes('href="index.html#repository-intro"')) errors.push('Legacy repository page must link to the home introduction.');
 if (/<script\b|http-equiv\s*=\s*["']refresh/i.test(oldIntro)) errors.push('Legacy repository page must not redirect automatically.');
 execFileSync(process.execPath, ['scripts/build-audit-data.mjs', '--check'], {cwd: root, stdio: 'inherit'});
-for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
+for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/diagram-topics.js','assets/compare-diagrams.js','scripts/check-diagram-ui.mjs','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
   execFileSync(process.execPath, ['--check', file], {cwd: root, stdio: 'inherit'});
 }
 if (errors.length) {

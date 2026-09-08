@@ -7,7 +7,7 @@
   const PROFILES = {
     'local-skill': {
       build: 'ghost-local-build-order', helper: 'ghost-local-unhook-order',
-      style: {focus:'按子模块讲机制和维护约束', summary:'更像给维护者看的技术说明：把子流程拆成短页，分别写用途、机制、前提和验证。不是逐行代码教程；同类章节会复用相似结构。'},
+      style: {focus:'按子模块讲机制和维护约束', summary:'维护者视角体现在“修改会影响什么、要检查什么”的说明。部分章节采用固定版式：用途、机制、约束、验证；另一些章节直接复用相同的章节结构。下面给出可跳转的原文例子，不以风格判断准确性。'},
       reading: [
         {page:'page-19', heading:'Purpose', label:'技术说明的固定结构', detail:'这一页按 Purpose、Mechanism、Build Flow、Invariants、Verification 展开，可直接看到“用途—机制—约束—验证”的写法。'},
         {page:'page-20', heading:'Source-Mutating Build Consequences', label:'侧重修改后的影响', detail:'用独立章节说明构建会改变源文件，以及阶段失败的后果，偏向维护者关心的依赖和边界。'}
@@ -139,8 +139,20 @@
     );
     if (!heading) return [];
     if (!heading.id) heading.id = 'compare-reading-' + (index + 1);
-    return [{label:item.label, detail:item.detail, heading:item.heading, target:heading.id}];
+    let example = heading.nextElementSibling;
+    while (example && (example.classList.contains('inline-issue') ||
+      (/^H[1-6]$/.test(example.tagName) && Number(example.tagName.slice(1)) > Number(heading.tagName.slice(1))))) example = example.nextElementSibling;
+    const excerpt = example && !/^H[1-6]$/.test(example.tagName) ? example.textContent.trim().slice(0,460) : '';
+    const outline = [...page.querySelectorAll('h2')].filter(el=>!el.closest('.inline-issue')).map(el=>el.textContent.trim());
+    return [{label:item.label, detail:item.detail, heading:item.heading, target:heading.id, excerpt, outline}];
   });
+  const repeatedStructure = tool === 'local-skill' ? ['page-5','page-7'].flatMap((id,index)=> {
+    const page = document.getElementById(id);
+    const heading = page?.querySelector('h2');
+    if (!heading) return [];
+    if (!heading.id) heading.id = 'compare-style-repeat-' + (index + 1);
+    return [{target:heading.id,page:id,title:page.querySelector('h1').textContent.trim(),outline:[...page.querySelectorAll('h2')].filter(el=>!el.closest('.inline-issue')).map(el=>el.textContent.trim())}];
+  }) : [];
   // Count authored diagram declarations before the lazy renderer replaces them with SVG.
   const diagramDefinitions = [
     ['flowchart', /^(?:flowchart|graph)\b/i, '流程／关系图', '用方框和箭头表示步骤或依赖；关系箭头不一定表示执行先后。'],
@@ -149,13 +161,30 @@
     ['class', /^classDiagram\b/i, '类／结构图', '展示类型、字段或结构之间的关系。']
   ];
   const diagramTypes = new Map();
+  const pairedDiagrams = [];
+  const topicRecords = (window.WIKI_DIAGRAM_TOPICS || []).filter(topic => topic.tools[tool]);
   [...content.querySelectorAll('.mermaid')].filter(el => !el.closest('.inline-issue')).forEach((el, index) => {
-    const source = el.textContent.split('\n').filter(line => !line.trim().startsWith('%%')).join('\n').trim();
+    const original = el.textContent;
+    const source = original.split('\n').filter(line => !line.trim().startsWith('%%')).join('\n').trim();
     const definition = diagramDefinitions.find(item => item[1].test(source)) || ['other', null, '其他图表', '未归入以上类型，点击查看原图。'];
     const [kind, , label, description] = definition;
     if (!el.id) el.id = 'compare-diagram-' + (index + 1);
     if (!diagramTypes.has(kind)) diagramTypes.set(kind, {kind, label, description, count:0, target:el.id});
     diagramTypes.get(kind).count += 1;
+    const page = el.closest('.wiki-page');
+    const previousHeadings = [...page.querySelectorAll('h1,h2,h3,h4')].filter(heading =>
+      !heading.closest('.inline-issue') && Boolean(heading.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)
+    );
+    const heading = previousHeadings.at(-1)?.textContent.trim();
+    topicRecords.forEach(topic => {
+      const match = topic.tools[tool];
+      if (page.id !== match.page || heading !== match.heading || !match.fragments.every(fragment => original.includes(fragment))) return;
+      // Preserve a stable, exact diagram target even if earlier diagrams are inserted later.
+      const anchor = document.createElement('span');
+      anchor.id = 'paired-diagram-' + topic.id;
+      el.before(anchor);
+      pairedDiagrams.push({topic:topic.id, target:anchor.id, source:original, kind:label, page:page.id, heading});
+    });
   });
   const targets = new Set([...content.querySelectorAll('[id]')].map(el => el.id));
   const tocItems = singlePageHeadings.length
@@ -184,7 +213,9 @@
     metrics: { pages: pages.length, codeBlocks, diagrams, characters },
     style: profile.style,
     reading,
+    repeatedStructure,
     diagramTypes: [...diagramTypes.values()],
+    pairedDiagrams,
     evidence: profile.evidence.filter(item => targets.has(item[1])).map(item => ({ label: item[0], target: item[1] }))
   };
 
@@ -289,6 +320,9 @@
     const target = document.getElementById(id);
     const visibleTarget = target.classList.contains('inline-issue') && target.previousElementSibling
       ? target.previousElementSibling : target;
+    content.querySelectorAll('.compare-current-target').forEach(el=>el.classList.remove('compare-current-target'));
+    const highlight = visibleTarget.matches('span[id^="paired-diagram-"]') ? visibleTarget.nextElementSibling : visibleTarget;
+    highlight?.classList.add('compare-current-target');
     const owner = target.closest('.wiki-page');
     nav.querySelectorAll('a').forEach(link => {
       if (link.getAttribute('href') === '#' + id ||

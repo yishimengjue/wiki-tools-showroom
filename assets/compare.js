@@ -17,6 +17,29 @@
   let selectedCase = '';
   let sequence = 0;
   let syncLeader = null;
+  const diagramState = {};
+  // Share only validated metadata with the topic viewer; iframe messages remain checked here.
+  function publishDiagrams(side, records = null) {
+    diagramState[side.name] = {tool:side.tool, ready:side.ready, records};
+    document.dispatchEvent(new CustomEvent('wiki-diagram-state', {detail:{...diagramState}}));
+  }
+  window.WIKI_COMPARE_DIAGRAMS = {
+    snapshot: () => ({...diagramState}),
+    choose: (name, tool) => {
+      if (!sides[name] || !Object.hasOwn(TOOLS, tool)) return;
+      load(sides[name], tool);
+      syncLeader = null;
+      updateURL();
+    },
+    locate: entries => {
+      sync.checked = false;
+      syncLeader = null;
+      entries.forEach(({side, target}) => {
+        if (sides[side] && validTarget(target)) send(sides[side], 'navigate', {target});
+      });
+      document.getElementById('compare-readers').scrollIntoView({block:'start',behavior:'instant'});
+    }
+  };
 
   ['left', 'right'].forEach(name => {
     sides[name] = {
@@ -27,7 +50,7 @@
       open: document.getElementById(name + '-open'),
       progress: document.getElementById(name + '-progress'),
       overview: document.getElementById('overview-' + name),
-      tool: '', instance: '', ready: false, metadata: null, style: null, ratio: 0, timer: null
+      tool: '', instance: '', ready: false, metadata: null, style: null, ratio: 0, timer: null, pendingTarget: null
     };
   });
 
@@ -108,6 +131,49 @@
       summary.textContent = side.style.summary;
       style.append(title, summary);
     }
+    const immediate = document.createElement('nav');
+    immediate.className = 'compare-style-links';
+    immediate.setAttribute('aria-label','风格说法的原文例子');
+    if (Array.isArray(data.reading)) data.reading.slice(0,3).forEach(item=> {
+      if (item && validTarget(item.target) && typeof item.label === 'string') immediate.append(evidenceLink(side,item.target,'看例子：' + item.label.slice(0,80)));
+    });
+    style.append(immediate);
+    if (side.tool === 'local-skill' && Array.isArray(data.repeatedStructure)) {
+      const records = data.repeatedStructure.filter(item=>item && validTarget(item.target) && typeof item.title === 'string' && /^page-\d+$/.test(item.page) && Array.isArray(item.outline) && item.outline.length > 0 && item.outline.every(text=>typeof text==='string')).slice(0,2);
+      if (records.length === 2 && JSON.stringify(records[0].outline) === JSON.stringify(records[1].outline)) {
+        const proof = document.createElement('section');
+        proof.className = 'compare-structure-proof';
+        const heading = document.createElement('h3');
+        heading.textContent = '“复用相同结构”的两个实际例子';
+        const plain = document.createElement('p');
+        plain.textContent = '两页介绍的主题不同，但二级标题完全一致。下列标题直接从原文提取；结构相同不等于事实有错。';
+        proof.append(heading,plain);
+        records.forEach(item=> {
+          const section = document.createElement('article');
+          const outline = document.createElement('p');
+          outline.className = 'original-outline';
+          outline.textContent = item.outline.join(' → ');
+          section.append(evidenceLink(side,item.target,item.page.replace('page-','第 ') + ' 页 · ' + item.title),outline);
+          proof.append(section);
+        });
+        const compare = document.createElement('button');
+        compare.type = 'button';
+        compare.className = 'compare-button compare-structure-pair';
+        compare.textContent = '把这两章放到左右全文窗口对照';
+        compare.addEventListener('click',()=> {
+          sync.checked = false;
+          chooseCase('',false);
+          ['left','right'].forEach((name,index)=> {
+            load(sides[name],'local-skill');
+            sides[name].pendingTarget = records[index].target;
+          });
+          updateURL();
+          document.getElementById('compare-readers').scrollIntoView({block:'start',behavior:'instant'});
+        });
+        proof.append(compare);
+        style.append(proof);
+      }
+    }
     const reading = side.overview.querySelector('.compare-reading-evidence');
     reading.replaceChildren();
     if (Array.isArray(data.reading)) data.reading.slice(0,3).forEach(item => {
@@ -119,6 +185,19 @@
       const heading = document.createElement('small');
       heading.textContent = '原文章节：' + item.heading.slice(0,150);
       card.append(evidenceLink(side, item.target, item.label.slice(0,100) + ' · 看原文'), detail, heading);
+      if (typeof item.excerpt === 'string' && item.excerpt) {
+        const quoteLabel = document.createElement('small');
+        quoteLabel.textContent = '下面直接摘自该节开头（最多 460 字符）';
+        const quote = document.createElement('blockquote');
+        quote.textContent = item.excerpt.slice(0,460);
+        card.append(quoteLabel,quote);
+      }
+      if (Array.isArray(item.outline) && item.outline.every(text=>typeof text==='string')) {
+        const outline = document.createElement('p');
+        outline.className = 'original-outline';
+        outline.textContent = '该页二级标题：' + item.outline.slice(0,15).join(' → ');
+        card.append(outline);
+      }
       reading.append(card);
     });
     const diagrams = side.overview.querySelector('.compare-diagram-types');
@@ -142,6 +221,12 @@
       Number.isSafeInteger(metrics[key]) && metrics[key] >= 0 && metrics[key] < 1000000000
     )) return;
     side.metadata = metrics;
+    const paired = Array.isArray(data.pairedDiagrams) ? data.pairedDiagrams.filter(item =>
+      item && typeof item.topic === 'string' && validTarget(item.target) &&
+      typeof item.source === 'string' && item.source.length < 30000 &&
+      ['kind','page','heading'].every(key => typeof item[key] === 'string')
+    ).slice(0,10) : [];
+    publishDiagrams(side, paired);
     renderStyle(side, data);
     side.overview.querySelectorAll('[data-metric]').forEach(el => {
       el.textContent = metrics[el.dataset.metric].toLocaleString('zh-CN');
@@ -164,6 +249,8 @@
     side.ready = false;
     side.metadata = null;
     side.style = null;
+    side.pendingTarget = null;
+    publishDiagrams(side);
     side.ratio = 0;
     side.select.value = tool;
     side.progress.textContent = '0%';
@@ -223,7 +310,10 @@
       side.status.hidden = true;
       side.frame.setAttribute('aria-busy', 'false');
       applyMetadata(side, data);
-      if (firstReady && selectedCase) send(side, 'case', { caseId: selectedCase });
+      if (firstReady && side.pendingTarget) {
+        send(side,'navigate',{target:side.pendingTarget});
+        side.pendingTarget = null;
+      } else if (firstReady && selectedCase) send(side, 'case', { caseId: selectedCase });
     } else if (data.type === 'progress' && Number.isFinite(data.ratio)) {
       side.ratio = Math.min(1, Math.max(0, data.ratio));
       side.progress.textContent = Math.round(side.ratio * 100) + '%';
@@ -263,6 +353,11 @@
     updateURL();
   });
   document.getElementById('jump-readers').addEventListener('click', () => document.getElementById('compare-readers').scrollIntoView({block:'start',behavior:'instant'}));
+  document.getElementById('jump-style').addEventListener('click',()=> {
+    const overview = document.getElementById('compare-overview');
+    overview.open = true;
+    overview.scrollIntoView({block:'start',behavior:'instant'});
+  });
   document.querySelectorAll('[data-case]').forEach(button => {
     button.addEventListener('click', () => chooseCase(button.dataset.case));
   });

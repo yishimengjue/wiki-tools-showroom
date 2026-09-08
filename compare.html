@@ -7,7 +7,10 @@
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/review-theme.css">
   <link rel="stylesheet" href="assets/compare.css">
+  <script src="assets/mermaid.min.js" defer></script>
+  <script src="assets/diagram-topics.js" defer></script>
   <script src="assets/compare.js" defer></script>
+  <script src="assets/compare-diagrams.js" defer></script>
 </head>
 <body class="compare-page">
   <a class="compare-skip" href="#compare-main">跳到对读内容</a>
@@ -33,6 +36,8 @@
     <section class="compare-controls" aria-label="对读设置">
       <button id="swap-tools" class="compare-button" type="button">交换左右</button>
       <button id="jump-readers" class="compare-button compare-button-primary" type="button">跳到双栏阅读</button>
+      <a class="compare-button compare-button-primary" href="#diagram-comparison">同一主题看两张图</a>
+      <button id="jump-style" class="compare-button" type="button">风格结论的原文例子</button>
       <label class="compare-sync"><input id="sync-scroll" type="checkbox" aria-describedby="sync-note"> 同步阅读进度</label>
       <span id="sync-note">按全文百分比同步，不代表章节或语义对齐。</span>
       <div class="compare-case-controls" aria-label="原文主题定位">
@@ -43,7 +48,32 @@
     </section>
     <p id="route-message" class="compare-route-message" role="status" hidden></p>
 
-    <details class="compare-overview" open>
+    <section class="diagram-comparison" id="diagram-comparison" aria-labelledby="diagram-comparison-title">
+      <header class="diagram-section-heading"><div><h2 id="diagram-comparison-title">同一主题，左右看原图</h2><p>当前已人工配对 Local Skill 与 DevinWiki 的三组图。图来自原始 Wiki，不重新编写或修正。</p></div><button class="compare-button" id="diagram-default-pair" type="button">选择 Local / Devin</button></header>
+      <nav class="diagram-topic-tabs" id="diagram-topic-tabs" aria-label="选择图表主题"></nav>
+      <p id="diagram-question" class="diagram-question"></p>
+      <p id="diagram-comparison-note" class="diagram-comparison-note"></p>
+      <p id="diagram-audit-link"></p>
+      <div class="diagram-pair-grid">
+        <article class="diagram-card" data-diagram-side="left">
+          <header><label>左侧工具<select id="diagram-left-tool" aria-label="左侧图表工具"></select></label><span class="diagram-kind"></span></header>
+          <p class="diagram-location"></p><p class="diagram-reading-note"></p>
+          <div class="diagram-actions"><button type="button" data-zoom="out" aria-label="缩小左图">缩小</button><button type="button" data-zoom="in" aria-label="放大左图">放大</button><button type="button" data-zoom="fit">适应宽度</button><span class="diagram-scale"></span><button type="button" data-locate>在左侧全文定位</button></div>
+          <div class="diagram-viewport" tabindex="0" role="region" aria-label="左侧原图，可滚动"><p role="status">正在读取左侧原图…</p></div>
+          <details class="diagram-source"><summary>原始 Mermaid 定义</summary><pre></pre></details>
+        </article>
+        <article class="diagram-card" data-diagram-side="right">
+          <header><label>右侧工具<select id="diagram-right-tool" aria-label="右侧图表工具"></select></label><span class="diagram-kind"></span></header>
+          <p class="diagram-location"></p><p class="diagram-reading-note"></p>
+          <div class="diagram-actions"><button type="button" data-zoom="out" aria-label="缩小右图">缩小</button><button type="button" data-zoom="in" aria-label="放大右图">放大</button><button type="button" data-zoom="fit">适应宽度</button><span class="diagram-scale"></span><button type="button" data-locate>在右侧全文定位</button></div>
+          <div class="diagram-viewport" tabindex="0" role="region" aria-label="右侧原图，可滚动"><p role="status">正在读取右侧原图…</p></div>
+          <details class="diagram-source"><summary>原始 Mermaid 定义</summary><pre></pre></details>
+        </article>
+      </div>
+      <div class="diagram-footer"><button class="compare-button compare-button-primary" id="diagram-locate-both" type="button">在下方全文同时定位这两张图</button><span>只对齐主题，不同步滚动百分比；图中文字和连线保持原样，可分别放大、滚动。</span></div>
+    </section>
+
+    <details class="compare-overview" id="compare-overview" open>
       <summary>成品概览 <span>整体风格、图表类型与原文例子，仅针对 Ghost 这五份成品</span></summary>
       <p id="difference-text" class="compare-difference" aria-live="polite">正在从两份全文读取统计；不同体量或侧重不等于更准确。</p>
       <div class="compare-overview-grid">

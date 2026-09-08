@@ -11,6 +11,7 @@ const cases = ['audit-core.json', 'audit-behavior.json'].flatMap((file) => JSON.
 const caseIds = new Set(cases.map((item) => item.id));
 const readerCases = new Set(['ghost-build-order', 'ghost-helper-order']);
 const readers = ['local-skill', 'devinwiki', 'deepwiki-open', 'openwiki', 'codewiki'];
+const principlePages = readers.map((tool) => 'tool-' + tool + '.html');
 const errors = [];
 let checkedLinks = 0;
 const ids = new Map(pages.map((file) => [file, new Set([...read(file).matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]))]));
@@ -72,6 +73,15 @@ for (const tool of readers) {
   if (!html.includes('assets/compare-embed.js')) errors.push(tool + ': no embed integration');
   if (html.indexOf('assets/site.js') > html.indexOf('assets/compare-embed.js')) errors.push(tool + ': embed executes before base reader');
 }
+for (const page of principlePages) {
+  const html = read(page);
+  if (!html.includes('assets/tool-principles-detail.js')) errors.push(page + ': missing detail renderer');
+  for (const role of ['flow', 'example', 'tool-map', 'compare-select', 'compare-result']) {
+    if (!html.includes('data-role="' + role + '"')) errors.push(page + ': missing principle region ' + role);
+  }
+}
+const principleHub = read('tool-principles-horizontal.zh-CN.html');
+for (const page of principlePages) if (!principleHub.includes('href="' + page + '"')) errors.push('Principle hub missing ' + page);
 const home = read('index.html');
 if ([...home.matchAll(/\bid="repository-intro"/g)].length !== 1) errors.push('Expected one repository introduction on the home page.');
 if (home.indexOf('id="repository-intro"') < home.indexOf('class="repo-grid"')) errors.push('Repository introduction must follow the comparison and scope sections.');
@@ -80,7 +90,7 @@ const oldIntro = read('repository-intro.html');
 if (!oldIntro.includes('href="index.html#repository-intro"')) errors.push('Legacy repository page must link to the home introduction.');
 if (/<script\b|http-equiv\s*=\s*["']refresh/i.test(oldIntro)) errors.push('Legacy repository page must not redirect automatically.');
 execFileSync(process.execPath, ['scripts/build-audit-data.mjs', '--check'], {cwd: root, stdio: 'inherit'});
-for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/diagram-topics.js','assets/compare-diagrams.js','scripts/check-diagram-ui.mjs','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
+for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/diagram-topics.js','assets/compare-diagrams.js','assets/tool-principles-detail.js','scripts/check-diagram-ui.mjs','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
   execFileSync(process.execPath, ['--check', file], {cwd: root, stdio: 'inherit'});
 }
 if (errors.length) {

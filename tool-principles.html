@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>五工具生成原理与依赖</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
+  <link rel="stylesheet" href="assets/principles.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link active" aria-current="page" href="tool-principles.html">工具原理</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
+  <main class="principles-shell">
+    <header class="principles-hero">
+      <p class="eyebrow">已核对本地部署与公开说明</p>
+      <h1>五个工具怎样把源码变成 Wiki</h1>
+      <p>五者都接收代码仓库，但“谁安排任务、模型看到哪些代码、在哪里运行”并不相同。图中只写已确认的步骤；DevinWiki 的服务内部实现没有公开，因此不做推测。</p>
+      <div class="layer-legend" aria-label="图例">
+        <span><i class="legend-controller"></i>流程控制器：决定先做什么、后做什么</span>
+        <span><i class="legend-model"></i>模型：阅读材料并写正文</span>
+        <span><i class="legend-check"></i>程序处理：建索引、校验、保存</span>
+        <span><i class="legend-unknown"></i>内部不可见</span>
+      </div>
+    </header>
+
+    <section class="principle-summary" aria-labelledby="summary-title">
+      <div>
+        <p class="eyebrow">先看最重要的区别</p>
+        <h2 id="summary-title">前四个可以在本地控制流程，DevinWiki 是在线黑盒</h2>
+      </div>
+      <div class="summary-paths">
+        <article><b>Local Skill / deepwiki-open / OpenWiki / CodeWiki</b><p>代码、配置、模型选择和部分中间产物可检查；工具负责组织流程，模型负责写内容。</p></article>
+        <article><b>DevinWiki</b><p>用户提交 GitHub 链接后直接拿到托管页面；本次只能核对输入和成品，无法确认服务内部怎样分工。</p></article>
+      </div>
+    </section>
+
+    <section class="tool-principles" aria-label="五工具流程">
+      <article class="principle-card" style="--accent:#236b58">
+        <header><span class="tool-index">01</span><div><h2>Local Skill</h2><p>Python 状态机安排多阶段任务，Codex 或 Claude Code 提供执行宿主和模型。</p></div><span class="visibility local">本地可检查</span></header>
+        <div class="flow-row" aria-label="Local Skill 生成流程">
+          <div class="flow-node check"><small>输入</small><b>本地 Git 仓库</b><span>读取文件和目录</span></div><i>→</i>
+          <div class="flow-node controller"><small>程序控制</small><b>建立源码清单</b><span>筛选核心文件、分组</span></div><i>→</i>
+          <div class="flow-node model"><small>模型参与</small><b>规划目录与页面</b><span>模型 / 子 Agent 分工</span></div><i>→</i>
+          <div class="flow-node model"><small>模型参与</small><b>逐页写作</b><span>机制、流程、引用</span></div><i>→</i>
+          <div class="flow-node check"><small>程序控制</small><b>校验并保存</b><span>输出 .deepwiki</span></div>
+        </div>
+        <div class="dependency-strip"><b>必需依赖</b><span>Git 与本地仓库</span><span>Codex 或 Claude Code</span><span>当前宿主模型</span><span>Python 状态机</span><span>Worker / 子 Agent</span><span>引用与格式校验脚本</span></div>
+        <p class="run-note"><strong>本次评测：</strong><code>deepwiki:generate 0.12.0</code> + Codex + <code>gpt-5.6-sol</code>。不是后来复制出的 <code>basic-wiki-generate</code>。</p>
+      </article>
+
+      <article class="principle-card" style="--accent:#97633f">
+        <header><span class="tool-index">02</span><div><h2>deepwiki-open</h2><p>先把源码做成可搜索索引，再由模型规划目录并逐页生成。</p></div><span class="visibility local">本地可检查</span></header>
+        <div class="flow-row" aria-label="deepwiki-open 生成流程">
+          <div class="flow-node check"><small>输入</small><b>克隆 / 本地仓库</b><span>读取源码</span></div><i>→</i>
+          <div class="flow-node check"><small>程序处理</small><b>建立代码索引</b><span>向量模型 + 本地数据库</span></div><i>→</i>
+          <div class="flow-node model"><small>模型参与</small><b>确定 Wiki 目录</b><span>读取文件树与 README</span></div><i>→</i>
+          <div class="flow-node model"><small>模型参与</small><b>逐页检索并写作</b><span>失败页可重试</span></div><i>→</i>
+          <div class="flow-node check"><small>程序处理</small><b>补引用并缓存</b><span>输出 Wiki 页面</span></div>
+        </div>
+        <div class="dependency-strip"><b>必需依赖</b><span>Python API</span><span>文本生成模型</span><span>向量模型</span><span>FAISS / 本地索引库</span><span>Git 仓库</span><span>网页端使用 Node / Next.js</span></div>
+        <div class="dependency-strip optional"><b>可选依赖</b><span>Docker Compose</span><span>OpenAI / Gemini / Bedrock / Ollama 等提供方</span><span>独立 Codemap 两阶段图谱</span></div>
+        <p class="run-note"><strong>本次评测：</strong>通过 OpenAI-compatible 接口调用配置为 <code>auto</code> 的模型；仓库任务和页面生成均限制为单并发。</p>
+      </article>
+
+      <article class="principle-card" style="--accent:#2e6683">
+        <header><span class="tool-index">03</span><div><h2>OpenWiki</h2><p>文档 Agent 先制定页面计划，再把页面作为队列逐项完成，并记录每条说法的源码依据。</p></div><span class="visibility local">本地可检查</span></header>
+        <div class="flow-row" aria-label="OpenWiki 生成流程">
+          <div class="flow-node check"><small>输入</small><b>Git 仓库</b><span>读取源码与测试</span></div><i>→</i>
+          <div class="flow-node controller"><small>Agent 控制</small><b>制定文档计划</b><span>拆分主题和页面</span></div><i>→</i>
+          <div class="flow-node check"><small>队列控制</small><b>持久化页面任务</b><span>逐项领取与恢复</span></div><i>→</i>
+          <div class="flow-node model"><small>模型参与</small><b>逐页生成</b><span>结论绑定源码证据</span></div><i>→</i>
+          <div class="flow-node check"><small>程序处理</small><b>校验并落盘</b><span>输出 openwiki/</span></div>
+        </div>
+        <div class="dependency-strip"><b>必需依赖</b><span>Node.js 22+</span><span>OpenWiki CLI</span><span>Deep Agents JS</span><span>模型提供方或 Agent 宿主</span><span>Git 仓库</span><span>页面队列与证据元数据</span></div>
+        <div class="dependency-strip optional"><b>可选依赖</b><span>GitHub Actions 等持续集成</span><span>MCP / Notion / Slack 等连接器</span></div>
+        <p class="run-note"><strong>本次评测：</strong>OpenAI-compatible provider + <code>deepseek-v4-flash-0731</code>；连接器不是本次代码 Wiki 的必要输入。</p>
+      </article>
+
+      <article class="principle-card" style="--accent:#9a7522">
+        <header><span class="tool-index">04</span><div><h2>CodeWiki</h2><p>先按目录和模块建立层级，再让多个分析角色处理局部及跨文件关系，最后汇总成架构文档。</p></div><span class="visibility local">本地可检查</span></header>
+        <div class="flow-row" aria-label="CodeWiki 生成流程">
+          <div class="flow-node check"><small>输入</small><b>Git 仓库</b><span>识别支持的源码文件</span></div><i>→</i>
+          <div class="flow-node controller"><small>程序控制</small><b>模块分层与聚类</b><span>形成模块树</span></div><i>→</i>
+          <div class="flow-node model"><small>多 Agent</small><b>分析模块关系</b><span>局部说明 + 跨文件关系</span></div><i>→</i>
+          <div class="flow-node model"><small>模型参与</small><b>汇总架构文档</b><span>职责、流程、风险</span></div><i>→</i>
+          <div class="flow-node check"><small>程序处理</small><b>校验图并导出</b><span>Markdown / HTML</span></div>
+        </div>
+        <div class="dependency-strip"><b>必需依赖</b><span>Python 3.12+</span><span>CodeWiki CLI</span><span>多 Agent 分析框架</span><span>模型提供方</span><span>Git 仓库</span><span>Mermaid 校验器</span></div>
+        <div class="dependency-strip optional"><b>模型接入</b><span>API provider</span><span>或通过 caw 调用 Codex / Claude CLI</span></div>
+        <p class="run-note"><strong>本次评测：</strong>Codex provider + <code>gpt-5.6-sol</code>。两个 Go 仓本轮没有产物，只能说明本次文件识别链路未覆盖，不能扩大为所有版本都不支持 Go。</p>
+      </article>
+
+      <article class="principle-card" style="--accent:#735783">
+        <header><span class="tool-index">05</span><div><h2>DevinWiki</h2><p>用户只提交 GitHub 仓库链接，服务端完成处理并返回托管 Wiki；内部生成步骤本次不可见。</p></div><span class="visibility unknown">在线黑盒</span></header>
+        <div class="flow-row blackbox-flow" aria-label="DevinWiki 可确认的流程">
+          <div class="flow-node check"><small>输入</small><b>GitHub 仓库链接</b><span>公开或已授权仓库</span></div><i>→</i>
+          <div class="flow-node unknown"><small>服务内部</small><b>Devin / DeepWiki 处理</b><span>模型、拆页、缓存、校验方式未公开或本次未测</span></div><i>→</i>
+          <div class="flow-node check"><small>输出</small><b>托管 Wiki 网页</b><span>浏览器直接阅读</span></div>
+        </div>
+        <div class="dependency-strip"><b>用户侧必需</b><span>GitHub 仓库</span><span>Devin / DeepWiki 在线服务</span><span>浏览器与网络</span><span>私有仓库所需授权</span></div>
+        <p class="run-note"><strong>不能确认：</strong>服务内部模型、多 Agent、代码索引、重试和事实校验机制。成品风格不能反推出这些实现。</p>
+      </article>
+    </section>
+
+    <section class="dependency-matrix" aria-labelledby="dependency-title">
+      <div class="section-head"><div><p class="eyebrow">依赖速查</p><h2 id="dependency-title">谁负责“安排流程”，谁负责“写内容”</h2></div></div>
+      <div class="home-table-scroll"><table class="home-table"><thead><tr><th>工具</th><th>流程控制者</th><th>写内容的模型</th><th>主要运行环境</th><th>产物</th></tr></thead><tbody>
+        <tr><th>Local Skill</th><td>Skill 的 Python 状态机</td><td>Codex / Claude Code 当前模型</td><td>本地 Git + Python + Agent 宿主</td><td><code>.deepwiki/</code></td></tr>
+        <tr><th>deepwiki-open</th><td>Python Wiki 任务服务</td><td>配置的文本生成模型</td><td>Python API + 向量模型与索引；网页端另需 Node</td><td>缓存 Wiki / 网页</td></tr>
+        <tr><th>OpenWiki</th><td>Deep Agents 文档 Agent + 页面队列</td><td>配置的 provider 或宿主模型</td><td>Node.js + OpenWiki CLI</td><td><code>openwiki/</code></td></tr>
+        <tr><th>CodeWiki</th><td>CodeWiki 模块树与多 Agent 流程</td><td>API provider 或 Codex / Claude CLI</td><td>Python + CodeWiki CLI</td><td>Markdown / HTML</td></tr>
+        <tr><th>DevinWiki</th><td>在线服务，内部未知</td><td>内部未知</td><td>用户侧仅需浏览器、网络和仓库权限</td><td>托管 Wiki 网页</td></tr>
+      </tbody></table></div>
+      <p class="scope-note"><strong>关键理解：</strong>模型不是完整工具。模型负责读材料和写文字；Skill、CLI 或在线服务负责选文件、拆任务、重试、校验和保存。相同模型放进不同流程，也会得到不同 Wiki。</p>
+    </section>
+
+    <aside class="publication-note"><strong>说明：</strong>Local Skill、deepwiki-open、OpenWiki、CodeWiki 的流程来自本地部署代码、README 和实际评测记录；DevinWiki 只描述用户侧可观察流程。这里说明的是生成机制，不代表任何工具生成的事实一定正确。</aside>
+  </main>
+</body>
+</html>

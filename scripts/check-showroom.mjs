@@ -6,7 +6,9 @@ import vm from 'node:vm';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const pages = fs.readdirSync(root).filter((file) => file.endsWith('.html'));
+const flowRoot = path.join(root, 'tool-flow-showcase');
+const flowPages = fs.readdirSync(flowRoot).filter((file) => file.endsWith('.html')).map((file) => 'tool-flow-showcase/' + file);
+const pages = fs.readdirSync(root).filter((file) => file.endsWith('.html')).concat(flowPages);
 const cases = ['audit-core.json', 'audit-behavior.json'].flatMap((file) => JSON.parse(read('assets/' + file)).cases);
 const caseIds = new Set(cases.map((item) => item.id));
 const readerCases = new Set(['ghost-build-order', 'ghost-helper-order']);
@@ -72,6 +74,13 @@ for (const tool of readers) {
   if (!html.includes('assets/compare-embed.js')) errors.push(tool + ': no embed integration');
   if (html.indexOf('assets/site.js') > html.indexOf('assets/compare-embed.js')) errors.push(tool + ': embed executes before base reader');
 }
+const flowDetailPages = ['local-skill.html','deepwiki-open.html','openwiki.html','codewiki.html','devinwiki.html'];
+const flowHub = read('tool-flow-showcase/index.html');
+for (const file of flowDetailPages) {
+  if (!flowHub.includes('href="' + file + '"')) errors.push('Flow hub missing ' + file);
+  const html = read('tool-flow-showcase/' + file);
+  for (const marker of ['data-flow','data-example','data-call-body','detail.js']) if (!html.includes(marker)) errors.push(file + ': missing ' + marker);
+}
 const home = read('index.html');
 if ([...home.matchAll(/\bid="repository-intro"/g)].length !== 1) errors.push('Expected one repository introduction on the home page.');
 if (home.indexOf('id="repository-intro"') < home.indexOf('class="repo-grid"')) errors.push('Repository introduction must follow the comparison and scope sections.');
@@ -80,7 +89,7 @@ const oldIntro = read('repository-intro.html');
 if (!oldIntro.includes('href="index.html#repository-intro"')) errors.push('Legacy repository page must link to the home introduction.');
 if (/<script\b|http-equiv\s*=\s*["']refresh/i.test(oldIntro)) errors.push('Legacy repository page must not redirect automatically.');
 execFileSync(process.execPath, ['scripts/build-audit-data.mjs', '--check'], {cwd: root, stdio: 'inherit'});
-for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/diagram-topics.js','assets/compare-diagrams.js','scripts/check-diagram-ui.mjs','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
+for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/diagram-topics.js','assets/compare-diagrams.js','tool-flow-showcase/detail.js','scripts/check-diagram-ui.mjs','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
   execFileSync(process.execPath, ['--check', file], {cwd: root, stdio: 'inherit'});
 }
 if (errors.length) {

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>五工具完整生成流程</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar"><a href="../index.html">五工具 Wiki 对比</a><nav><a class="active" href="index.html">流程入口</a><a href="../tool-principles-horizontal.zh-CN.html">原横向总表</a><a href="../compare.html">成品对读</a><a href="../issues-compare.html">问题对照</a></nav></header>
+  <main class="shell">
+    <header class="hero">
+      <div><p class="eyebrow">独立页面 · 蓝白版</p><h1>五个工具分别怎样把仓库变成 Wiki</h1><p>每个工具使用一个独立页面。页面中的横向流程会说明：模块负责什么、模块实际调用哪些工具、交给下一步什么结果。</p></div>
+      <div class="hero-path"><div>GitHub 仓库快照</div><span>→</span><div>Wiki 页面、图表与源码引用</div></div>
+    </header>
+    <section class="tool-grid" aria-label="选择工具流程">
+      <a class="tool-card" href="local-skill.html"><small>01 · 状态机驱动</small><h2>Local Skill</h2><p>按固定阶段安排多个 Worker，最终统一校验并发布。</p><ul><li>Writer：search_code.py + action + 宿主只读工具</li><li>控制：runtime.py</li><li>输出：.deepwiki/</li></ul></a>
+      <a class="tool-card" href="deepwiki-open.html"><small>02 · 代码索引驱动</small><h2>deepwiki-open</h2><p>先索引源码，每个页面再检索相关代码交给模型。</p><ul><li>Writer：build_page_prompt + RAG.acall</li><li>检索：AdalFlow + FAISS</li><li>输出：缓存 Wiki / 网页</li></ul></a>
+      <a class="tool-card" href="openwiki.html"><small>03 · 页面队列驱动</small><h2>OpenWiki</h2><p>规划页面队列，Worker 逐页读取、写作并提交源码说法。</p><ul><li>Writer：宿主读写工具 + submit_page</li><li>控制：6 个 lifecycle tools</li><li>输出：openwiki/</li></ul></a>
+      <a class="tool-card" href="codewiki.html"><small>04 · 代码结构驱动</small><h2>CodeWiki</h2><p>先建立组件依赖和模块树，再由 Agent 分层写文档。</p><ul><li>Writer：read_code_components + editor</li><li>分析：tree-sitter + NetworkX</li><li>输出：Markdown / HTML</li></ul></a>
+      <a class="tool-card" href="devinwiki.html"><small>05 · 在线服务</small><h2>DevinWiki</h2><p>提交仓库链接后获得托管 Wiki，内部 Writer 工具未公开。</p><ul><li>Writer：未公开</li><li>用户侧：GitHub + 浏览器</li><li>输出：托管 Wiki</li></ul></a>
+    </section>
+  </main>
+</body>
+</html>

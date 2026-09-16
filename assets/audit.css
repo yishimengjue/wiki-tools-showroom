@@ -134,3 +134,39 @@
 @media(max-width:800px){.audit-heading{display:block}.audit-scope{display:flex;gap:14px;text-align:left;margin:5px 0 12px}.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.category-card{min-height:132px;padding:15px}.category-card strong{font-size:21px}.category-card .category-kicker{font-size:11px}.audit-workbench{display:block}.case-sidebar{position:static;max-height:355px;border-right:0;border-bottom:1px solid var(--line)}.case-list{min-height:0;max-height:205px}.case-filters{padding:14px 16px}.case-button{padding:12px 14px}.case-detail{padding:19px}.pair-grid{grid-template-columns:1fr}.tool-verdicts{grid-template-columns:repeat(2,minmax(0,1fr))}.skill-fix{grid-template-columns:1fr}.audit-method{padding:20px}.audit-heading h1{font-size:29px}.plain-definition,.plain-example{grid-template-columns:1fr;gap:5px;padding:16px}.source-panel{padding:15px}.source-row{grid-template-columns:37px minmax(0,1fr)}.source-row .source-line-note{grid-column:2;border-left:0;font-size:15px}.source-row.is-annotated .source-line-note{border-left:3px solid var(--blue)}.source-row:not(.is-annotated) .source-line-note{display:none}.source-column-head{grid-template-columns:1fr;padding-left:0}.source-column-head span{padding:6px 13px}.source-panel summary{padding:12px}.source-summary{padding:14px}.source-line-code{font-size:12px}.quote-explanation{padding:14px}}
 @media(max-width:500px){.tool-verdicts{grid-template-columns:1fr}.tool-verdict{padding:16px}.tool-verdict p{font-size:15px}.category-card{padding:13px}.case-detail{padding:16px}.audit-shell{padding:22px 12px 50px}}
 @media(prefers-reduced-motion:reduce){.category-card{transition:none}}
+
+/* Keep the controls compact without reducing the reading text below 14px. */
+.category-card{min-height:108px;padding:13px 15px}
+.category-card strong{font-size:18px;line-height:1.4;margin-bottom:4px}
+.category-card small{font-size:14px;line-height:1.5}
+.category-card .category-kicker{margin-bottom:5px}
+.case-detail{padding:20px}
+.case-detail h2{font-size:26px;line-height:1.4;margin:12px 0}
+.case-impact,.plain-example p,.plain-definition p{font-size:15px;line-height:1.75}
+.plain-example,.plain-definition{grid-template-columns:145px minmax(0,1fr);padding:12px 15px;margin-bottom:12px;gap:12px}
+.skill-fix{font-size:17px;line-height:1.7;grid-template-columns:140px minmax(0,1fr);padding:15px 17px;gap:14px;margin-bottom:18px}
+.skill-fix strong{font-size:18px}
+.source-fact{font-size:16px;line-height:1.75}
+.source-summary p,.quote-explanation{font-size:15px;line-height:1.75}
+.quote-explanation{padding:12px;margin-bottom:14px}
+.quote-translation{font-size:15px;line-height:1.75}
+.case-button{padding:11px 12px}.case-button strong{font-size:14px;line-height:1.5}
+.case-filters{padding:14px}
+.case-filter-note{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 10px}
+#show-all-cases{margin-bottom:12px;width:100%;font-size:14px}
+.case-pagination{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;font-size:14px;color:var(--muted)}
+.case-pagination span{margin-right:auto}
+.case-pagination button,.audit-diagram-actions button{padding:5px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--blue);font:inherit;font-size:14px;cursor:pointer}
+.case-pagination button:disabled,.audit-diagram-actions button:disabled{opacity:.45;cursor:default}
+.audit-original-diagram{margin:0 0 15px;min-width:0}
+.audit-original-diagram figcaption{font-size:16px;font-weight:700;color:var(--ink)}
+.audit-original-diagram>p{font-size:14px;line-height:1.65;color:var(--muted);margin:7px 0}
+.audit-diagram-actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:10px 0}
+.audit-diagram-scale{font-size:13px;color:var(--muted)}
+.audit-diagram-view{height:340px;overflow:auto;border:1px solid var(--line);border-radius:9px;background:#fff;color:#243447;font-size:15px}
+.audit-diagram-canvas{padding:12px;width:max-content;min-width:100%}
+.audit-diagram-view svg{display:block;margin:0 auto}
+.audit-original-diagram details,.audit-quote-details{margin:10px 0;font-size:14px}
+.audit-original-diagram summary,.audit-quote-details summary{color:var(--blue);cursor:pointer;margin-bottom:8px}
+.audit-original-diagram>small{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+@media(max-width:800px){.case-detail h2{font-size:23px}.plain-example,.plain-definition,.skill-fix{grid-template-columns:1fr}.category-card strong{font-size:18px}.audit-diagram-view{height:300px}}

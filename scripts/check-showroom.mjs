@@ -122,6 +122,11 @@ const oldIntro = read('repository-intro.html');
 if (!oldIntro.includes('href="index.html#repository-intro"')) errors.push('Legacy repository page must link to the home introduction.');
 if (/<script\b|http-equiv\s*=\s*["']refresh/i.test(oldIntro)) errors.push('Legacy repository page must not redirect automatically.');
 execFileSync(process.execPath, ['scripts/build-audit-data.mjs', '--check'], {cwd: root, stdio: 'inherit'});
+execFileSync(process.execPath, ['scripts/build-audit-diagrams.mjs', '--check'], {cwd: root, stdio: 'inherit'});
+for (const file of ['assets/audit-diagrams.js','assets/audit-diagram-renderer.js','scripts/build-audit-diagrams.mjs']) execFileSync(process.execPath,['--check',file],{cwd:root,stdio:'inherit'});
+const auditPage = read('issues-compare.html');
+for (const name of ['assets/mermaid.min.js','assets/audit-diagrams.js','assets/audit-diagram-renderer.js','id="show-all-cases"']) if (!auditPage.includes(name)) errors.push('Missing audit rendering/filter integration: '+name);
+if ((read('compare.html').match(/<details class="overview-evidence">/g)||[]).length!==2) errors.push('Both reading evidence panels must be collapsed by default.');
 for (const file of ['assets/site.js', 'assets/audit.js', 'assets/audit-data.js', 'assets/compare.js', 'assets/compare-embed.js','assets/diagram-topics.js','assets/compare-diagrams.js','tool-flow-showcase/detail.js','scripts/check-diagram-ui.mjs','assets/home.js','assets/training-summary.js','scripts/build-training-summary.mjs']) {
   execFileSync(process.execPath, ['--check', file], {cwd: root, stdio: 'inherit'});
 }

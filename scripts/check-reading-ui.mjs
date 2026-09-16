@@ -17,6 +17,8 @@ page.on('pageerror', error=>failures.push(error.message));
 try {
   await page.goto(base + '/compare.html');
   await page.waitForFunction(()=>document.querySelectorAll('.compare-reading-example').length === 4);
+  assert.equal(await page.locator('.overview-evidence[open]').count(),0,'Long evidence should be collapsed initially.');
+  assert(await page.locator('#compare-overview').evaluate(el=>el.getBoundingClientRect().height<420),'Default overview should leave room for the readers.');
   assert(await page.evaluate(()=>document.documentElement.scrollHeight > innerHeight + 500),'Outer page should scroll.');
   assert(await page.locator('#left-frame').evaluate(el=>el.getBoundingClientRect().height >= 660),'Reader must not shrink under overview.');
   const tools = ['local-skill','devinwiki','deepwiki-open','openwiki','codewiki'];
@@ -24,6 +26,7 @@ try {
     await page.selectOption('#left-tool',tool);
     await page.waitForFunction(expected=>document.querySelector('#left-frame').getAttribute('src').startsWith(expected + '.html') && document.querySelector('#left-frame').getAttribute('aria-busy') === 'false',tool);
     assert.equal(await page.locator('#overview-left .compare-reading-example').count(),2,tool + ': missing style evidence');
+    await page.locator('#overview-left .overview-evidence').evaluate(el=>{el.open=true;});
     const frame = page.frames().find(frame=>frame.url().includes('/' + tool + '.html?embed=1'));
     const types = await page.locator('#overview-left .compare-diagram-types a').count();
     assert(types > 0,tool + ': missing diagram types');
@@ -52,7 +55,7 @@ try {
   assert.equal(await page.locator('.tool-verdict .status-error').count(),0);
   assert.equal(await page.locator('.fact-box').count(),0,'Remove duplicate source summary.');
   assert(await page.locator('.skill-fix').evaluate(el=>el.getBoundingClientRect().top < document.querySelector('.tool-verdicts').getBoundingClientRect().top),'Skill fix must precede tool comparison.');
-  assert(await page.locator('.skill-fix p').evaluate(el=>parseFloat(getComputedStyle(el).fontSize) >= 20));
+  assert(await page.locator('.skill-fix p').evaluate(el=>parseFloat(getComputedStyle(el).fontSize) >= 16));
   await page.goto(base + '/issues-compare.html#case=lightbox-reinit');
   await page.waitForSelector('.skill-fix');
   assert.equal(await page.locator('.tool-verdict .status-error').count(),0);
@@ -63,6 +66,16 @@ try {
   await page.screenshot({path:path.join(output,'issues-desktop.png')});
   await page.locator('.case-source-shortcut').click();
   await page.waitForFunction(()=>document.querySelector('#source-evidence').getBoundingClientRect().top < innerHeight);
+  await page.goto(base + '/issues-compare.html#case=ghost-build-order');
+  await page.waitForFunction(()=>document.querySelectorAll('.audit-diagram-view svg').length===2);
+  assert.equal(await page.locator('.case-button').count(),10,'A deep link should not hide the other cases by default.');
+  assert.equal(await page.locator('[data-category="all"]').getAttribute('aria-pressed'),'true');
+  await page.locator('[data-category="interface-contract"]').click();
+  assert.equal(await page.locator('.case-button').count(),1);
+  await page.locator('#show-all-cases').click();
+  assert.equal(await page.locator('.case-button').count(),10);
+  await page.locator('[data-case="ghost-helper-order"]').click();
+  await page.waitForFunction(()=>document.querySelectorAll('.audit-diagram-view svg').length===2);
 
   await page.goto(base + '/index.html');
   await page.waitForSelector('.material-cell');

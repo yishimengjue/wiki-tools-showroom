@@ -90,16 +90,14 @@
       return TOOLS[larger.tool].name + ' 的' + label + '更多（' +
         Math.max(left[key], right[key]) + ' 对 ' + Math.min(left[key], right[key]) + '）';
     };
-    const angle = sides.left.style && sides.right.style ? TOOLS[sides.left.tool].name + '：' + sides.left.style.focus + '；' + TOOLS[sides.right.tool].name + '：' + sides.right.style.focus + '。' : '';
-    output.textContent = angle + describe('codeBlocks', '代码块') + '；' + describe('diagrams', '图表') +
-      '。体量或侧重不同，不代表细节覆盖更多或事实更准确。';
+    output.textContent = describe('codeBlocks', '代码块') + '；' + describe('diagrams', '图表') + '。数量不代表准确性。';
   }
 
   function resetOverview(side) {
     side.overview.querySelector('.overview-tool').textContent = TOOLS[side.tool].name;
     side.overview.querySelectorAll('[data-metric]').forEach(el => { el.textContent = '待加载'; });
     side.overview.querySelector('.compare-evidence').replaceChildren();
-    ['.compare-style', '.compare-diagram-types', '.compare-reading-evidence'].forEach(selector => side.overview.querySelector(selector).replaceChildren());
+    ['.compare-style', '.compare-extra-style', '.compare-diagram-types', '.compare-reading-evidence'].forEach(selector => side.overview.querySelector(selector).replaceChildren());
     difference();
   }
 
@@ -123,13 +121,15 @@
   function renderStyle(side, data) {
     const style = side.overview.querySelector('.compare-style');
     style.replaceChildren();
+    side.overview.querySelector('.compare-extra-style').replaceChildren();
     if (data.style && typeof data.style.focus === 'string' && typeof data.style.summary === 'string') {
       side.style = {focus:data.style.focus.slice(0,100), summary:data.style.summary.slice(0,500)};
       const title = document.createElement('h3');
       title.textContent = side.style.focus;
       const summary = document.createElement('p');
       summary.textContent = side.style.summary;
-      style.append(title, summary);
+      style.append(title);
+      side.overview.querySelector('.compare-extra-style').append(summary);
     }
     const immediate = document.createElement('nav');
     immediate.className = 'compare-style-links';
@@ -171,7 +171,7 @@
           document.getElementById('compare-readers').scrollIntoView({block:'start',behavior:'instant'});
         });
         proof.append(compare);
-        style.append(proof);
+        side.overview.querySelector('.compare-extra-style').append(proof);
       }
     }
     const reading = side.overview.querySelector('.compare-reading-evidence');
@@ -356,6 +356,7 @@
   document.getElementById('jump-style').addEventListener('click',()=> {
     const overview = document.getElementById('compare-overview');
     overview.open = true;
+    overview.querySelectorAll('.overview-evidence').forEach(el=>{el.open=true;});
     overview.scrollIntoView({block:'start',behavior:'instant'});
   });
   document.querySelectorAll('[data-case]').forEach(button => {

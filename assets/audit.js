@@ -47,7 +47,7 @@
   $('audit-count').textContent = contentCount + ' 个内容案例 · ' + pipelineCount + ' 类运行故障';
   $('status-legend').innerHTML = Object.keys(STATUS).map((status) => '<span>' + pill(status) + esc(STATUS[status].meaning) + '</span>').join('');
   let selected = cases.find((item) => item.id === 'ghost-build-order') || cases[0];
-  let category = selected.category;
+  let category = 'all';
   let query = '';
   let tableOnly = false;
   let left = 'local-skill';
@@ -57,17 +57,19 @@
     return !query || [item.repo, item.title, item.sourceFact, item.plainExample || ''].join(' ').toLocaleLowerCase().includes(query);
   }
   function filteredCases(id) {
-    return cases.filter((item) => item.category === id && (!tableOnly || item.fromTable) && matchesQuery(item));
+    return cases.filter((item) => (id === 'all' ? item.category !== 'review-notes' : item.category === id) && (!tableOnly || item.fromTable) && matchesQuery(item));
   }
   function categoryCards() {
-    $('category-grid').innerHTML = CATEGORIES.filter((item) => item.id !== 'review-notes').map((item) => {
+    const categories = [{id:'all',name:'全部案例',plain:'内容问题与生成中断分开标记',tag:'取消分类筛选'},...CATEGORIES.filter(item=>item.id!=='review-notes')];
+    $('category-grid').innerHTML = categories.map((item) => {
       const count = filteredCases(item.id).length;
       return '<button class="category-card ' + (item.id === 'pipeline-contract' ? 'pipeline-category' : '') + '" type="button" data-category="' + item.id + '" aria-pressed="' + (category === item.id) + '"><span class="category-kicker"><span>' + esc(item.tag) + '</span><span class="category-count">' + count + ' 案例</span></span><strong>' + esc(item.name) + '</strong><small>' + esc(item.plain) + '</small></button>';
     }).join('');
   }
   function listCases() {
     const visible = filteredCases(category);
-    $('case-count').textContent = visible.length + ' / ' + cases.filter((item) => item.category === category).length;
+    $('case-count').textContent = visible.length + ' 项';
+    $('case-filter-note').textContent = category === 'all' ? '全部范围：'+contentCount+' 个内容案例 + '+pipelineCount+' 类生成中断。' : '当前分类：'+CATEGORIES.find(item=>item.id===category).name+'。查看全部可切换其他问题。';
     $('case-list').innerHTML = visible.length ? visible.map((item, i) => '<button type="button" class="case-button" data-case="' + esc(item.id) + '" aria-current="' + (selected && selected.id === item.id) + '"><span class="case-number">' + String(i + 1).padStart(2,'0') + '</span><span><strong>' + esc(item.title) + '</strong><small>' + esc(item.repo) + '</small><span class="mini-tags"><span class="mini-tag ' + (item.fromTable ? 'table-origin' : '') + '">' + (item.fromTable ? '表内代表问题' : '同类补充案例') + '</span>' + (item.kind === 'pipeline' ? '<span class="mini-tag">不计入成品错误</span>' : '') + '</span></span><span class="case-arrow">›</span></button>').join('') : '<p class="empty-state">当前筛选下没有案例。可清空搜索或取消“只看表中七个代表问题”。</p>';
   }
   function toolOptions(current) {
@@ -85,13 +87,18 @@
   }
   function quoteCard(tool) {
     const result = toolRecord(tool);
+    const diagram = window.WIKI_AUDIT_DIAGRAMS?.[selected.id]?.[tool];
     let body = '<div class="quote-explanation"><strong>' + judgmentLabel(result) + '</strong><p>' + esc(result.explanation) + '</p>' + (selected.kind !== 'pipeline' && result.status !== 'no-output' && result.status !== 'unverified' ? '<button class="source-jump" type="button" data-show-source>看带中文说明的源码</button>' : '') + '</div>';
+    if (diagram) {
+      body += '<figure class="audit-original-diagram" data-case-id="'+esc(selected.id)+'" data-audit-diagram="'+tool+'"><figcaption>'+NAMES[tool]+' · 原始 Wiki 完整图</figcaption><p>保留原有节点、连线和错误，未重新绘制或纠正。下方摘录仅对应其中一部分。</p><div class="audit-diagram-actions"><button type="button" data-diagram-zoom="out" disabled>缩小</button><button type="button" data-diagram-zoom="in" disabled>放大</button><button type="button" data-diagram-zoom="fit" disabled>适应宽度</button><span class="audit-diagram-scale"></span></div><div class="audit-diagram-view" tabindex="0" role="region" aria-label="'+NAMES[tool]+' 原图，可滚动">正在渲染原图…</div><details><summary>原始 Mermaid 定义</summary><pre class="original-quote">'+esc(diagram.source)+'</pre></details><small>'+esc(diagram.origin)+'</small></figure><details class="audit-quote-details"><summary>查看核查摘录与中文直译</summary>';
+    }
     if (result.quote) {
       body += result.quoteZh ? '<span class="quote-label">' + (selected.kind === 'pipeline' || result.status === 'no-output' ? '原始运行记录的中文直译' : 'Wiki 原话的中文直译 · 不改动原意') + '</span><blockquote class="quote-translation">' + esc(result.quoteZh) + '</blockquote>' : '';
       body += '<span class="quote-label">' + (selected.kind === 'pipeline' || result.status === 'no-output' ? '原始运行记录' : result.status === 'not-covered' ? '相关原文 · 未说明本条具体问题' : 'Wiki 原文摘录') + '</span><pre class="original-quote">' + esc(result.quote) + '</pre>';
     } else {
       body += '<p class="no-quote">' + (result.status === 'no-output' ? '本次该仓没有可读取的成品，不能展示原文对照。' : result.status === 'not-covered' ? '未找到针对这条具体问题的原文说明；不补写或虚构一段“正确答案”。' : '本条没有可引用的对应原文，不将缺证据解释为没有问题。') + '</p>';
     }
+    if (diagram) body += '</details>';
     body += '<p class="quote-location">' + (selected.kind === 'pipeline' || result.status === 'no-output' ? '记录位置：' : '原文位置：') + esc(result.wikiLabel || '没有对应位置') + (safeURL(result.wikiUrl) ? ' · ' + link(result.wikiUrl, '打开对应 Wiki') : '') + '</p>';
     return '<article class="quote-card ' + esc(result.status) + '"><header class="quote-card-header"><h4>' + NAMES[tool] + '</h4>' + pill(result.status, selected.kind === 'pipeline') + '</header><div class="quote-content">' + body + '</div></article>';
   }
@@ -113,6 +120,7 @@
     $('pair-left').value = left;
     $('pair-right').value = right;
     $('pair-grid').innerHTML = quoteCard(left) + quoteCard(right);
+    window.WIKI_AUDIT_RENDERER?.render($('pair-grid'));
     const action = $('pair-full-reader');
     if (action) action.href = 'compare.html?left=' + left + '&right=' + right + '#case=' + encodeURIComponent(selected.id);
   }
@@ -129,7 +137,8 @@
   }
   function detail() {
     if (!selected) {
-      $('case-detail').innerHTML = '<p class="empty-state">请选择一个有核查记录的案例。</p>';
+      $('case-detail').innerHTML = '<p class="empty-state">没有符合当前筛选的案例。可点击左侧“查看全部案例 / 清除筛选”恢复完整列表。</p>';
+      window.WIKI_AUDIT_RENDERER?.render($('case-detail'));
       return;
     }
     const currentCategory = CATEGORIES.find((item) => item.id === selected.category);
@@ -138,7 +147,9 @@
     const severity = {high:'高', medium:'中', low:'低'}[selected.severity] || '未定级';
     const severityLabel = isReviewNote ? '不计事实错误' : '影响：' + severity;
     const refs = (selected.sourceEvidence || []).map((item) => link(item.url,item.label)).join('');
-    $('case-detail').innerHTML = '<div class="case-meta"><span>' + esc(currentCategory.name) + '</span><span> / </span><span>' + esc(selected.repo) + '</span><span class="severity-pill ' + esc(selected.severity) + '">' + severityLabel + '</span><span class="mini-tag ' + (selected.fromTable ? 'table-origin' : '') + '">' + (selected.fromTable ? '表内代表问题' : isReviewNote ? '补充核查' : '同类补充案例') + '</span></div>' +
+    const visible = filteredCases(category);
+    const position = visible.findIndex(item=>item.id===selected.id);
+    $('case-detail').innerHTML = '<nav class="case-pagination" aria-label="切换案例"><span>当前列表第 '+(position+1)+' / '+visible.length+' 项</span><button type="button" data-case-step="-1" '+(position<=0?'disabled':'')+'>上一项</button><button type="button" data-case-step="1" '+(position>=visible.length-1?'disabled':'')+'>下一项</button></nav><div class="case-meta"><span>' + esc(currentCategory.name) + '</span><span> / </span><span>' + esc(selected.repo) + '</span><span class="severity-pill ' + esc(selected.severity) + '">' + severityLabel + '</span><span class="mini-tag ' + (selected.fromTable ? 'table-origin' : '') + '">' + (selected.fromTable ? '表内代表问题' : isReviewNote ? '补充核查' : '同类补充案例') + '</span></div>' +
       '<h2>' + esc(selected.title) + '</h2><div class="plain-definition"><strong>这类问题是什么意思</strong><p>' + esc(currentCategory.explain || currentCategory.plain) + '</p></div><p class="case-impact"><strong>' + (isReviewNote ? '本条结论：' : '会带来什么影响：') + '</strong>' + esc(selected.impact) + '</p>' +
       (selected.plainExample ? '<div class="plain-example"><strong>这个案例里发生了什么</strong><p>' + esc(selected.plainExample) + '</p></div>' : '') +
       '<button class="source-jump case-source-shortcut" type="button" data-show-source>' + (isPipeline ? '跳到下方运行记录' : '跳到下方源码与中文说明') + '</button>' +
@@ -165,8 +176,11 @@
   function readHash() {
     const params = new URLSearchParams(location.hash.slice(1));
     const requestedCase = cases.find((item) => item.id === params.get('case'));
-    const requestedCategory = CATEGORIES.find((item) => item.id === params.get('category'));
-    if (requestedCase) {selected = requestedCase; category = requestedCase.category;}
+    const requestedCategory = params.get('category') === 'all' ? {id:'all'} : CATEGORIES.find((item) => item.id === params.get('category'));
+    if (requestedCase) {
+      selected = requestedCase;
+      category = selected.category === 'review-notes' ? selected.category : requestedCategory && (requestedCategory.id==='all'||requestedCategory.id===selected.category) ? requestedCategory.id : 'all';
+    }
     else if (requestedCategory) {
       category = requestedCategory.id;
       selected = filteredCases(category)[0] || cases.find((item) => item.category === category) || null;
@@ -202,6 +216,13 @@
     if (matchMedia('(max-width:800px)').matches) $('case-detail').scrollIntoView({block:'start',behavior:'smooth'});
   });
   $('case-detail').addEventListener('click', (event) => {
+    const step = event.target.closest('[data-case-step]');
+    if (step) {
+      const visible=filteredCases(category);
+      const next=visible[visible.findIndex(item=>item.id===selected.id)+Number(step.dataset.caseStep)];
+      if (next) {selected=next;listCases();detail();saveHash();$('case-detail').scrollIntoView({block:'start'});}
+      return;
+    }
     if (event.target.closest('[data-show-source]')) {
       const source = $('source-evidence');
       const first = source.querySelector('details');
@@ -215,6 +236,11 @@
     document.querySelector('.pair-section').scrollIntoView({block:'start',behavior:'smooth'});
   });
   $('case-search').addEventListener('input', (event) => {query = event.target.value.trim().toLocaleLowerCase(); applyFilters();});
+  $('show-all-cases').addEventListener('click',()=> {
+    category='all';query='';tableOnly=false;
+    $('case-search').value='';$('table-only').checked=false;
+    applyFilters();
+  });
   $('table-only').addEventListener('change', (event) => {tableOnly = event.target.checked; applyFilters();});
   window.addEventListener('hashchange', () => {readHash(); render();});
   readHash(); render();

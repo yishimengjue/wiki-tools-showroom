@@ -7,9 +7,12 @@
   <title>问题对照 · 五工具 Wiki 对比</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/review-theme.css">
-  <link rel="stylesheet" href="assets/audit.css">
+  <link rel="stylesheet" href="assets/audit.css?v=20260916-compact">
+  <script src="assets/mermaid.min.js" defer></script>
   <script src="assets/audit-data.js" defer></script>
-  <script src="assets/audit.js" defer></script>
+  <script src="assets/audit-diagrams.js" defer></script>
+  <script src="assets/audit-diagram-renderer.js" defer></script>
+  <script src="assets/audit.js?v=20260916-compact" defer></script>
 </head>
 <body class="audit-page">
   <header class="topbar">
@@ -26,12 +29,14 @@
       <div><p class="eyebrow">七仓内容核查 / 历史运行故障单列</p><h1>同一个问题，五个工具怎么写</h1></div>
       <div class="audit-scope"><span id="audit-count">正在载入核查记录</span><a href="#audit-method">查看口径</a></div>
     </header>
-    <p class="audit-lead">先选上方的问题类型，再从左侧选择真实案例。页面会依次说明“Wiki 哪里不对、源码实际怎样、会造成什么误解、其他工具是否也犯了同类问题”；没有写到的内容不算写错。</p>
+    <p class="audit-lead">默认列出全部案例，左侧切换具体问题，上方按类型筛选。部分类型只有 1 个已确认案例，不代表全站只有 1 个问题；没有写到的内容不算写错。</p>
     <nav class="category-grid" id="category-grid" aria-label="抽象问题类别"></nav>
     <div class="audit-workbench">
       <aside class="case-sidebar" aria-label="具体问题列表">
         <div class="case-filters">
           <div class="case-list-heading"><h2>具体案例</h2><span id="case-count"></span></div>
+          <p id="case-filter-note" class="case-filter-note"></p>
+          <button id="show-all-cases" class="small-button" type="button">查看全部案例 / 清除筛选</button>
           <label class="sr-only" for="case-search">搜索仓库或问题</label>
           <input id="case-search" type="search" placeholder="搜索仓库或问题" autocomplete="off">
           <label class="table-only"><input id="table-only" type="checkbox"> 只看表中七个代表问题</label>

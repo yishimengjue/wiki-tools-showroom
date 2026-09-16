@@ -2,6 +2,26 @@
 .principles-horizontal-hero { padding: 28px 32px; background: linear-gradient(120deg,#fff,#eaf4ff); border: 1px solid var(--line); border-radius: 16px; }
 .principles-horizontal-hero h1 { margin: 5px 0 12px; font-size: clamp(30px,4vw,46px); line-height: 1.2; }
 .principles-horizontal-hero > p:last-child { max-width: 950px; margin: 0; font-size: 16px; color: var(--muted); }
+.chain-comparison { min-width: 0; padding: 24px; margin-top: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); scroll-margin-top: 80px; }
+.chain-comparison-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 18px; }
+.chain-comparison-heading h2 { margin: 3px 0 0; font-size: 25px; line-height: 1.4; }
+.chain-comparison-heading p { margin: 0; }.chain-comparison-heading > p { max-width: 460px; font-size: 15px; color: var(--muted); }
+.chain-table-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; overscroll-behavior-x: contain; }
+.chain-table { width: 100%; min-width: 1160px; border-collapse: separate; border-spacing: 0; table-layout: fixed; text-align: left; background: var(--panel); }
+.chain-table .chain-tool-col { width: 160px; }.chain-table .chain-difference-col { width: 23%; }
+.chain-table th, .chain-table td { padding: 17px 18px; vertical-align: top; border-bottom: 1px solid var(--line); }
+.chain-table thead th { position: relative; padding: 13px 18px; font-size: 14px; color: #0d4f91; background: var(--blue-soft); }
+.chain-table thead th span { display: block; font-size: 11px; margin-bottom: 4px; color: var(--blue); }
+.chain-table thead th i { position: absolute; right: -8px; top: 50%; font-size: 18px; transform: translateY(-50%); font-style: normal; z-index: 1; }
+.chain-table tbody th { position: sticky; left: 0; z-index: 2; background: var(--panel); box-shadow: 1px 0 0 var(--line); font-size: 15px; }
+.chain-table tbody th a { text-underline-offset: 4px; white-space: nowrap; }.chain-table tbody th small { display: block; margin-top: 8px; color: var(--muted); font-weight: 400; font-size: 12px; }
+.chain-table td strong { display: block; font-size: 15px; line-height: 1.6; }.chain-table td p { margin: 6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.chain-stage { position: relative; }.chain-stage-next::after { content: "\2192"; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); color: var(--blue); font-size: 18px; background: var(--panel); z-index: 1; }
+.chain-table .chain-difference { background: var(--subtle); border-left: 1px solid var(--line); }.chain-difference strong { color: #0d4f91; }
+.chain-table .chain-unknown { font-style: normal; color: #65788b; }
+.chain-table tbody tr:last-child > * { border-bottom: 0; }
+.chain-table caption { caption-side: bottom; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 13px; text-align: left; color: var(--muted); }
+.chain-comparison-note { margin: 15px 0 0; font-size: 13px; line-height: 1.8; color: var(--muted); }.chain-comparison-note strong { color: var(--ink); }
 .tool-nav { display: flex; flex-wrap: wrap; gap: 9px; margin: 22px 0 12px; scroll-margin-top: 80px; }
 .tool-nav a { padding: 8px 15px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; font-size: 14px; font-weight: 700; text-decoration: none; }
 .tool-nav a:hover { background: var(--blue-soft); border-color: var(--blue); }
@@ -49,6 +69,7 @@
 @media(max-width:700px) {
   .principles-horizontal-shell { padding: 18px 12px 45px; }
   .principles-horizontal-hero { padding: 22px; }
+  .chain-comparison { padding: 16px; }.chain-comparison-heading { display: block; }.chain-comparison-heading > p { margin-top: 8px; }
   .principle-lane { padding: 16px; }
   .lane-heading { flex-wrap: wrap; gap: 8px; }
   .environment-grid { grid-template-columns: 1fr; }

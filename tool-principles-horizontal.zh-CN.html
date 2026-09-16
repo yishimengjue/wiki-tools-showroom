@@ -7,12 +7,30 @@
   <title>五个wiki工具对比</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/review-theme.css">
-  <link rel="stylesheet" href="assets/principles-horizontal.css?v=20260916-horizontal-2">
+  <link rel="stylesheet" href="assets/principles-horizontal.css?v=20260916-chain-table">
 </head>
 <body>
   <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link active" aria-current="page" href="tool-principles-horizontal.zh-CN.html">工具原理</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
   <main class="principles-horizontal-shell">
     <header class="principles-horizontal-hero"><p class="eyebrow">生成流程与工具依赖</p><h1>五个wiki工具对比</h1><p>每个工具先看从左到右的完整流程，再横向查看读取源码、调度任务、模型写作和校验分别用什么工具。下方保留运行依赖和本次评测配置。</p></header>
+    <section class="chain-comparison" id="chain-overview" aria-labelledby="chain-overview-title">
+      <header class="chain-comparison-heading"><div><p class="eyebrow">同一件事，五种做法</p><h2 id="chain-overview-title">五工具链路对比</h2></div><p>都在把代码写成说明书，区别在于怎么找材料、分工和检查。</p></header>
+      <div class="chain-table-scroll" tabindex="0" role="region" aria-label="五工具链路速查表，可左右滚动">
+        <table class="chain-table">
+          <caption>横着看一个工具的主流程，竖着看同一步的区别。点击工具名称，可查看下方详细链路和实际使用的工具。</caption>
+          <colgroup><col class="chain-tool-col"><col><col><col><col class="chain-difference-col"></colgroup>
+          <thead><tr><th scope="col">工具</th><th scope="col"><span>01</span> 怎样找代码 <i aria-hidden="true">→</i></th><th scope="col"><span>02</span> 怎样安排写作 <i aria-hidden="true">→</i></th><th scope="col"><span>03</span> 怎样检查并输出</th><th scope="col">最直观的区别</th></tr></thead>
+          <tbody>
+            <tr data-tool="local-skill"><th scope="row"><a href="#local-skill">Local Skill</a><small>查看详细链路</small></th><td class="chain-stage chain-stage-next"><strong>先选文件，再分组做摘要</strong><p>找出核心文件，整理每组材料。</p></td><td class="chain-stage chain-stage-next"><strong>按目录分配页面任务</strong><p>写作 Agent 分别读代码、写页面。</p></td><td class="chain-stage"><strong>组装、校验后发布</strong><p>检查结构、引用位置和图表格式等。</p></td><td class="chain-difference"><strong>按阶段分工写说明书</strong><p>先分组和定目录，再分配任务，最后统一组装。</p></td></tr>
+            <tr data-tool="deepwiki-open"><th scope="row"><a href="#deepwiki-open">deepwiki-open</a><small>查看详细链路</small></th><td class="chain-stage chain-stage-next"><strong>先建可检索的代码资料库</strong><p>把代码切成片段，方便按主题查找。</p></td><td class="chain-stage chain-stage-next"><strong>写一页，先查相关材料</strong><p>把检索到的代码交给模型解释。</p></td><td class="chain-stage"><strong>整理引用并保存页面</strong><p>缓存目录和正文，供网页展示。</p></td><td class="chain-difference"><strong>先建索引，再按主题取材</strong><p>写作时主要使用程序检索出的代码片段。</p></td></tr>
+            <tr data-tool="openwiki"><th scope="row"><a href="#openwiki">OpenWiki</a><small>查看详细链路</small></th><td class="chain-stage chain-stage-next"><strong>先看仓库，列出页面清单</strong><p>结合文件和已有文档规划要写什么。</p></td><td class="chain-stage chain-stage-next"><strong>从队列领页，读源码写说明</strong><p>提交页面时，记录重要说法的源码来源。</p></td><td class="chain-stage"><strong>核对说法记录和页面链接</strong><p>整理索引、来源及完成状态。</p></td><td class="chain-difference"><strong>按清单写页，并记下依据</strong><p>页面有进度记录，重要说法与源码来源关联。</p></td></tr>
+            <tr data-tool="codewiki"><th scope="row"><a href="#codewiki">CodeWiki</a><small>查看详细链路</small></th><td class="chain-stage chain-stage-next"><strong>先梳理代码的组成和关系</strong><p>从支持的文件中识别函数、类及依赖。</p></td><td class="chain-stage chain-stage-next"><strong>按模块层次编写文档</strong><p>大模块可拆成子模块继续写。</p></td><td class="chain-stage"><strong>检查图表并导出文档</strong><p>保留模块结构，输出 Markdown 或网页。</p></td><td class="chain-difference"><strong>先理清关系，再写架构</strong><p>以代码模块和依赖关系组织文档。</p></td></tr>
+            <tr data-tool="devinwiki"><th scope="row"><a href="#devinwiki">DevinWiki</a><small>查看详细链路</small></th><td class="chain-stage chain-stage-next"><strong>用户提交仓库链接</strong><p class="chain-unknown">服务内部怎样读取代码未公开。</p></td><td class="chain-stage chain-stage-next"><strong>在线服务完成生成</strong><p class="chain-unknown">内部怎样分工、检索和写作未公开。</p></td><td class="chain-stage"><strong>返回可直接阅读的网页</strong><p class="chain-unknown">能看到成品，内部校验方式未确认。</p></td><td class="chain-difference"><strong>输入链接，直接拿到网页</strong><p>使用者不必操作中间流程，但无法据此审查内部工具链。</p></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chain-comparison-note"><strong>这张表比较工作方式，不是质量排名。</strong>实际运行可能反复读代码、修改或重试；有校验步骤也不等于每句话都正确。这里只概括下方已经列明的工具链，不给未公开的步骤补猜测。</p>
+    </section>
     <nav class="tool-nav" id="tool-nav" aria-label="选择要查看的工具"><a href="#local-skill">Local Skill</a><a href="#deepwiki-open">deepwiki-open</a><a href="#openwiki">OpenWiki</a><a href="#codewiki">CodeWiki</a><a href="#devinwiki">DevinWiki</a></nav>
     <p class="layout-note"><strong>每个工具占一整行，步骤从左到右用箭头连接，不再纵向堆叠。</strong>下方按职责横排工具清单。窄窗口和手机仍保持横向，可左右滑动；DevinWiki 内部工具未公开，不推测补齐。</p>
     <section class="tool-lanes" aria-label="五工具流程与依赖横向展示">

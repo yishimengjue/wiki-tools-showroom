@@ -100,6 +100,13 @@ const topicContext = {window:{}};
 vm.runInNewContext(read('assets/diagram-topics.js'),topicContext);
 if (topicContext.window.WIKI_DIAGRAM_TOPICS[0].id !== 'resource-handoff') errors.push('Resource/source generation must be the first/default diagram topic.');
 const principles = read('tool-principles-horizontal.zh-CN.html');
+const chainTable = principles.match(/<table class="chain-table">([\s\S]*?)<\/table>/)?.[1] || '';
+if ((chainTable.match(/<tr data-tool=/g) || []).length !== 5) errors.push('Expected five tools in the plain-language chain comparison table.');
+for (const tool of readers) {
+  const row = chainTable.match(new RegExp('<tr data-tool="' + tool + '">([\\s\\S]*?)</tr>'))?.[1] || '';
+  if ((row.match(/<td\b/g) || []).length !== 4 || !row.includes('href="#' + tool + '"')) errors.push(tool + ': incomplete chain overview or missing detail link.');
+  if (tool === 'devinwiki' && (row.match(/class="chain-unknown"/g) || []).length !== 3) errors.push('Devin internal stages must remain explicitly unknown.');
+}
 if (/class="board-wrap"/.test(principles)) errors.push('Legacy vertical tool table must not return.');
 if (!principles.includes('<h1>五个wiki工具对比</h1>')) errors.push('Unexpected principles page title.');
 for (const tool of readers) {

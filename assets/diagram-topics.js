@@ -1,6 +1,23 @@
 /* Reviewed topic matches, not automatic similarity or whole-Wiki correctness judgments. */
 window.WIKI_DIAGRAM_TOPICS = [
   {
+    id: 'resource-handoff', title: '资源和源码生成', kind: '调用时序图对调用时序图',
+    question: '构建脚本怎样把生成的材料交给资源文件和源文件？',
+    comparison: '两图都画了脚本写入资源与源码。Local 继续画到编译和运行时使用，时间跨度更长；Devin 展开脚本与加密库之间的调用和返回，到写入两个文件为止。这是范围与细节粒度的差别，不是准确性排名。',
+    tools: {
+      'local-skill': {
+        page: 'page-18', heading: 'Embedded bytes meet embedded key material',
+        fragments: ['participant X as Executable', 'B->>C: Replace AesKey and AesIv declarations', 'X->>D: Retrieve resource by ID and type'],
+        note: '看顶部参与者：有构建脚本、源码、资源、成品和运行时。读的是材料跨阶段交接，并非每条箭头都是一次函数调用。'
+      },
+      devinwiki: {
+        page: 'page-4', heading: 'Step 3: Encrypt Shellcode',
+        fragments: ['participant PyCrypto as "PyCrypto Library"', 'PyCrypto-->>BuildPy: Return encrypted data', 'BuildPy->>SourceCode: Update with key/IV values'],
+        note: '看脚本与 PyCrypto 两列之间的往返箭头：它具体展示请求和返回；这张图不负责说明后续编译和运行。'
+      }
+    }
+  },
+  {
     id: 'build-order', title: '构建顺序', kind: '流程图对流程图',
     question: '从准备输入到生成成品，步骤是串行还是并行？',
     comparison: 'Local 用五步直线概括；Devin 展开了输入、编译工具和中间文件，还画出了并行分支。细节更多不等于更准确：这两张图的构建顺序都有已确认问题。',
@@ -32,23 +49,6 @@ window.WIKI_DIAGRAM_TOPICS = [
         page: 'page-5', heading: 'Linking Process',
         fragments: ['buildpy -->|"first step"| buildasm', 'resourceo -->|"linked in"| link', 'ghosto -->|"linked in"| link'],
         note: '既列文件，也列负责处理的函数。first step 等词说明阶段，linked in 的箭头说明文件去向，不能把所有箭头都当作调用。'
-      }
-    }
-  },
-  {
-    id: 'resource-handoff', title: '资源与源码如何生成', kind: '调用时序图对调用时序图',
-    question: '构建脚本怎样把生成的材料交给资源文件和源文件？',
-    comparison: '两图都画了脚本写入资源与源码。Local 继续画到编译和运行时使用，时间跨度更长；Devin 展开脚本与加密库之间的调用和返回，到写入两个文件为止。这是范围与细节粒度的差别，不是准确性排名。',
-    tools: {
-      'local-skill': {
-        page: 'page-18', heading: 'Embedded bytes meet embedded key material',
-        fragments: ['participant X as Executable', 'B->>C: Replace AesKey and AesIv declarations', 'X->>D: Retrieve resource by ID and type'],
-        note: '看顶部参与者：有构建脚本、源码、资源、成品和运行时。读的是材料跨阶段交接，并非每条箭头都是一次函数调用。'
-      },
-      devinwiki: {
-        page: 'page-4', heading: 'Step 3: Encrypt Shellcode',
-        fragments: ['participant PyCrypto as "PyCrypto Library"', 'PyCrypto-->>BuildPy: Return encrypted data', 'BuildPy->>SourceCode: Update with key/IV values'],
-        note: '看脚本与 PyCrypto 两列之间的往返箭头：它具体展示请求和返回；这张图不负责说明后续编译和运行。'
       }
     }
   }

@@ -135,7 +135,9 @@ a{color:var(--blue)}
 .home-table{width:100%;border-collapse:collapse;font-size:16px;line-height:1.75;background:var(--panel);text-align:left}
 .home-table th,.home-table td{padding:16px;border-bottom:1px solid var(--line);vertical-align:top}
 .home-table th{font-weight:700}.home-table thead th{background:var(--subtle);color:var(--ink)}
-.style-table{min-width:820px}.style-table th:first-child{width:145px}.style-table td:nth-child(2){width:32%}.style-table td:nth-child(3){width:29%}
+.style-table{min-width:1080px;table-layout:fixed}.style-table th:first-child{width:125px}.style-table th:nth-child(2){width:21%}.style-table th:nth-child(3){width:27%}.style-table th:nth-child(4){width:20%}
+.style-table .tool-strength{background:var(--blue-soft)}.tool-strength strong{display:block;color:var(--blue);margin-bottom:6px}
+.strength-boundary{font-size:15px;line-height:1.85;padding:16px 18px;border-left:3px solid var(--blue);background:var(--subtle);border-radius:0 8px 8px 0}
 .home-table a{text-underline-offset:3px}.home-table caption{caption-side:bottom;text-align:left;padding:12px 16px;font-size:13px;color:var(--muted)}
 .training-matrix{min-width:1120px}.training-matrix tbody th{width:280px;min-width:260px}.training-matrix th small{display:block;font-size:14px;line-height:1.7;color:var(--muted);font-weight:400;margin-top:7px}
 .material-cell{display:flex;flex-direction:column;gap:5px;align-items:flex-start;min-width:112px;width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:inherit;cursor:pointer;text-align:left}

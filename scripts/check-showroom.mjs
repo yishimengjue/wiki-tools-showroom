@@ -82,6 +82,26 @@ for (const file of flowDetailPages) {
   for (const marker of ['data-flow','data-example','data-call-body','detail.js']) if (!html.includes(marker)) errors.push(file + ': missing ' + marker);
 }
 const home = read('index.html');
+const styleTable = home.match(/<table class="home-table style-table">([\s\S]*?)<\/table>/)?.[1] || '';
+if (!styleTable.includes('优点') || (styleTable.match(/class="tool-strength"/g) || []).length !== 5) errors.push('Each tool needs an evidence-backed strengths cell.');
+const contentCases = cases.filter(item=>item.kind !== 'pipeline' && item.category !== 'review-notes');
+if (contentCases.length !== 9) errors.push('Update the homepage nine-case comparison scope.');
+for (const tool of ['deepwiki-open','codewiki']) {
+  const correct = contentCases.filter(item=>item.tools[tool].status === 'correct').length;
+  const wrong = contentCases.filter(item=>item.tools[tool].status === 'error').length;
+  if (correct !== 3 || wrong !== 0) errors.push('Update the scoped error-count note for ' + tool);
+}
+const topicContext = {window:{}};
+vm.runInNewContext(read('assets/diagram-topics.js'),topicContext);
+if (topicContext.window.WIKI_DIAGRAM_TOPICS[0].id !== 'resource-handoff') errors.push('Resource/source generation must be the first/default diagram topic.');
+const principles = read('tool-principles-horizontal.zh-CN.html');
+if (!principles.includes('<h1>五个wiki工具对比</h1>')) errors.push('Unexpected principles page title.');
+for (const tool of readers) {
+  const lane = principles.match(new RegExp('<article class="principle-lane" id="' + tool + '">([\\s\\S]*?)</article>'))?.[1] || '';
+  const expectedSteps = tool === 'devinwiki' ? 3 : 4;
+  if ((lane.match(/class="process-step /g) || []).length !== expectedSteps) errors.push(tool + ': incomplete horizontal chain.');
+  if ((lane.match(/class="module-column"/g) || []).length !== 4 || !lane.includes('运行依赖') || !lane.includes('本次评测实际使用')) errors.push(tool + ': missing horizontal tool inventory.');
+}
 if ([...home.matchAll(/\bid="repository-intro"/g)].length !== 1) errors.push('Expected one repository introduction on the home page.');
 if (home.indexOf('id="repository-intro"') < home.indexOf('class="repo-grid"')) errors.push('Repository introduction must follow the comparison and scope sections.');
 if ([...home.matchAll(/\bclass="repository-brief-flow"/g)].length !== 1) errors.push('Expected one short repository example.');

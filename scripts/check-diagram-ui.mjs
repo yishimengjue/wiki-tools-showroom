@@ -18,6 +18,9 @@ try {
   await page.goto(base + '/compare.html');
   await ready();
   assert.equal(await page.locator('[data-diagram-topic]').count(),3);
+  assert.equal(await page.locator('[data-diagram-topic]').first().getAttribute('data-diagram-topic'),'resource-handoff');
+  assert.equal(await page.locator('[data-diagram-topic="resource-handoff"]').getAttribute('aria-pressed'),'true');
+  assert(await page.locator('.diagram-viewport').first().evaluate(el=>el.getBoundingClientRect().height<=360),'Compact diagram viewport should not exceed 360px.');
   for (const topic of ['build-order','build-inputs','resource-handoff']) {
     await page.locator('[data-diagram-topic="' + topic + '"]').click();
     await ready();

@@ -4,14 +4,14 @@
   const TOOLS = ['local-skill', 'devinwiki', 'deepwiki-open', 'openwiki', 'codewiki'];
   const NAMES = {'local-skill':'Local Skill', devinwiki:'DevinWiki', 'deepwiki-open':'DeepWiki Open', openwiki:'OpenWiki', codewiki:'CodeWiki'};
   const CATEGORIES = [
-    {id:'interface-contract', name:'接口契约失真', plain:'命令、参数或输入用法写错', tag:'接口用法'},
-    {id:'capability-scope', name:'能力边界误判', plain:'把局部能力说成整体保证', tag:'能力范围'},
-    {id:'control-flow', name:'控制流建模错误', plain:'步骤先后、分支或依赖画错', tag:'执行流程'},
-    {id:'error-semantics', name:'异常处理语义错误', plain:'把出错后的处理方式讲错', tag:'失败处理'},
-    {id:'state-semantics', name:'状态变化建模错误', plain:'混淆中间状态与最终结果', tag:'状态变化'},
-    {id:'evidence-mismatch', name:'事实与证据错配', plain:'引用真实，但没指到所说的实现', tag:'证据对应'},
-    {id:'pipeline-contract', name:'跨阶段契约冲突', plain:'生成阶段采用不兼容的规则', tag:'生成故障 · 单列'},
-    {id:'review-notes', name:'补充核查', plain:'区分局部说明与完整覆盖', tag:'不计事实错误'}
+    {id:'interface-contract', name:'用法写错', plain:'Wiki 给出的命令、参数或输入，照着操作会失败', explain:'文档告诉读者“这样输入就能用”，但程序实际不接受这种写法。', tag:'接口用法'},
+    {id:'capability-scope', name:'把能力说大了', plain:'只在部分情况有效，却写成所有情况都有效', explain:'程序只在某条路径或某些条件下提供能力，Wiki 却省略条件，给人“始终有效”的印象。', tag:'能力范围'},
+    {id:'control-flow', name:'执行顺序画错', plain:'流程图或正文把步骤先后、分支关系写反', explain:'代码明明先做 A 再做 B，Wiki 却画成先 B 后 A，或把依次执行画成同时执行。', tag:'执行流程'},
+    {id:'error-semantics', name:'出错后会怎样写错', plain:'程序报错、继续执行或返回原值，被 Wiki 讲成另一种结果', explain:'错误发生后，程序究竟停止、继续还是返回旧值，会直接影响读者判断；Wiki 在这里描述错了。', tag:'失败处理'},
+    {id:'state-semantics', name:'中间状态和最终结果混淆', plain:'程序暂时保存了什么，与最后是否成功被混为一谈', explain:'过程中出现一个临时结果，不代表最终请求成功；Wiki 没有把“中间发生什么”和“最后结果是什么”分开。', tag:'状态变化'},
+    {id:'evidence-mismatch', name:'引用没有证明结论', plain:'链接能打开，但指向的代码不是文中所说的实现', explain:'引用位置真实存在，却没有执行 Wiki 所描述的功能，读者无法用这段代码验证结论。', tag:'证据对应'},
+    {id:'pipeline-contract', name:'生成步骤前后规则冲突', plain:'前一步选中的文件，后一步又全部排除，导致生成停止', explain:'像前一位同事把材料放进文件夹，后一位同事按另一套规则把材料全部丢掉，最终没有内容可以继续写。', tag:'生成故障 · 单列'},
+    {id:'review-notes', name:'需要补充说明', plain:'内容没有写全，但现有文字本身不一定错误', explain:'缺少边界或风险提示可以改进，但不能把“没有提到”直接判成“写错了”。', tag:'不计事实错误'}
   ];
   const STATUS = {
     error:{label:'有此问题', meaning:'同一检查点存在明确错误'},
@@ -139,8 +139,8 @@
     const severityLabel = isReviewNote ? '不计事实错误' : '影响：' + severity;
     const refs = (selected.sourceEvidence || []).map((item) => link(item.url,item.label)).join('');
     $('case-detail').innerHTML = '<div class="case-meta"><span>' + esc(currentCategory.name) + '</span><span> / </span><span>' + esc(selected.repo) + '</span><span class="severity-pill ' + esc(selected.severity) + '">' + severityLabel + '</span><span class="mini-tag ' + (selected.fromTable ? 'table-origin' : '') + '">' + (selected.fromTable ? '表内代表问题' : isReviewNote ? '补充核查' : '同类补充案例') + '</span></div>' +
-      '<h2>' + esc(selected.title) + '</h2><p class="case-impact"><strong>' + (isReviewNote ? '本条结论：' : '会带来什么影响：') + '</strong>' + esc(selected.impact) + '</p>' +
-      (selected.plainExample ? '<div class="plain-example"><strong>举个例子</strong><p>' + esc(selected.plainExample) + '</p></div>' : '') +
+      '<h2>' + esc(selected.title) + '</h2><div class="plain-definition"><strong>这类问题是什么意思</strong><p>' + esc(currentCategory.explain || currentCategory.plain) + '</p></div><p class="case-impact"><strong>' + (isReviewNote ? '本条结论：' : '会带来什么影响：') + '</strong>' + esc(selected.impact) + '</p>' +
+      (selected.plainExample ? '<div class="plain-example"><strong>这个案例里发生了什么</strong><p>' + esc(selected.plainExample) + '</p></div>' : '') +
       '<button class="source-jump case-source-shortcut" type="button" data-show-source>' + (isPipeline ? '跳到下方运行记录' : '跳到下方源码与中文说明') + '</button>' +
       '<section class="skill-fix" aria-label="Skill 优化方向"><strong>Skill 优化方向</strong><p>' + esc(selected.skillFix) + '</p></section>' +
       '<h3 class="five-way-title">五工具在这条检查点上的表现</h3><p class="section-caption">' + (isPipeline ? '本案例没有五工具同批次对照测试，不把未测工具标为通过。' : isReviewNote ? '本条不计事实错误。区分原文已写对的局部事实与尚未覆盖的其他边界，不要求每段文字列出所有风险。' : '“说明正确”只适用于本条；未说明与部分说明均不能当作正确对照。') + '</p>' +

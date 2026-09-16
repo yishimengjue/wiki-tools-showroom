@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
   <title>五工具 Wiki 对比 · 七仓核查与成品对读</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/review-theme.css">
@@ -14,11 +14,27 @@
 <body>
   <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link active" aria-current="page" href="index.html">总览</a><a class="top-link" href="tool-principles-horizontal.zh-CN.html">工具原理</a><a class="top-link" href="index.html#repository-intro">仓库说明</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
   <main class="landing">
-    <header class="overview-intro"><p class="eyebrow">五工具 · 七仓库 · 同一源码快照</p><h1>Wiki 成品与事实准确性对比</h1><p>从多个 GitHub 仓库中选择 Ghost 展示完整成品；七个仓库的具体问题按类型归类，再逐项比较五个工具写了什么、是否与源码对应。</p><div class="overview-facts"><span>完整成品：Ghost 五份 Wiki</span><span>问题分类：7 类</span><span>生成中断与内容错误分开</span></div></header>
-    <section class="entry-grid" aria-label="三种查看方式">
-      <article class="entry-card"><span class="entry-label"><b>01</b> 完整成品</span><h2>两个工具，左右对读</h2><p>任意选择两个工具，独立翻页和搜索。同一屏查看完整正文、表格、代码块和流程图，不再来回切换五个页面。</p><div class="reader-mini" aria-hidden="true"><div><b>左侧 Wiki</b><i class="skeleton-line"></i><i class="skeleton-line short"></i><div class="mini-graph"><i></i>→<i></i>→<i></i></div></div><div><b>右侧 Wiki</b><i class="skeleton-line"></i><div class="mini-code">function → condition → result<br>source → explanation</div></div></div><a class="button primary" href="compare.html">打开成品对读</a></article>
-      <article class="entry-card"><span class="entry-label"><b>02</b> 同一检查点</span><h2>一条问题，五工具对照</h2><p>上方选择抽象问题类别，左侧选择具体案例，右侧查看各工具的判断、原文和源码依据；也可以将其中两个工具放在一起细看。</p><div class="mini-status-grid" aria-hidden="true"><span class="mini-error">有此问题</span><span class="mini-good">说明正确</span><span>部分说明</span><span>未说明</span><span>无成品</span></div><a class="button primary" href="issues-compare.html">打开问题对照</a></article>
-      <article class="entry-card principle-entry"><span class="entry-label"><b>03</b> 生成原理</span><h2>五个工具怎样把源码变成 Wiki</h2><p>横向查看每个工具由谁控制流程、使用哪些源码工具、何时调用模型，以及运行时依赖哪些软件或在线服务。</p><div class="principle-mini-flow" aria-hidden="true"><span>Git 仓库</span><i>→</i><span>流程控制器</span><i>→</i><span>模型分析</span><i>→</i><span>Wiki 成品</span></div><a class="button primary" href="tool-principles-horizontal.zh-CN.html">横向查看工具原理</a></article>
+    <header class="overview-intro">
+      <p class="overview-result"><strong>目前效果：</strong>五种工具都能生成可读 Wiki，但现有七仓测试中没有一种同时做到内容完整、事实准确和稳定生成；Local Skill 机制解释较细，仍需先纠错再用于训练数据。</p>
+      <p class="eyebrow">五工具 · 七仓库 · 同一源码快照</p>
+      <h1>Wiki 生成工具实测与源码核查</h1>
+      <p>本网页记录从工具调研到问题确认的全过程。结论来自 Wiki 原文与对应仓库源码的逐项对照，不用页面数量、图表数量代替事实核查。</p>
+      <div class="overview-facts"><span>5 种 Wiki 工具</span><span>7 个不同类型仓库</span><span>Ghost 五份成品可左右对读</span><span>内容错误与运行中断分开统计</span></div>
+    </header>
+    <section class="study-flow" aria-labelledby="study-flow-title">
+      <div class="section-head"><div><p class="eyebrow">本网页怎样得到结论</p><h2 id="study-flow-title">从工具调研到源码确认，共五步</h2></div><p>每一步都可进入对应页面查看原始材料。</p></div>
+      <div class="study-flow-track">
+        <a class="study-step" href="tool-principles-horizontal.zh-CN.html"><span>01</span><strong>调研 Wiki 工具</strong><small>确认五个工具的定位、输入、输出和公开边界</small></a>
+        <i aria-hidden="true">→</i>
+        <a class="study-step" href="tool-principles-horizontal.zh-CN.html"><span>02</span><strong>拆解生成原理</strong><small>横向比较读取源码、任务调度、模型写作和校验</small></a>
+        <i aria-hidden="true">→</i>
+        <a class="study-step" href="#repository-intro"><span>03</span><strong>在七个仓库实测</strong><small>覆盖 Python、Go、JavaScript、TypeScript 和 C/C++</small></a>
+        <i aria-hidden="true">→</i>
+        <a class="study-step" href="compare.html"><span>04</span><strong>比较 Wiki 成品</strong><small>选择两个工具，左右查看正文、代码和流程图差异</small></a>
+        <i aria-hidden="true">→</i>
+        <a class="study-step" href="issues-compare.html"><span>05</span><strong>展示并解释问题</strong><small>对照 Wiki 原话、仓库源码、影响和 Skill 优化方法</small></a>
+      </div>
+      <p class="study-flow-note">简单理解：先弄清工具怎么工作，再让它们处理同一批仓库，最后回到源码判断 Wiki 到底写对没有。</p>
     </section>
     <section class="section home-review-section" id="tool-differences" aria-labelledby="tool-differences-title">
       <div class="section-head"><div><p class="eyebrow">七仓产物观察 / Ghost 原文例子</p><h2 id="tool-differences-title">五个工具的实际差异</h2></div></div>

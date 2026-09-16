@@ -28,3 +28,16 @@
 @media(max-width:1050px){.flow-row{grid-template-columns:1fr}.flow-row.blackbox-flow{grid-template-columns:1fr}.flow-row>i{transform:rotate(90deg)}.principle-summary{grid-template-columns:1fr}}
 @media(max-width:650px){.principles-shell{padding:18px 12px 65px}.principles-hero{padding:27px;border-radius:18px}.principle-card{padding:19px}.principle-card>header{grid-template-columns:auto 1fr}.visibility{grid-column:2;width:max-content}.flow-node{min-height:auto}}
 @media(prefers-color-scheme:dark){.principles-hero{background:linear-gradient(135deg,#1b2521,#20352d)}.flow-node{background:#222b27}.flow-node.controller{background:#312d21}.flow-node.model{background:#1e3038}.flow-node.check{background:#1c3028}.flow-node.unknown{background:repeating-linear-gradient(135deg,#29262c,#29262c 10px,#332f36 10px,#332f36 20px)}.run-note{background:#252d29}.layer-legend span,.summary-paths article{background:var(--panel)}.tool-index{background:color-mix(in srgb,var(--accent) 28%,#1b2521)}.dependency-strip span{background:color-mix(in srgb,var(--accent) 18%,#1b2521)}.principle-mini-flow span{background:#252d29}}
+
+/* Keep the legacy detail page consistent with the public blue-and-white showroom. */
+.principles-hero{background:linear-gradient(135deg,#fff,#eaf4ff);border-radius:18px}
+.legend-controller,.legend-model,.legend-check{background:#dcebfb}.legend-unknown{background:#edf2f7}
+.summary-paths article{border-left-color:var(--blue);box-shadow:0 7px 24px rgba(30,92,153,.06)}
+.summary-paths article:last-child{border-left-color:var(--blue)}
+.principle-card{border-top-color:var(--blue)!important;box-shadow:0 10px 30px rgba(30,92,153,.06)}
+.tool-index{background:var(--blue-soft);color:var(--blue)}
+.visibility.local,.visibility.unknown{background:var(--blue-soft);color:var(--blue)}
+.flow-node,.flow-node.controller,.flow-node.model,.flow-node.check{background:#f5faff}
+.flow-node.unknown{background:repeating-linear-gradient(135deg,#f5f8fb,#f5f8fb 10px,#ebf1f7 10px,#ebf1f7 20px)}
+.run-note,.principle-mini-flow span{background:var(--blue-soft)}
+.principle-mini-flow i{color:var(--blue)}

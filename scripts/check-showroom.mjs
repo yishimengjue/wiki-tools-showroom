@@ -90,6 +90,10 @@ const design = read('lightweight-wiki-design.html');
 for (const page of ['index.html', 'tool-principles-horizontal.zh-CN.html']) {
   if (!read(page).includes('href="lightweight-wiki-design.html"')) errors.push(page + ': missing lightweight design entry.');
 }
+for (const page of ['index.html', 'tool-principles-horizontal.zh-CN.html', 'lightweight-wiki-design.html']) {
+  const nav = read(page).match(/<nav aria-label="主导航">([\s\S]*?)<\/nav>/)?.[1] || '';
+  if ([...nav.matchAll(/href="([^"]+)"/g)].at(-1)?.[1] !== 'lightweight-wiki-design.html') errors.push(page + ': lightweight design must be last in navigation.');
+}
 for (const flow of ['original', 'lightweight']) {
   const chain = design.match(new RegExp('<ol[^>]*data-flow="' + flow + '"[^>]*>([\\s\\S]*?)</ol>'))?.[1] || '';
   if ((chain.match(/class="process-step"/g) || []).length !== 6) errors.push('Lightweight design: incomplete ' + flow + ' flow.');

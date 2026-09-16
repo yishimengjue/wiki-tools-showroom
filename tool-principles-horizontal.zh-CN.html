@@ -7,14 +7,14 @@
   <title>五个wiki工具对比</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/review-theme.css">
-  <link rel="stylesheet" href="assets/principles-horizontal.css">
+  <link rel="stylesheet" href="assets/principles-horizontal.css?v=20260916-horizontal-2">
 </head>
 <body>
   <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link active" aria-current="page" href="tool-principles-horizontal.zh-CN.html">工具原理</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
   <main class="principles-horizontal-shell">
     <header class="principles-horizontal-hero"><p class="eyebrow">生成流程与工具依赖</p><h1>五个wiki工具对比</h1><p>每个工具先看从左到右的完整流程，再横向查看读取源码、调度任务、模型写作和校验分别用什么工具。下方保留运行依赖和本次评测配置。</p></header>
     <nav class="tool-nav" id="tool-nav" aria-label="选择要查看的工具"><a href="#local-skill">Local Skill</a><a href="#deepwiki-open">deepwiki-open</a><a href="#openwiki">OpenWiki</a><a href="#codewiki">CodeWiki</a><a href="#devinwiki">DevinWiki</a></nav>
-    <p class="layout-note">箭头只表示主流程先后；下方按职责列工具，不表示所有工具每次都会调用。手机上可左右滑动。DevinWiki 内部工具未公开，不推测补齐。</p>
+    <p class="layout-note"><strong>每个工具占一整行，步骤从左到右用箭头连接，不再纵向堆叠。</strong>下方按职责横排工具清单。窄窗口和手机仍保持横向，可左右滑动；DevinWiki 内部工具未公开，不推测补齐。</p>
     <section class="tool-lanes" aria-label="五工具流程与依赖横向展示">
       <article class="principle-lane" id="local-skill">
         <header class="lane-heading"><div><h2>Local Skill</h2><p>状态机驱动的分阶段 Wiki 生产线</p><span class="status">本地实现可检查</span></div><a href="#tool-nav">返回工具选择</a></header>

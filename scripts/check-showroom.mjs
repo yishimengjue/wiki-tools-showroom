@@ -82,6 +82,11 @@ for (const file of flowDetailPages) {
   for (const marker of ['data-flow','data-example','data-call-body','detail.js']) if (!html.includes(marker)) errors.push(file + ': missing ' + marker);
 }
 const home = read('index.html');
+if (!home.includes('<h2 id="study-flow-title">调研实测流程</h2>')) errors.push('Unexpected research workflow title.');
+if (!home.includes('class="study-flow-scroll"')) errors.push('Research workflow must have its own horizontal scroll region.');
+const theme = read('assets/review-theme.css');
+if (/\.study-flow-track\s*\{[^}]*grid-template-columns:\s*1fr[;}]/.test(theme)) errors.push('Research workflow must not collapse to a vertical column.');
+if (/\.study-flow-track>i\s*\{[^}]*rotate\(90deg\)/.test(theme)) errors.push('Research arrows must not rotate downward.');
 const styleTable = home.match(/<table class="home-table style-table">([\s\S]*?)<\/table>/)?.[1] || '';
 if (!styleTable.includes('优点') || (styleTable.match(/class="tool-strength"/g) || []).length !== 5) errors.push('Each tool needs an evidence-backed strengths cell.');
 const contentCases = cases.filter(item=>item.kind !== 'pipeline' && item.category !== 'review-notes');
@@ -95,6 +100,7 @@ const topicContext = {window:{}};
 vm.runInNewContext(read('assets/diagram-topics.js'),topicContext);
 if (topicContext.window.WIKI_DIAGRAM_TOPICS[0].id !== 'resource-handoff') errors.push('Resource/source generation must be the first/default diagram topic.');
 const principles = read('tool-principles-horizontal.zh-CN.html');
+if (/class="board-wrap"/.test(principles)) errors.push('Legacy vertical tool table must not return.');
 if (!principles.includes('<h1>五个wiki工具对比</h1>')) errors.push('Unexpected principles page title.');
 for (const tool of readers) {
   const lane = principles.match(new RegExp('<article class="principle-lane" id="' + tool + '">([\\s\\S]*?)</article>'))?.[1] || '';

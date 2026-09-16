@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>轻量 Wiki 设计 · 与原 Local Skill 的流程对比</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/review-theme.css">
+  <link rel="stylesheet" href="assets/principles-horizontal.css?v=20260916-chain-table">
+  <link rel="stylesheet" href="assets/lightweight-design.css?v=20260916">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html"><span>WIKI</span> 五工具对比</a><nav aria-label="主导航"><a class="top-link" href="index.html">总览</a><a class="top-link" href="tool-principles-horizontal.zh-CN.html">工具原理</a><a class="top-link active" aria-current="page" href="lightweight-wiki-design.html">轻量 Wiki 设计</a><a class="top-link" href="compare.html">成品对读</a><a class="top-link" href="issues-compare.html">问题对照</a></nav></header>
+  <main class="principles-horizontal-shell lightweight-design">
+    <header class="principles-horizontal-hero">
+      <p class="eyebrow">设计方案 · 不计入已有五工具实测</p>
+      <h1>轻量 Wiki 设计</h1>
+      <p><strong>原 Local Skill 先规划多页知识库；轻量 Skill 先确认核心事实，再一次生成单页四章概览。</strong>变化不只是少写几页，而是减少目录规划、分工写作和组装环节。</p>
+    </header>
+    <nav class="tool-nav" aria-label="本页内容"><a href="#original-flow">原 Local Skill</a><a href="#lightweight-flow">轻量 Skill</a><a href="#design-differences">区别速查</a></nav>
+    <p class="layout-note">步骤从左到右；为便于阅读，相邻动作合并在同一框内，框内仍按箭头顺序执行。窄屏可左右滑动。</p>
+
+    <div class="tool-lanes">
+      <section class="principle-lane" id="original-flow" aria-labelledby="original-title">
+        <header class="lane-heading"><div><span class="status">原流程</span><h2 id="original-title">先规划知识库，再分别生成各页面</h2><p>原 Local Skill · 本站历史评测对应 deepwiki:generate 0.12.0，不是 basic-wiki-generate。</p></div></header>
+        <div class="chain-scroll" tabindex="0" role="region" aria-label="原 Local Skill 流程，从左到右，可左右滚动">
+          <ol class="process-chain design-chain" data-flow="original">
+            <li class="process-step"><small>01 · 看仓库</small><b>扫描与分析仓库</b><span>了解有哪些文件和功能。</span></li>
+            <li class="process-step"><small>02 · 整理材料</small><b>识别核心模块<br>→ 并行生成摘要</b><span>不同模块分别整理。</span></li>
+            <li class="process-step"><small>03 · 规划章节</small><b>分类与章节规划</b><span>决定内容分成哪些章节。</span></li>
+            <li class="process-step"><small>04 · 确定目录</small><b>各章概览<br>→ 冻结目录</b><span>先写章概览，再锁定目录。</span></li>
+            <li class="process-step"><small>05 · 分页写作</small><b>并行撰写页面<br>→ 翻译</b><span>分配页面任务，分别完成。</span></li>
+            <li class="process-step"><small>06 · 组装发布</small><b>组装 → 校验<br>→ 发布授权<br>→ 发布 <code>.deepwiki/</code></b><span>形成多页知识库。</span></li>
+          </ol>
+        </div>
+        <div class="design-notes">
+          <section><h3>写之前，还要找相关代码</h3><p>在<strong>分类、各章概览、页面写作</strong>前，先执行：<strong>提取检索关键词 → 自动搜索相关代码</strong>。不是只靠最初的摘要一路写到底。</p></section>
+          <section><h3>运行器管理整个过程</h3><p>管理<strong>任务领取、提交、重试和恢复</strong>，记录各阶段进度。它负责流程运转，不等于自动保证每句话正确。</p></section>
+        </div>
+      </section>
+
+      <section class="principle-lane" id="lightweight-flow" aria-labelledby="lightweight-title">
+        <header class="lane-heading"><div><span class="status">轻量方案</span><h2 id="lightweight-title">先确认核心事实，再一次生成四章概览</h2><p>先把能确认的内容整理成事实清单，再用它组织一页 Wiki 和主图。</p></div></header>
+        <div class="chain-scroll" tabindex="0" role="region" aria-label="轻量 Skill 流程，从左到右，可左右滚动">
+          <ol class="process-chain design-chain" data-flow="lightweight">
+            <li class="process-step"><small>01 · 看仓库</small><b>扫描仓库</b><span>先了解文件和目录。</span></li>
+            <li class="process-step"><small>02 · 查核心实现</small><b>定向读核心代码</b><span>围绕核心功能找依据。</span></li>
+            <li class="process-step"><small>03 · 记录事实</small><b>事实清单<br><code>repo-profile.json</code></b><span>先整理确认过的材料。</span></li>
+            <li class="process-step"><small>04 · 集中写作</small><b>单页四章 Wiki<br>+ 主图</b><span>一次组织完整概览。</span></li>
+            <li class="process-step"><small>05 · 检查内容</small><b>静态核对<br>与结构校验</b><span>对照源码和文档结构。</span></li>
+            <li class="process-step"><small>06 · 修订输出</small><b>最多两轮<br>补读 / 修订<br>→ 输出</b><span>发现疑点，再读代码修订。</span></li>
+          </ol>
+        </div>
+        <p class="design-explanation"><strong>事实清单是什么？</strong>可以理解为写作前的“已确认事项表”，先整理核心材料，再写正文和画主图；文件名是 <code>repo-profile.json</code>。清单里记了某个说法，也仍然需要核对它的源码依据。</p>
+      </section>
+    </div>
+
+    <section class="chain-comparison" id="design-differences" aria-labelledby="differences-title">
+      <header class="chain-comparison-heading"><div><h2 id="differences-title">区别速查</h2></div><p>原流程重在多页知识组织；轻量方案重在核心事实和集中概览。</p></header>
+      <div class="chain-table-scroll" tabindex="0" role="region" aria-label="两种 Skill 的设计差异，可左右滚动">
+        <table class="design-table">
+          <thead><tr><th scope="col">比较项</th><th scope="col">原 Local Skill</th><th scope="col">轻量 Skill</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">写之前先做什么</th><td>整理模块摘要，规划章节和目录。</td><td>定向读核心代码，形成事实清单。</td></tr>
+            <tr><th scope="row">怎样找材料</th><td>分类、概览和写作前，按关键词搜索相关代码。</td><td>先集中读核心代码；检查发现疑点后补读。</td></tr>
+            <tr><th scope="row">怎样组织写作</th><td>各章概览 → 冻结目录 → 并行写页 → 翻译。</td><td>基于事实清单，一次生成单页四章 Wiki 和主图。</td></tr>
+            <tr><th scope="row">怎样检查和修订</th><td>运行器管理任务重试与恢复；组装后校验、授权发布。</td><td>静态核对与结构校验；最多两轮补读 / 修订后输出。</td></tr>
+            <tr><th scope="row">最终拿到什么</th><td><code>.deepwiki/</code> 多页知识库，按章节阅读。</td><td>单页四章概览 + 主图，集中阅读。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <aside class="footer-note"><strong>方案边界：</strong>本页按提供的设计对比流程，不修改或运行 Skill。轻量方案减少流程环节，但是否更快、更省 Token、更准确，仍需同仓库实测；静态校验也不能证明所有事实正确。四章的具体标题和两轮修订后仍未解决问题的处理方式，不在本次设计说明范围内。</aside>
+    <nav class="tool-nav" aria-label="继续查看"><a href="tool-principles-horizontal.zh-CN.html#local-skill">查看原 Local Skill 工具依赖</a><a href="issues-compare.html">查看已有实测问题</a><a href="index.html">返回总览</a></nav>
+  </main>
+</body>
+</html>

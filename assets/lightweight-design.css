@@ -1,0 +1,27 @@
+.lightweight-design .principles-horizontal-hero strong { color: var(--ink); }
+.lightweight-design .lane-heading h2 { margin-top: 9px; font-size: clamp(21px, 2.4vw, 27px); line-height: 1.5; }
+.lightweight-design .lane-heading p { margin-bottom: 20px; }
+.lightweight-design .design-chain { grid-template-columns: repeat(6, minmax(0, 1fr)); min-width: 1120px; gap: 25px; }
+.lightweight-design .process-step { min-height: 153px; padding: 12px; }
+.lightweight-design .process-step:not(:last-child)::after { right: -23px; font-size: 23px; }
+.lightweight-design .process-step b { font-size: 16px; line-height: 1.7; }
+.lightweight-design .process-step span { margin-top: 8px; font-size: 14px; }
+.lightweight-design code { font-size: .86em; overflow-wrap: anywhere; }
+.design-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 15px; }
+.design-notes section { padding: 14px 17px; border-left: 3px solid var(--blue); background: var(--subtle); }
+.design-notes h3 { margin: 0 0 6px; font-size: 16px; }
+.design-notes p, .design-explanation { margin: 0; font-size: 15px; color: var(--muted); }
+.design-notes strong, .design-explanation strong { color: var(--ink); }
+.design-explanation { margin-top: 16px; padding: 14px 17px; background: var(--subtle); border-radius: 8px; }
+.design-table { width: 100%; min-width: 750px; border-collapse: collapse; text-align: left; font-size: 15px; }
+.design-table th, .design-table td { padding: 16px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.design-table thead { color: #0d4f91; background: var(--blue-soft); }
+.design-table tbody th { width: 20%; background: var(--subtle); }
+.design-table td { width: 40%; }
+.design-table tbody tr:last-child > * { border-bottom: 0; }
+.lightweight-design .footer-note { font-size: 15px; color: var(--muted); }
+.lightweight-design .footer-note strong { color: var(--ink); }
+@media (max-width: 700px) {
+  .design-notes { grid-template-columns: 1fr; }
+  .lightweight-design .principles-horizontal-hero { padding: 20px; }
+}

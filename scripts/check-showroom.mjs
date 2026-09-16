@@ -86,6 +86,17 @@ for (const file of flowDetailPages) {
   for (const marker of ['data-flow','data-example','data-call-body','detail.js']) if (!html.includes(marker)) errors.push(file + ': missing ' + marker);
 }
 const home = read('index.html');
+const design = read('lightweight-wiki-design.html');
+for (const page of ['index.html', 'tool-principles-horizontal.zh-CN.html']) {
+  if (!read(page).includes('href="lightweight-wiki-design.html"')) errors.push(page + ': missing lightweight design entry.');
+}
+for (const flow of ['original', 'lightweight']) {
+  const chain = design.match(new RegExp('<ol[^>]*data-flow="' + flow + '"[^>]*>([\\s\\S]*?)</ol>'))?.[1] || '';
+  if ((chain.match(/class="process-step"/g) || []).length !== 6) errors.push('Lightweight design: incomplete ' + flow + ' flow.');
+}
+for (const text of ['repo-profile.json', '最多两轮', '发布授权', '自动搜索相关代码', '任务领取、提交、重试和恢复', '仍需同仓库实测']) {
+  if (!design.includes(text)) errors.push('Lightweight design missing: ' + text);
+}
 if (!home.includes('<h2 id="study-flow-title">调研实测流程</h2>')) errors.push('Unexpected research workflow title.');
 if (!home.includes('class="study-flow-scroll"')) errors.push('Research workflow must have its own horizontal scroll region.');
 const theme = read('assets/review-theme.css');

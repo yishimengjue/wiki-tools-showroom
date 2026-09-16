@@ -30,9 +30,8 @@
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>大多数页面给出详细实现结论，但没有可点击的文件和行号。</p></div>
         <div><b>源码实际是什么</b><p>这些主题确实分布在 AES.h、allocator.h、etw.h、functions.h 等文件中，需要逐页挂证据。</p></div>
-        <div><b>普通人怎么理解</b><p>读者看到结论，却不能快速回源码确认它是否正确。</p></div>
         <div><b>为什么影响判断</b><p>事实错误更难被发现，也不适合直接作为高置信度训练标签。</p></div>
-        <div><b>建议怎么改</b><p>每个实质页面至少引用一处源码；跨文件结论需要覆盖所有关键文件。</p></div>
+        <div><b>优化方法</b><p>每个实质页面至少引用一处源码；跨文件结论需要覆盖所有关键文件。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="issue-summary.html#issue-13">核查报告：18/20 页无引用 ↗</a></p></details>
     </aside><h1>Execution Architecture and Payload Lifecycle</h1>
@@ -110,9 +109,8 @@
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>它说随机位置“必须留足空间”，并说当前设计假设这些条件成立。</p></div>
         <div><b>源码实际是什么</b><p>当前实现没有检查剩余空间；随机位置太靠末端时，完整载荷会写出已申请的内存。</p></div>
-        <div><b>普通人怎么理解</b><p>不是未来可能忘记检查，而是现在就没有检查。像把大箱子随机放到货架上，却没确认右侧够不够。</p></div>
         <div><b>为什么影响判断</b><p>读者会误以为现有实现是安全的，只需以后维护时小心。</p></div>
-        <div><b>建议怎么改</b><p>直接写明当前缺陷，并要求随机上限不超过“总空间减去载荷长度”。</p></div>
+        <div><b>优化方法</b><p>直接写明当前缺陷，并要求随机上限不超过“总空间减去载荷长度”。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">allocator.h：随机起点和完整复制 ↗</a></p></details>
     </aside>
@@ -273,9 +271,8 @@
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>图中先复制本地系统组件，最后才结束临时进程。</p></div>
         <div><b>源码实际是什么</b><p>源码在远程读取完成后立即结束临时进程，之后才进入本地替换步骤。</p></div>
-        <div><b>普通人怎么理解</b><p>图把两个动作的先后顺序画反了。</p></div>
         <div><b>为什么影响判断</b><p>会让读者误判临时进程存活时间和故障排查位置。</p></div>
-        <div><b>建议怎么改</b><p>按源码调用顺序重画，读取完成后立刻结束临时进程。</p></div>
+        <div><b>优化方法</b><p>按源码调用顺序重画，读取完成后立刻结束临时进程。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L38-L71">unhook.h：读取后立即结束临时进程 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L77-L128">unhook.h：之后才替换本地代码 ↗</a></p></details>
     </aside>
@@ -575,9 +572,8 @@
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>图中先准备源码和载荷，再编译汇编文件。</p></div>
         <div><b>源码实际是什么</b><p>真实脚本先编译汇编，再加密并写入载荷，然后编译资源、C++ 和链接。</p></div>
-        <div><b>普通人怎么理解</b><p>流程图第一步和第二步顺序相反。</p></div>
         <div><b>为什么影响判断</b><p>排查旧文件或构建失败时，工程师会从错误阶段开始检查。</p></div>
-        <div><b>建议怎么改</b><p>流程图必须从 build.py 的五个连续调用直接生成。</p></div>
+        <div><b>优化方法</b><p>流程图必须从 build.py 的五个连续调用直接生成。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/build.py#L196-L201">build.py：真实构建顺序 ↗</a></p></details>
     </aside>

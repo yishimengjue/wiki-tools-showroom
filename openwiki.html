@@ -1014,9 +1014,8 @@ generated: { by: &quot;openwiki/0.5.0&quot;, at: &quot;2026-09-03T03:10:44.817Z&
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>Wiki 说缓冲区由 malloc 申请，随后由 delete[] 释放，语气像正常的所有权交接。</p></div>
         <div><b>源码实际是什么</b><p>C/C++ 中 malloc 应与 free 配对；用 delete[] 释放属于未定义行为。</p></div>
-        <div><b>普通人怎么理解</b><p>从 A 柜台借出的东西交给 B 柜台归还，程序可能崩溃或破坏内存。</p></div>
         <div><b>为什么影响判断</b><p>工程师可能照抄错误的资源释放方式。</p></div>
-        <div><b>建议怎么改</b><p>明确标成缺陷，并把两处 delete[] 改为与 malloc 匹配的 free。</p></div>
+        <div><b>优化方法</b><p>明确标成缺陷，并把两处 delete[] 改为与 malloc 匹配的 free。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L88-L94">Ghost.cpp：解密缓冲区释放 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L52-L137">unhook.h：临时缓冲区释放 ↗</a></p></details>
     </aside>
@@ -1246,9 +1245,8 @@ if (!decryption) { std::cout &lt;&lt; &quot;[+] Decryption UnSuccessful&quot; &l
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>Wiki 写明从整块内存随机选位置，再复制完整载荷，并把这解释为隐藏效果。</p></div>
         <div><b>源码实际是什么</b><p>源码没有保证“随机起点 + 载荷长度”仍在内存范围内。</p></div>
-        <div><b>普通人怎么理解</b><p>箱子藏得随机不等于放得安全；靠近货架末端时仍会伸出去。</p></div>
         <div><b>为什么影响判断</b><p>读者会把有缺陷的实现当成可复用设计。</p></div>
-        <div><b>建议怎么改</b><p>在该段后直接标出边界缺陷，不只描述它想达到的效果。</p></div>
+        <div><b>优化方法</b><p>在该段后直接标出边界缺陷，不只描述它想达到的效果。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">allocator.h：随机起点和完整复制 ↗</a></p></details>
     </aside>

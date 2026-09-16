@@ -614,9 +614,8 @@
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>CodeWiki 明确写出随机位置可能导致越界，以及 malloc 与 delete[] 不能配对。</p></div>
         <div><b>源码实际是什么</b><p>源码逐项支持这两条判断；这是五份成品中最直接的风险说明。</p></div>
-        <div><b>普通人怎么理解</b><p>它不只复述代码做了什么，还检查了边界和内存归还方式是否合理。</p></div>
         <div><b>为什么影响判断</b><p>读者能立即知道需要修复什么，不会把缺陷误当成设计能力。</p></div>
-        <div><b>建议怎么改</b><p>保留这种“行为 + 边界 + 后果”的写法，并补充可点击源码引用。</p></div>
+        <div><b>优化方法</b><p>保留这种“行为 + 边界 + 后果”的写法，并补充可点击源码引用。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">allocator.h：随机起点和完整复制 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/Ghost.cpp#L88-L94">Ghost.cpp：解密缓冲区释放 ↗</a>　<a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/unhook.h#L52-L137">unhook.h：临时缓冲区释放 ↗</a></p></details>
     </aside>

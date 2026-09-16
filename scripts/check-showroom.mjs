@@ -71,6 +71,10 @@ for (let i = 1; i <= 13; i += 1) {
 }
 for (const tool of readers) {
   const html = read(tool + '.html');
+  const reviewCards = [...html.matchAll(/<aside\b[^>]*class="inline-issue\b[^"]*"[^>]*>[\s\S]*?<\/aside>/g)];
+  for (const [card] of reviewCards) {
+    if (card.includes('普通人怎么理解') || card.includes('建议怎么改') || !card.includes('<b>优化方法</b>')) errors.push(tool + ': outdated review card fields.');
+  }
   if (!html.includes('assets/compare-embed.js')) errors.push(tool + ': no embed integration');
   if (html.indexOf('assets/site.js') > html.indexOf('assets/compare-embed.js')) errors.push(tool + ': embed executes before base reader');
 }

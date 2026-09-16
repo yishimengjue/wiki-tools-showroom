@@ -1951,9 +1951,8 @@ RetSpoofCall(memcpy, 3, Gdgt, ControlProtectionOffset, &amp;sourceBuffer, sizeof
       <div class="issue-five">
         <div><b>原 Wiki 怎么说</b><p>Wiki 展示了随机起点计算和 memcpy 完整复制，并把它们作为正常流程说明。</p></div>
         <div><b>源码实际是什么</b><p>随机起点可到达区域末端，复制时没有边界判断，可能写出已申请内存。</p></div>
-        <div><b>普通人怎么理解</b><p>材料都在页面上，但少做了最后一步加法检查。</p></div>
         <div><b>为什么影响判断</b><p>长篇文档会让读者误以为这段代码已经被充分审查。</p></div>
-        <div><b>建议怎么改</b><p>对“随机起点 + 固定长度复制”增加范围校验，并明确标成当前缺陷。</p></div>
+        <div><b>优化方法</b><p>对“随机起点 + 固定长度复制”增加范围校验，并明确标成当前缺陷。</p></div>
       </div>
       <details><summary>查看该仓库快照中的源码证据</summary><p><a href="https://github.com/cpu0x00/Ghost/blob/bf67313c72d1df48117daf4aeca604e83a570280/allocator.h#L35-L72">allocator.h：随机起点和完整复制 ↗</a></p></details>
     </aside>
